@@ -1,156 +1,85 @@
 package tortilla;
-import java.awt.Frame;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import javax.swing.JOptionPane;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Queries the master server for the list of servers.
  * Creates TortillaServer objects.
- * Puts those into a ConcurrentHashMap accessible with getServerConcurrentHashMap();
+ * Puts those into a ConcurrentHashMap accessible with getServers();
  *
  * @author David
  */
-public class TortillaQueryMaster extends TortillaParseQstat {
+public class TortillaQueryMaster {
 
-    private Process qstatProcess;
-    private ConcurrentMap < String, TortillaServer > serverList =
-                new ConcurrentHashMap < String, TortillaServer >();
-    private File qstat;
+    private static final int DPMASTER_PORT = 27950;
+    private static final String REQUEST = "xxxxgetservers Nexuiz 3";
 
     /**
-     * Run qstat. Cache serverlist.
+     * The serverList ConcurrentHashMap.
+     * @return ConcurrentHashMap of serverList.
      */
-    public void qstat()
-    {
-        String cmd = null;
-        String osName = new String (System.getProperty("os.name"));
-        String userDir = System.getProperty("user.dir");
+    public ArrayList < String > getServers() {
+        ArrayList < String > serverList =
+                new ArrayList < String >();
+        TortillaServer server;
 
-        if (osName.contains("Windows"))
-        {
-            qstat = new File(userDir + "\\qstat\\qstat.exe");
-            cmd = new String(qstat.toString() + " -nexuizm "
-                    + getMaster() + " -raw ___ -retry 1 -maxsim 25");
-        }
-        else if (osName.contains("Linux") || osName.contains("Solaris") ||
-                osName.contains("FreeBSD"))
-        {
-            qstat = new File(qstatUnixLocation());
-            cmd = new String(qstat.toString() + " -nexuizm " + getMaster() +
-                    " -raw ___ -retry 1 -maxsim 25");
-        }
-
-        if (qstat.exists() && cmd != null)
-        {
-            try
-            {
-                Runtime runtime = Runtime.getRuntime();
-                setQstatProcess(runtime.exec(cmd));
-                parseInputStream();
-            }
-            catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(new Frame(), 
-                    "Error running qstat");
+        String queryResult = TortillaQuery.getInfo(getMaster(),
+                DPMASTER_PORT, REQUEST);
+        System.out.println(queryResult);
+        StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
+        tokens.nextToken(); // first token is the response text
+        while (tokens.hasMoreTokens()) {
+            String address = tokens.nextToken();
+            if (address.equals("EOT")) {
+                break;
+            } else {
+                String ip = getValue(address);
+                serverList.add(ip);
             }
         }
-        else
-        {
-            JOptionPane.showMessageDialog(new Frame(), 
-                    "Qstat not found.\nBe sure that qstat is in your $PATH");
-        }
-    }
-    
-    /**
-     * Used to check if qstat is installed on Unix systems.
-     * @return File path to quakestat executable on unix systems.
-     */
-    public String qstatUnixLocation()
-    {
-        String path = null;
-        try
-        {
-            Runtime runtime = Runtime.getRuntime();
-            setQstatProcess(runtime.exec("which quakestat"));
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(getQstatProcess().getInputStream()));
-            path = in.readLine();
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-        return path;
+        return serverList;
     }
 
     /**
      * Choose a random master server to query, for load-balancing.
      * @return URL of master server.
      */
-    public String getMaster()
-    {
+    protected String getMaster() {
         String[] master = {"ghdigital.com", "dpmaster.deathmask.net",
-            "excalibur.nvg.ntnu.no"};
-        Random generator = new Random();
-        int randomIndex = generator.nextInt(master.length);
-        return master[randomIndex];
+            "dpmaster.tchr.no"
+        };
+        return master[(int) (Math.random() * 3)];
     }
 
     /**
-     * Parse output of qstat process.
+     * Translates bytes in strings to IP addresses and ports.
+     * All numbers are big-endian oriented (most significant bytes first). 
+     * For instance, a server hosted at address 1.2.3.4 on port 2048 will 
+     * be sent as: "\x01\x02\x03\x04\x08\x00".
+     * @param address String containing the data.
+     * @return  String with the decoded data.
      */
-    public void parseInputStream()
-    {        
-        String input;
-        try
-        {
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(getQstatProcess().getInputStream()));
-            in.readLine();
-            while ( (input = in.readLine()) != null )
-            {
-                processLine( input );
-                if (getServer() != null)
-                {
-                    serverList.put(getServer().getIp(), getServer());
-                }
-            }
-            
-        }
-        catch (IOException e)
-        {
+    protected String getValue(String ip) {
+        try {
+            byte b[] = ip.getBytes("ISO-8859-1");
+            int A = 0;
+            int B = 0;
+            int C = 0;
+            int D = 0;
+            int port = 0;
+            A |= b[0] & 0xff;
+            B |= b[1] & 0xff;
+            C |= b[2] & 0xff;
+            D |= b[3] & 0xff;
+            port |= b[4] & 0xFF;
+            port <<= 8;
+            port |= b[5] & 0xFF;
+            return A + "." + B + "." + C + "." + D + ":" + port;
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return "";
         }
     }
-
-    public Process getQstatProcess()
-    {
-        return qstatProcess;
-    }
-
-    public void setQstatProcess(Process qstatProcess)
-    {
-        this.qstatProcess = qstatProcess;
-    }
-
-    /**
-     * The serverList ConcurrentHashMap.
-     * @return ConcurrentHashMap of serverList.
-     */
-    public ConcurrentMap<String, TortillaServer> getServerList()
-    {
-        return serverList;
-    }
-
-    public void setServerList(ConcurrentMap<String, TortillaServer> serverList)
-    {
-        this.serverList = serverList;
-    }
-
 }

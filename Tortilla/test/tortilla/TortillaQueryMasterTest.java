@@ -1,5 +1,7 @@
 package tortilla;
 
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentMap;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -8,7 +10,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests TortillaQueryMaster and TortillaQueryServer.
+ * Tests TortillaQueryMaster.
  * @author David
  */
 public class TortillaQueryMasterTest {
@@ -45,26 +47,31 @@ public class TortillaQueryMasterTest {
         System.out.println("Queried " + result);
         assertTrue(result.contains("ghdigital.com") ||
                 result.contains("dpmaster.deathmask.net") ||
-                result.contains("excalibur.nvg.ntnu.no"));
+                result.contains("dpmaster.tchr.no"));
     }
-
+    
     /**
-     * Test if servercache is created.
+     * Test of getServers method.
      */
     @Test
-    public void testQueryMaster()
-    {
-        System.out.println("testQueryMaster");
-        long startTime = System.currentTimeMillis();
-        instance.qstat();
-        long endTime = System.currentTimeMillis();
-        System.out.println("qstat() executed in " + (endTime - startTime)
-                + "ms");
-        instance.parseInputStream();
-        System.out.println("parseInputStream() complete");
-        System.out.println(instance.getServerList().keySet());
-        System.out.println(instance.getServerList().size() + " servers");
-        assertFalse(instance.getServerList().isEmpty());
+    public void testGetServers() {
+        System.out.println("testGetServers");
+        ArrayList < String > result = 
+                instance.getServers();
+        for (String ip : result) {
+            System.out.println(ip);
+        }
     }
-
+    
+//    /**
+//     * Test of getServers method.
+//     * This is an unreliable and useless test atm.
+//     */
+//    @Test
+//    public void testGetValue() {
+//        System.out.println("testGetValue");
+//        String expResult = "75.126.234.42:26002";
+//        String result = instance.getValue("K~ê*e?");
+//        assertEquals(result, expResult);
+//    }
 }

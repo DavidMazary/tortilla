@@ -1,7 +1,6 @@
 /*
  * TortillaView.java
  */
-
 package tortilla;
 
 import java.awt.Frame;
@@ -12,6 +11,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentMap;
 import javax.swing.Timer;
 import javax.swing.Icon;
@@ -32,13 +32,12 @@ public class TortillaView extends FrameView {
     private TortillaQueryServer queryS = new TortillaQueryServer();
     private TortillaAddPrivateServer addPrivateServer;
     private DefaultTableModel model = new DefaultTableModel();
-    private ConcurrentMap<String, TortillaServer> serverList;
+    private ArrayList<String> serverList;
     private boolean hideEmpty;
     private boolean hideFull;
     private boolean useSdl;
     private boolean hideHighPing;
     private static final int MAX_PING = 120;
-
 
     public TortillaView(SingleFrameApplication app) {
         super(app);
@@ -49,6 +48,7 @@ public class TortillaView extends FrameView {
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
         messageTimer = new Timer(messageTimeout, new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 statusMessageLabel.setText("");
             }
@@ -59,6 +59,7 @@ public class TortillaView extends FrameView {
             busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
         }
         busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
                 statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
@@ -71,6 +72,7 @@ public class TortillaView extends FrameView {
         // connecting action tasks to status bar via TaskMonitor
         TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
         taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 String propertyName = evt.getPropertyName();
                 if ("started".equals(propertyName)) {
@@ -87,11 +89,11 @@ public class TortillaView extends FrameView {
                     progressBar.setVisible(false);
                     progressBar.setValue(0);
                 } else if ("message".equals(propertyName)) {
-                    String text = (String)(evt.getNewValue());
+                    String text = (String) (evt.getNewValue());
                     statusMessageLabel.setText((text == null) ? "" : text);
                     messageTimer.restart();
                 } else if ("progress".equals(propertyName)) {
-                    int value = (Integer)(evt.getNewValue());
+                    int value = (Integer) (evt.getNewValue());
                     progressBar.setVisible(true);
                     progressBar.setIndeterminate(false);
                     progressBar.setValue(value);
@@ -435,7 +437,6 @@ public class TortillaView extends FrameView {
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
-
     /**
      * Get server list from master server when clicked.
      * @param evt
@@ -521,55 +522,41 @@ public class TortillaView extends FrameView {
     private javax.swing.JPanel statusPanel;
     private javax.swing.JButton updateButton;
     // End of variables declaration//GEN-END:variables
-
     private final Timer messageTimer;
     private final Timer busyIconTimer;
     private final Icon idleIcon;
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
-
     private JDialog aboutBox;
 
-    public DefaultTableModel getModel()
-    {
+    public DefaultTableModel getModel() {
 //        model = new ServerTableModel();
         return model;
     }
 
-    public void connect()
-    {
+    public void connect() {
         int selectedRow = jTable1.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = "";
-        if (selectedRow != -1)
-        {
-            for (int i = 0; i < getModel().getColumnCount(); i++)
-            {
-                if (getModel().getColumnName(i).contains("Server"))
-                {
+        if (selectedRow != -1) {
+            for (int i = 0; i < getModel().getColumnCount(); i++) {
+                if (getModel().getColumnName(i).contains("Server")) {
                     nameColumn = i;
                 }
             }
-            String selectedServer
-                    = getModel().getValueAt(selectedRow, nameColumn).toString();
-            for (String ip : serverList.keySet())
-            {
-                if (serverList.get(ip).getHostname().contains(selectedServer))
-                {
+            String selectedServer = getModel().getValueAt(selectedRow, nameColumn).toString();
+            for (String ip : serverList.keySet()) {
+                if (serverList.get(ip).getHostname().contains(selectedServer)) {
                     selectedIp = ip;
                 }
             }
             launcher.setSdl(isUseSdl());
             launcher.setIp(selectedIp);
             launcher.playGame();
-        }
-        else if (serverList == null)
-        {
+        } else if (serverList == null) {
             JOptionPane.showMessageDialog(new Frame(),
                     "Please update the server list");
-        }
-        else
-        {
+        } else {
             JOptionPane.showMessageDialog(new Frame(),
                     "Please select a server");
         }
@@ -579,36 +566,28 @@ public class TortillaView extends FrameView {
     /**
      * Filter serverList according to search term.
      */
-    public void filter()
-    {
+    public void filter() {
         String query = searchTextField.getText().toLowerCase();
 
-        if (!query.equals(""))
-        {
-            for (String ip : serverList.keySet())
-            {
-                if (!serverList.get(ip).getHostname().toLowerCase().contains(query))
-                {
+        if (!query.equals("")) {
+            for (String ip : serverList.keySet()) {
+                if (!serverList.get(ip).getHostname().toLowerCase().contains(query)) {
                     serverList.remove(ip);
                 }
             }
             refresh();
-        }
-        else
-        {
+        } else {
             update();
         }
     }
 
     /**
-     * Use TortillaQueryMaster to update table with info from "qstat -nexuizm".
+     * Use TortillaQueryMaster to update table.
      */
-    public void update()
-    {
+    public void update() {
         statusMessageLabel.setText("Updating...");
         // set up table
-        if (getModel().getColumnCount() != 5)
-        {
+        if (getModel().getColumnCount() != 5) {
             getModel().addColumn("Ping");
             getModel().addColumn("Server");
             getModel().addColumn("Players");
@@ -616,88 +595,26 @@ public class TortillaView extends FrameView {
             getModel().addColumn("Map");
         }
         TableColumn column;
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             column = jTable1.getColumnModel().getColumn(i);
-            if (i == 0 || i == 2 || i == 3)
-            {
+            if (i == 0 || i == 2 || i == 3) {
                 column.setPreferredWidth(24); //numerical columns smaller
             }
         }
-        for (int j = getModel().getRowCount() - 1; j >= 0; j--)
-        {
+        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
             getModel().removeRow(j);
         }
-        SwingWorker worker = new SwingWorker<
-                ConcurrentMap<String,TortillaServer>, Void>() {
+        SwingWorker worker = new SwingWorker<ArrayList<String>, Void>() {
+
             @Override
-            public ConcurrentMap<String,TortillaServer> doInBackground() {
-                queryM.qstat();
-                return queryM.getServerList();
+            public ArrayList<String> doInBackground() {
+                return queryM.getServers();
             }
 
             @Override
-            public void done()
-            {
+            public void done() {
                 statusMessageLabel.setText("");
-                try
-                {
-                    serverList = get();
-                    int ping;
-                    String hostname;
-                    int players;
-                    int maxplayers;
-                    String map;
-                    int count = 0;
-                    boolean permission;
-                    for (String Ip : serverList.keySet())
-                    {
-                        permission = true;
-                        ping = serverList.get(Ip).getPing();
-                        hostname = serverList.get(Ip).getHostname();
-                        players = serverList.get(Ip).getPlayers();
-                        maxplayers = serverList.get(Ip).getMaxplayers();
-                        map = serverList.get(Ip).getMap();
-                        if (isHideEmpty())
-                        {
-                            if (players == 0)
-                            {
-                                permission = false;
-                            }
-                        }
-                        if (isHideFull())
-                        {
-                            if (players == maxplayers)
-                            {
-                                permission = false;
-                            }
-                        }
-                        if (isHideHighPing())
-                        {
-                            if (ping > MAX_PING)
-                            {
-                                permission = false;
-                            }
-                        }
-                        if (permission)
-                        {
-                            model.addRow(new Object[]{ping, hostname,
-                                players, maxplayers, map});
-//                            getModel().fireTableDataChanged();
-                        }
-                        count++;
-                    }
-                } catch (InterruptedException ignore) {}
-                catch (java.util.concurrent.ExecutionException e) {
-                    String why = null;
-                    Throwable cause = e.getCause();
-                    if (cause != null) {
-                        why = cause.getMessage();
-                    } else {
-                        why = e.getMessage();
-                    }
-                    System.err.println("Error retrieving file: " + why);
-                }
+                refresh();
             }
         };
 
@@ -710,54 +627,23 @@ public class TortillaView extends FrameView {
      * @todo Spawn each TortillaQueryServer call in a separate thread.
      * At the moment, each call run sequentially, which adds up.
      */
-    public void refresh()
-    {
-        if (serverList != null)
-        {
-            statusMessageLabel.setText("Refreshing...");
-            // set up table
-            if (getModel().getColumnCount() != 5)
-            {
-                getModel().addColumn("Ping");
-                getModel().addColumn("Server");
-                getModel().addColumn("Players");
-                getModel().addColumn("Max");
-                getModel().addColumn("Map");
-            }
-            TableColumn column;
-            for (int i = 0; i < 4; i++)
-            {
-                column = jTable1.getColumnModel().getColumn(i);
-                if (i == 0 || i == 2 || i == 3)
-                {
-                    column.setPreferredWidth(18); //numerical columns smaller
-                }
-            }
-            for (int j = getModel().getRowCount() - 1; j >= 0; j--)
-            {
-                getModel().removeRow(j);
-            }
+    public void refresh() {
+        if (serverList != null) {
+            SwingWorker worker = new SwingWorker<ConcurrentMap<String, TortillaServer>, Void>() {
 
-            SwingWorker worker = new SwingWorker<
-                    ConcurrentMap<String,TortillaServer>, Void>() {
                 @Override
-                public ConcurrentMap<String,TortillaServer> doInBackground() {
-                    ConcurrentMap<String,TortillaServer> tempSL = serverList;
-                    for (String ip : serverList.keySet())
-                    {
-                        queryS.setIp(ip);
-                        queryS.qstat();
-                        tempSL.put(queryS.getServer().getIp(),
-                                queryS.getServer());
+                public ConcurrentMap<String, TortillaServer> doInBackground() {
+                    ConcurrentMap<String, TortillaServer> tempSL = serverList;
+                    for (String ip : serverList.keySet()) {
+                        TortillaServer server = queryS.getDetails(ip);
+                        tempSL.put(server.getIp(), server);
                     }
                     return tempSL;
                 }
 
                 @Override
-                public void done()
-                {
-                    try
-                    {
+                public void done() {
+                    try {
                         statusMessageLabel.setText("");
                         serverList = get();
                         int ping;
@@ -767,47 +653,39 @@ public class TortillaView extends FrameView {
                         String map;
                         int count = 0;
                         boolean permission;
-                        for (String Ip : serverList.keySet())
-                        {
+                        for (String Ip : serverList.keySet()) {
                             permission = true;
                             ping = serverList.get(Ip).getPing();
                             hostname = serverList.get(Ip).getHostname();
-                            players = serverList.get(Ip).getPlayers();
-                            maxplayers = serverList.get(Ip).getMaxplayers();
+                            players = serverList.get(Ip).getPlayerCount();
+                            maxplayers = serverList.get(Ip).getMaxPlayers();
                             map = serverList.get(Ip).getMap();
-                            if (isHideEmpty())
-                            {
-                                if (players == 0)
-                                {
+                            if (isHideEmpty()) {
+                                if (players == 0) {
                                     permission = false;
                                 }
                             }
-                            if (isHideFull())
-                            {
-                                if (players == maxplayers)
-                                {
+                            if (isHideFull()) {
+                                if (players == maxplayers) {
                                     permission = false;
                                 }
                             }
-                            if (isHideHighPing())
-                            {
-                                if (ping > MAX_PING)
-                                {
+                            if (isHideHighPing()) {
+                                if (ping > MAX_PING) {
                                     permission = false;
                                 }
                             }
-                            if (permission)
-                            {
+                            if (permission) {
                                 getModel().addRow(
                                         new Object[]{ping, hostname,
-                                        players, maxplayers, map});
+                                    players, maxplayers, map
+                                });
                             }
                             count++;
                         }
                         statusMessageLabel.setText("");
-                    }
-                    catch (InterruptedException ignore) {}
-                    catch (java.util.concurrent.ExecutionException e) {
+                    } catch (InterruptedException ignore) {
+                    } catch (java.util.concurrent.ExecutionException e) {
                         String why = null;
                         Throwable cause = e.getCause();
                         if (cause != null) {
@@ -820,9 +698,7 @@ public class TortillaView extends FrameView {
                 }
             };
             worker.execute();
-        }
-        else
-        {
+        } else {
             update();
         }
     }
@@ -850,18 +726,18 @@ public class TortillaView extends FrameView {
 //    private void setModel(ServerTableModel model) {
 //        this.model = model;
 //    }
-    
     class ServerTableModel extends DefaultTableModel {
+
         String[] columnNames = {
             "Ping", "Server", "Players", "Max", "Map"
-            };
+        };
 
 //        Object data[][];
 
 //        /**
-//         * Returns the number of rows in the model. 
-//         * A JTable uses this method to determine how many rows it should display. 
-//         * This method should be quick, as it is called frequently during rendering. 
+//         * Returns the number of rows in the model.
+//         * A JTable uses this method to determine how many rows it should display.
+//         * This method should be quick, as it is called frequently during rendering.
 //         * @return the number of rows in the model
 //         */
 //        @Override
@@ -870,9 +746,9 @@ public class TortillaView extends FrameView {
 //        }
 //
         /**
-         * Returns the number of columns in the model. 
-         * A JTable uses this method to determine how 
-         * many columns it should create and display by default. 
+         * Returns the number of columns in the model.
+         * A JTable uses this method to determine how
+         * many columns it should create and display by default.
          * @return the number of columns in the model
          */
         @Override
@@ -881,8 +757,7 @@ public class TortillaView extends FrameView {
         }
 
         @Override
-        public String getColumnName(int index)
-        {
+        public String getColumnName(int index) {
             return columnNames[index];
         }
 
@@ -899,7 +774,7 @@ public class TortillaView extends FrameView {
             }
             return dataType;
         }
-        
+
         /**
          * No editing of any cells.
          * @param row the row whose value is to be queried
@@ -909,6 +784,7 @@ public class TortillaView extends FrameView {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
+SwingWorker<ArrayList<String>, Void>        
         }
     }
 }

@@ -1,129 +1,111 @@
 package tortilla;
 
-import java.awt.Frame;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import javax.swing.JOptionPane;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
- * Query an actual game server instead of the master server.
- * Not using a file to cache the data this time.
+ * Query a particular game server using <code>getstatus</code>.
  * @author david
  */
-public class TortillaQueryServer extends TortillaParseQstat {
-
-    private Process qstatProcess;
-    private String ip;
-    private File qstat;
+public class TortillaQueryServer {
 
     /**
-     * Use qstat to query this server.     *
+     * Creates a TortillaServer containing all of the server info,
+     * excluding player names, scores, and pings.
+     *
+     * @param ipStr     String of IP address of this server
+     * @param port      Port this server is running on
+     * @return  TortillaServer containing the info of this server.
      */
-    public void qstat()
-    {
-        String cmd = null;
-        String osName = new String (System.getProperty("os.name"));
-        String userDir = System.getProperty("user.dir");
+    public TortillaServer getDetails(String ipStr) {
+        TortillaQuery.generateChallenge();
+        int port = Integer.getInteger(ipStr.substring((ipStr.length() - 5)));
+        String queryResult = TortillaQuery.getInfo(ipStr, port,
+                "xxxxgetinfo " + TortillaQuery.getChallenge());
 
-        if (osName.contains("Windows"))
-        {
-            qstat = new File(userDir + "\\qstat\\qstat.exe");
-            cmd = new String(qstat.toString() + " -nexuizs "
-                    + getIp() + " -raw ___");
-        }
-        else if (osName.contains("Linux") || osName.contains("Solaris") ||
-                osName.contains("FreeBSD"))
-        {
-            qstat = new File(qstatUnixLocation());
-            cmd = new String("quakestat -nexuizs " + getIp() +
-                    " -raw ___");
-        }
-
-        if (qstat.exists() && cmd != null)
-        {
-            try
-            {
-                Runtime runtime = Runtime.getRuntime();
-                setQstatProcess(runtime.exec(cmd));
-                parseInputStream();
-            }
-            catch (Exception err)
-            {
-                JOptionPane.showMessageDialog(new Frame(), 
-                    "Error running qstat");
+        TortillaServer tortillaServer = null;
+        if (queryResult != null && queryResult.length() > 0) {
+            queryResult = queryResult.substring(queryResult.indexOf("\\"));
+            queryResult = queryResult.replaceAll("\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");
+            if (TortillaQuery.checkChallenge(queryResult)) {
+                tortillaServer = new TortillaServer();
+                tortillaServer.setGame(
+                        TortillaQuery.getPart(queryResult, "gamename"));
+                tortillaServer.setIp(ipStr);
+                tortillaServer.setHostname(
+                        TortillaQuery.getPart(queryResult, "hostname"));
+                tortillaServer.setPlayerCount(
+                        TortillaQuery.getPart(queryResult, "clients"));
+                tortillaServer.setMaxPlayers(
+                        TortillaQuery.getPart(queryResult, "sv_maxclients"));
+                tortillaServer.setMap(
+                        TortillaQuery.getPart(queryResult, "mapname"));
+                tortillaServer.setGameVersion(
+                        TortillaQuery.getPart(queryResult, "gameversion"));
             }
         }
-        else
-        {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Qstat not found.\nBe sure that qstat is in your $PATH");
-        }
+        return tortillaServer;
     }
 
     /**
-     * Used to check if qstat is installed on Unix systems.
-     * @return File path to quakestat executable on unix systems.
+     * Gets an ArrayList of the players on this server.
+     *
+     * @param ipStr     String of IP address of server
+     * @param port      Port server is listening on
+     * @return  ArrayList of the TortillaPlayers on this server
      */
-    public String qstatUnixLocation()
-    {
-        String path = null;
-        try
-        {
-            Runtime runtime = Runtime.getRuntime();
-            setQstatProcess(runtime.exec("which quakestat"));
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(getQstatProcess().getInputStream()));
-            path = in.readLine();
+    public ArrayList<TortillaPlayer> getPlayers(String ipStr, int port) {
+        TortillaQuery.generateChallenge();
+        ArrayList<TortillaPlayer> tortillaPlayer =
+                new ArrayList<TortillaPlayer>();
+        String queryResult = TortillaQuery.getInfo(ipStr, port,
+                "xxxxgetstatus " + TortillaQuery.getChallenge());
+        if (queryResult == null || queryResult.length() < 1 || TortillaQuery.checkChallenge(queryResult.substring(0,
+                queryResult.indexOf('\n')))) {
+            return tortillaPlayer;
         }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-        return path;
-    }
 
-    /**
-     * Parse output of qstat process.
-     */
-    public void parseInputStream()
-    {
-        String input;
-        try
-        {
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(getQstatProcess().getInputStream()));
-            while ( (input = in.readLine()) != null )
-            {
-                processLine( input );
+        queryResult = queryResult.substring(queryResult.indexOf("\\"));
+        queryResult = queryResult.replaceAll(
+                "\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");
+
+        if (queryResult != null || queryResult.length() > 0) {
+            String input;
+            try {
+                BufferedReader in = new BufferedReader(
+                        new StringReader(queryResult));
+                in.readLine();
+                while ((input = in.readLine()) != null) {
+                    tortillaPlayer.add(processPlayer(input));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+
+        return tortillaPlayer;
     }
 
-    public String getIp()
-    {
-        return ip;
+    /**
+     * From a line in the queryResult, retreive player info.
+     * @param queryResult String of the line to process.
+     * @return TortillaPlayer which is created.
+     */
+    protected TortillaPlayer processPlayer(String queryResult) {
+        Scanner scanner = new Scanner(queryResult);
+        int score = scanner.nextInt();
+        int ping = scanner.nextInt();
+        scanner.useDelimiter("\"");
+        scanner.next();
+        String name = scanner.next();
+        TortillaPlayer player = new TortillaPlayer();
+        player.setScore(score);
+        player.setName(name.trim());
+        player.setPing(ping);
+        return player;
     }
-
-    public void setIp(String ip)
-    {
-        this.ip = ip;
-    }
-
-    public Process getQstatProcess()
-    {
-        return qstatProcess;
-    }
-
-    public void setQstatProcess(Process qstatProcess)
-    {
-        this.qstatProcess = qstatProcess;
-    }
-
 }

@@ -30,7 +30,7 @@ public class TortillaServerTest {
 
     @Before
     public void setUp() {
-        instance = new TortillaServer("", "", "", 1, 1, 1);
+        instance = new TortillaServer();
     }
 
     @After
@@ -44,8 +44,8 @@ public class TortillaServerTest {
     public void isFull()
     {
         System.out.println("isFull");
-        instance.setPlayers(2);
-        instance.setMaxplayers(2);
+        instance.setPlayerCount(2);
+        instance.setMaxPlayers(2);
         boolean expResult = true;
         boolean result = instance.isFull();
         assertEquals(expResult, result);
@@ -58,8 +58,8 @@ public class TortillaServerTest {
     public void isEmpty()
     {
         System.out.println("isEmpty");
-        instance.setPlayers(0);
-        instance.setMaxplayers(2);
+        instance.setPlayerCount(0);
+        instance.setMaxPlayers(2);
         boolean expResult = true;
         boolean result = instance.isEmpty();
         assertEquals(expResult, result);
@@ -155,15 +155,15 @@ public class TortillaServerTest {
 //    }
 //
 //    /**
-//     * Test of getPlayers method, of class TortillaServer.
+//     * Test of getPlayerCount method, of class TortillaServer.
 //     */
 //    @Test
-//    public void getPlayers()
+//    public void getPlayerCount()
 //    {
-//        System.out.println("getPlayers");
+//        System.out.println("getPlayerCount");
 //        TortillaServer instance = null;
 //        int expResult = 0;
-//        int result = instance.getPlayers();
+//        int result = instance.getPlayerCount();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -227,15 +227,15 @@ public class TortillaServerTest {
 //    }
 //
 //    /**
-//     * Test of setPlayers method, of class TortillaServer.
+//     * Test of setPlayerCount method, of class TortillaServer.
 //     */
 //    @Test
-//    public void setPlayers()
+//    public void setPlayerCount()
 //    {
-//        System.out.println("setPlayers");
+//        System.out.println("setPlayerCount");
 //        int newPlayers = 0;
 //        TortillaServer instance = null;
-//        instance.setPlayers(newPlayers);
+//        instance.setPlayerCount(newPlayers);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
