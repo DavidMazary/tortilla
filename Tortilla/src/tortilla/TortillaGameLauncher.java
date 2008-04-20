@@ -80,7 +80,7 @@ public class TortillaGameLauncher {
             try
             {
                 Runtime runtime = Runtime.getRuntime();
-                Process gameProcess = runtime.exec(cmd);
+                runtime.exec(cmd);
             }
             catch (Exception e)
             {
