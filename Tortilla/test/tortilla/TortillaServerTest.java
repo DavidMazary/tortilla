@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 /**
  * Tests TortillaServer.
- * @author david
+ * @author dmaz
  */
 public class TortillaServerTest {
     

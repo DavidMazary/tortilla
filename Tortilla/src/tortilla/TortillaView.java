@@ -442,23 +442,23 @@ public class TortillaView extends FrameView {
      * @param evt
      */
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        update();
+//        update();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
-        update();
+//        update();
     }//GEN-LAST:event_updateButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
-        connect();
+//        connect();
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        refresh();
+//        refresh();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        refresh();
+//        refresh();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
@@ -470,15 +470,15 @@ public class TortillaView extends FrameView {
     }//GEN-LAST:event_searchTextFieldFocusGained
 
     private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
-        filter();
+//        filter();
     }//GEN-LAST:event_searchTextFieldActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-        filter();
+//        filter();
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        connect();
+//        connect();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
@@ -534,174 +534,174 @@ public class TortillaView extends FrameView {
         return model;
     }
 
-    public void connect() {
-        int selectedRow = jTable1.getSelectedRow();
-        int nameColumn = 1;
-        String selectedIp = "";
-        if (selectedRow != -1) {
-            for (int i = 0; i < getModel().getColumnCount(); i++) {
-                if (getModel().getColumnName(i).contains("Server")) {
-                    nameColumn = i;
-                }
-            }
-            String selectedServer = getModel().getValueAt(selectedRow, nameColumn).toString();
-            for (String ip : serverList.keySet()) {
-                if (serverList.get(ip).getHostname().contains(selectedServer)) {
-                    selectedIp = ip;
-                }
-            }
-            launcher.setSdl(isUseSdl());
-            launcher.setIp(selectedIp);
-            launcher.playGame();
-        } else if (serverList == null) {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Please update the server list");
-        } else {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Please select a server");
-        }
-
-    }
-
-    /**
-     * Filter serverList according to search term.
-     */
-    public void filter() {
-        String query = searchTextField.getText().toLowerCase();
-
-        if (!query.equals("")) {
-            for (String ip : serverList.keySet()) {
-                if (!serverList.get(ip).getHostname().toLowerCase().contains(query)) {
-                    serverList.remove(ip);
-                }
-            }
-            refresh();
-        } else {
-            update();
-        }
-    }
-
-    /**
-     * Use TortillaQueryMaster to update table.
-     */
-    public void update() {
-        statusMessageLabel.setText("Updating...");
-        // set up table
-        if (getModel().getColumnCount() != 5) {
-            getModel().addColumn("Ping");
-            getModel().addColumn("Server");
-            getModel().addColumn("Players");
-            getModel().addColumn("Max");
-            getModel().addColumn("Map");
-        }
-        TableColumn column;
-        for (int i = 0; i < 4; i++) {
-            column = jTable1.getColumnModel().getColumn(i);
-            if (i == 0 || i == 2 || i == 3) {
-                column.setPreferredWidth(24); //numerical columns smaller
-            }
-        }
-        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
-            getModel().removeRow(j);
-        }
-        SwingWorker worker = new SwingWorker<ArrayList<String>, Void>() {
-
-            @Override
-            public ArrayList<String> doInBackground() {
-                return queryM.getServers();
-            }
-
-            @Override
-            public void done() {
-                statusMessageLabel.setText("");
-                refresh();
-            }
-        };
-
-        worker.execute();
-    }
-
-    /**
-     * Called by the refresh buttons, this action runs through the serverlist,
-     * querying each server.
-     * @todo Spawn each TortillaQueryServer call in a separate thread.
-     * At the moment, each call run sequentially, which adds up.
-     */
-    public void refresh() {
-        if (serverList != null) {
-            SwingWorker worker = new SwingWorker<ConcurrentMap<String, TortillaServer>, Void>() {
-
-                @Override
-                public ConcurrentMap<String, TortillaServer> doInBackground() {
-                    ConcurrentMap<String, TortillaServer> tempSL = serverList;
-                    for (String ip : serverList.keySet()) {
-                        TortillaServer server = queryS.getDetails(ip);
-                        tempSL.put(server.getIp(), server);
-                    }
-                    return tempSL;
-                }
-
-                @Override
-                public void done() {
-                    try {
-                        statusMessageLabel.setText("");
-                        serverList = get();
-                        int ping;
-                        String hostname;
-                        int players;
-                        int maxplayers;
-                        String map;
-                        int count = 0;
-                        boolean permission;
-                        for (String Ip : serverList.keySet()) {
-                            permission = true;
-                            ping = serverList.get(Ip).getPing();
-                            hostname = serverList.get(Ip).getHostname();
-                            players = serverList.get(Ip).getPlayerCount();
-                            maxplayers = serverList.get(Ip).getMaxPlayers();
-                            map = serverList.get(Ip).getMap();
-                            if (isHideEmpty()) {
-                                if (players == 0) {
-                                    permission = false;
-                                }
-                            }
-                            if (isHideFull()) {
-                                if (players == maxplayers) {
-                                    permission = false;
-                                }
-                            }
-                            if (isHideHighPing()) {
-                                if (ping > MAX_PING) {
-                                    permission = false;
-                                }
-                            }
-                            if (permission) {
-                                getModel().addRow(
-                                        new Object[]{ping, hostname,
-                                    players, maxplayers, map
-                                });
-                            }
-                            count++;
-                        }
-                        statusMessageLabel.setText("");
-                    } catch (InterruptedException ignore) {
-                    } catch (java.util.concurrent.ExecutionException e) {
-                        String why = null;
-                        Throwable cause = e.getCause();
-                        if (cause != null) {
-                            why = cause.getMessage();
-                        } else {
-                            why = e.getMessage();
-                        }
-                        System.err.println("Error retrieving file: " + why);
-                    }
-                }
-            };
-            worker.execute();
-        } else {
-            update();
-        }
-    }
+//    public void connect() {
+//        int selectedRow = jTable1.getSelectedRow();
+//        int nameColumn = 1;
+//        String selectedIp = "";
+//        if (selectedRow != -1) {
+//            for (int i = 0; i < getModel().getColumnCount(); i++) {
+//                if (getModel().getColumnName(i).contains("Server")) {
+//                    nameColumn = i;
+//                }
+//            }
+//            String selectedServer = getModel().getValueAt(selectedRow, nameColumn).toString();
+//            for (String ip : serverList.keySet()) {
+//                if (serverList.get(ip).getHostname().contains(selectedServer)) {
+//                    selectedIp = ip;
+//                }
+//            }
+//            launcher.setSdl(isUseSdl());
+//            launcher.setIp(selectedIp);
+//            launcher.playGame();
+//        } else if (serverList == null) {
+//            JOptionPane.showMessageDialog(new Frame(),
+//                    "Please update the server list");
+//        } else {
+//            JOptionPane.showMessageDialog(new Frame(),
+//                    "Please select a server");
+//        }
+//
+//    }
+//
+//    /**
+//     * Filter serverList according to search term.
+//     */
+//    public void filter() {
+//        String query = searchTextField.getText().toLowerCase();
+//
+//        if (!query.equals("")) {
+//            for (String ip : serverList.keySet()) {
+//                if (!serverList.get(ip).getHostname().toLowerCase().contains(query)) {
+//                    serverList.remove(ip);
+//                }
+//            }
+//            refresh();
+//        } else {
+//            update();
+//        }
+//    }
+//
+//    /**
+//     * Use TortillaQueryMaster to update table.
+//     */
+//    public void update() {
+//        statusMessageLabel.setText("Updating...");
+//        // set up table
+//        if (getModel().getColumnCount() != 5) {
+//            getModel().addColumn("Ping");
+//            getModel().addColumn("Server");
+//            getModel().addColumn("Players");
+//            getModel().addColumn("Max");
+//            getModel().addColumn("Map");
+//        }
+//        TableColumn column;
+//        for (int i = 0; i < 4; i++) {
+//            column = jTable1.getColumnModel().getColumn(i);
+//            if (i == 0 || i == 2 || i == 3) {
+//                column.setPreferredWidth(24); //numerical columns smaller
+//            }
+//        }
+//        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
+//            getModel().removeRow(j);
+//        }
+//        SwingWorker worker = new SwingWorker<ArrayList<String>, Void>() {
+//
+//            @Override
+//            public ArrayList<String> doInBackground() {
+//                return queryM.getServers();
+//            }
+//
+//            @Override
+//            public void done() {
+//                statusMessageLabel.setText("");
+//                refresh();
+//            }
+//        };
+//
+//        worker.execute();
+//    }
+//
+//    /**
+//     * Called by the refresh buttons, this action runs through the serverlist,
+//     * querying each server.
+//     * @todo Spawn each TortillaQueryServer call in a separate thread.
+//     * At the moment, each call run sequentially, which adds up.
+//     */
+//    public void refresh() {
+//        if (serverList != null) {
+//            SwingWorker worker = new SwingWorker<ConcurrentMap<String, TortillaServer>, Void>() {
+//
+//                @Override
+//                public ConcurrentMap<String, TortillaServer> doInBackground() {
+//                    ConcurrentMap<String, TortillaServer> tempSL = serverList;
+//                    for (String ip : serverList.keySet()) {
+//                        TortillaServer server = queryS.getInfo(ip);
+//                        tempSL.put(server.getIp(), server);
+//                    }
+//                    return tempSL;
+//                }
+//
+//                @Override
+//                public void done() {
+//                    try {
+//                        statusMessageLabel.setText("");
+//                        serverList = get();
+//                        int ping;
+//                        String hostname;
+//                        int players;
+//                        int maxplayers;
+//                        String map;
+//                        int count = 0;
+//                        boolean permission;
+//                        for (String Ip : serverList.keySet()) {
+//                            permission = true;
+//                            ping = serverList.get(Ip).getPing();
+//                            hostname = serverList.get(Ip).getHostname();
+//                            players = serverList.get(Ip).getPlayerCount();
+//                            maxplayers = serverList.get(Ip).getMaxPlayers();
+//                            map = serverList.get(Ip).getMap();
+//                            if (isHideEmpty()) {
+//                                if (players == 0) {
+//                                    permission = false;
+//                                }
+//                            }
+//                            if (isHideFull()) {
+//                                if (players == maxplayers) {
+//                                    permission = false;
+//                                }
+//                            }
+//                            if (isHideHighPing()) {
+//                                if (ping > MAX_PING) {
+//                                    permission = false;
+//                                }
+//                            }
+//                            if (permission) {
+//                                getModel().addRow(
+//                                        new Object[]{ping, hostname,
+//                                    players, maxplayers, map
+//                                });
+//                            }
+//                            count++;
+//                        }
+//                        statusMessageLabel.setText("");
+//                    } catch (InterruptedException ignore) {
+//                    } catch (java.util.concurrent.ExecutionException e) {
+//                        String why = null;
+//                        Throwable cause = e.getCause();
+//                        if (cause != null) {
+//                            why = cause.getMessage();
+//                        } else {
+//                            why = e.getMessage();
+//                        }
+//                        System.err.println("Error retrieving file: " + why);
+//                    }
+//                }
+//            };
+//            worker.execute();
+//        } else {
+//            update();
+//        }
+//    }
 
     public boolean isHideEmpty() {
         this.hideEmpty = jCheckBoxMenuItem4.getState();
@@ -784,7 +784,7 @@ public class TortillaView extends FrameView {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
-SwingWorker<ArrayList<String>, Void>        
+//SwingWorker<ArrayList<String>, Void>        
         }
     }
 }

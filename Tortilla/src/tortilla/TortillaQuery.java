@@ -1,12 +1,17 @@
 package tortilla;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * TortillaQuery directly communicates with the master and
@@ -20,7 +25,7 @@ import java.util.StringTokenizer;
  * dpmaster's Technical Information document</a> G. Armitage's
  * <a href="http://caia.swin.edu.au/reports/070730A/CAIA-TR-070730A.pdf">
  * Server Discovery for Quake III Arena, Wolfenstein Enemy Territory and Quake 4</a>
- * @author DeadEd
+ * @author DeadEd, dmaz
  */
 public class TortillaQuery {
     // Timeout used for the sockets
@@ -28,6 +33,7 @@ public class TortillaQuery {
     private static final int PACKET_SIZE = 12288;
     private static final int LOCAL_PORT = 5401;
     private static String challenge;
+    private static int ping;
 
     /**
      * Builds the DatagramPacket we'll be using to query the server.
@@ -55,68 +61,42 @@ public class TortillaQuery {
      */
     public static String getInfo(String ipStr, int port,
             String request) {
-
-        StringBuffer recStr = new StringBuffer("");
-        DatagramSocket socket = null;
         try {
+
+            StringBuffer recStr = new StringBuffer("");
+            DatagramSocket socket = null;
             socket = new DatagramSocket(LOCAL_PORT);
             InetAddress address = InetAddress.getByName(ipStr);
+            byte[] data = new byte[PACKET_SIZE];
+            DatagramPacket inPacket = new DatagramPacket(data, PACKET_SIZE);
 
             socket.connect(address, port);
 
             DatagramPacket out = getDatagramPacket(request, address, port);
             socket.send(out);
+            long sendTime = System.currentTimeMillis();
 
-            byte[] data = new byte[PACKET_SIZE];
-            DatagramPacket inPacket = new DatagramPacket(data, PACKET_SIZE);
             socket.setSoTimeout(TIMEOUT);
             // get the response
             socket.receive(inPacket);
-            recStr.append(new String(inPacket.getData(), 0,
-                    inPacket.getLength(), "ISO-8859-1"));
-        } catch (SocketTimeoutException ex) {
-            recStr.append(new String("Request timed out"));
-            ex.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (socket != null) {
-                socket.close();
-            }
+            long receiveTime = System.currentTimeMillis();
+            ping = (int) (receiveTime - sendTime);
+            recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(), "ISO-8859-1"));
+            return recStr.toString();
+        } catch (IOException ex) {
+            Logger.getLogger(TortillaQuery.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return recStr.toString();
     }
-
+    
     /**
-     * Takes in an infoString and a part of that string, 
-     * and outputs the value of that part, as a string.
-     * For example, an infoString containing "/name/dave/" will return "dave"
-     * when the given part is "name".
-     * @param queryString   infoString we are searching
-     * @param part  a command from the infoString
-     * @return  value of the given part from the queryString
+     * Returns the time elapsed in the communication.
+     * This seems the best way to simulate <code>ping</code>
+     * since Java doesn't do ICMP.
+     * @return Int of ping-time to server in milliseconds.
      */
-    public static String getPart(String queryString, String part) {
-        if ((queryString == null) || (queryString.length() <= 0)) {
-            return "Bad queryString";
-        }
-
-        int start = queryString.toLowerCase().indexOf(
-                "\\" + part.toLowerCase() + "\\") + 2 + part.length();
-        if (start < (2 + part.length())) {
-            return "ERROR: " + part + " not found in query string";
-        }
-        String tempStr = queryString.substring(start);
-        int end = tempStr.indexOf("\\") + start;
-        if (end <= start) {
-            // check for a newline
-            end = tempStr.indexOf("\n") + start;
-            if (end <= start) {
-                return "ERROR: " + part + " not found in query string";
-            }
-        }
-        String tmp = queryString.substring(start, end);
-        return tmp;
+    public static int getPing() {
+        return ping;
     }
 
     /**

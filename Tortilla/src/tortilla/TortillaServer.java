@@ -4,7 +4,7 @@ package tortilla;
  * A Nexuiz server object.
  * For each server show ping, hostname, mapname, playercount, ip.
  * Later, this class will also store if a server is a favorite or is timed-out.
- * @author David
+ * @author dmaz
  */
 public class TortillaServer implements java.io.Serializable {
 
@@ -13,7 +13,6 @@ public class TortillaServer implements java.io.Serializable {
     private String map;
     private String game;
     private String gameVersion;
-    private String port;
     private int maxplayers;
     private int players;
     private int ping;
@@ -193,14 +192,6 @@ public class TortillaServer implements java.io.Serializable {
 
     public void setGameVersion(String gameVersion) {
         this.gameVersion = gameVersion;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
     }
 
 //    /**
