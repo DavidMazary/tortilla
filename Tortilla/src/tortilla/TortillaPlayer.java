@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
  * For each player in a server, show name, ping, score,
  * and whether player is bot or whether player is spectating.
  * Also converts special characters into displayable text in player names.
- * @author David
+ * @author dmaz
  */
 public class TortillaPlayer implements java.io.Serializable {
 

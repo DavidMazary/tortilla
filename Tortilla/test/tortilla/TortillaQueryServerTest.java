@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package tortilla;
 
 import java.util.ArrayList;
@@ -15,23 +14,21 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author david
+ * @author dmaz
  */
-public class TortillaQueryServerTest {    
-    
+public class TortillaQueryServerTest {
+
     TortillaQueryServer queryS;
 
     public TortillaQueryServerTest() {
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception
-    {
+    public static void setUpClass() throws Exception {
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception
-    {
+    public static void tearDownClass() throws Exception {
     }
 
     @Before
@@ -42,36 +39,35 @@ public class TortillaQueryServerTest {
     @After
     public void tearDown() {
     }
-    
+
     /**
      * Test if server details are correctly queried.
      */
     @Test
-    public void testQueryServer()
-    {
+    public void testQueryServer() {
         System.out.println("testQueryServer");
-        TortillaServer server = queryS.getDetails("75.126.234.42", 26000);
-        assertEquals("75.126.234.42", server.getIp());
+        TortillaServer server = queryS.getInfo("75.126.234.42:26000");
+        System.out.println("Ping: " + server.getPing());
+        assertEquals("75.126.234.42:26000", server.getIp());
         assertEquals(18, server.getMaxPlayers());
         assertEquals("Nexuiz", server.getGame());
         assertEquals("20000", server.getGameVersion());
     }
-    
+
     /**
      * Test if server players are correctly queried.
      * Eyeball this one for now.
      */
     @Test
-    public void testQueryServerPlayers()
-    {
+    public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        ArrayList < TortillaPlayer > players = 
-                queryS.getPlayers("75.126.234.42", 26000);
+        ArrayList<TortillaPlayer> players =
+                queryS.getStatus("75.126.234.42:26000");
         for (TortillaPlayer player : players) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }
+        fail("Write a proper test for this.");
     }
-    
 //    /**
 //     * Test if timed-out server is correctly handled.
 //     */
@@ -79,7 +75,7 @@ public class TortillaQueryServerTest {
 //    public void testQueryTimeoutServer()
 //    {
 //        System.out.println("testQueryTimeoutServer");
-//        TortillaServer server = queryS.getDetails("www.vt.edu", 26000);
+//        TortillaServer server = queryS.getInfo("www.vt.edu", 26000);
 //        assertTrue(server.getTimeout());
 //    }
 }

@@ -1,7 +1,13 @@
 package tortilla;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -11,7 +17,7 @@ import static org.junit.Assert.*;
 
 /**
  * Tests TortillaQueryMaster.
- * @author David
+ * @author dmaz
  */
 public class TortillaQueryMasterTest {
 
@@ -55,12 +61,21 @@ public class TortillaQueryMasterTest {
      */
     @Test
     public void testGetServers() {
-        System.out.println("testGetServers");
-        ArrayList < String > result = 
-                instance.getServers();
-        for (String ip : result) {
-            System.out.println(ip);
-        }
+//        BufferedReader input = null;
+//        try {
+            System.out.println("testGetServers");
+//            input = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/servercache"));
+            instance.saveServerList();
+//            System.out.println(input.toString());
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(TortillaQueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            try {
+//                input.close();
+//            } catch (IOException ex) {
+//                Logger.getLogger(TortillaQueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }
     
 //    /**

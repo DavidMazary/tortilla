@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Launches the game.
- * @author David
+ * @author dmaz
  */
 public class TortillaGameLauncher {
     private boolean sdl;

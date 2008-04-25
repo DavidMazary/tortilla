@@ -1,15 +1,20 @@
 package tortilla;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Queries the master server for the list of servers.
  * Creates TortillaServer objects.
  * Puts those into a ConcurrentHashMap accessible with getServers();
  *
- * @author David
+ * @author dmaz
  */
 public class TortillaQueryMaster {
 
@@ -17,29 +22,34 @@ public class TortillaQueryMaster {
     private static final String REQUEST = "xxxxgetservers Nexuiz 3";
 
     /**
-     * The serverList ConcurrentHashMap.
-     * @return ConcurrentHashMap of serverList.
+     * Retreives and saves the list of servers from the master server.
      */
-    public ArrayList < String > getServers() {
-        ArrayList < String > serverList =
-                new ArrayList < String >();
-        TortillaServer server;
-
-        String queryResult = TortillaQuery.getInfo(getMaster(),
-                DPMASTER_PORT, REQUEST);
-        System.out.println(queryResult);
-        StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
-        tokens.nextToken(); // first token is the response text
-        while (tokens.hasMoreTokens()) {
-            String address = tokens.nextToken();
-            if (address.equals("EOT")) {
-                break;
-            } else {
-                String ip = getValue(address);
-                serverList.add(ip);
+    public void saveServerList() {
+        BufferedWriter writer = null;
+        try {
+            File serverCache = new File(System.getProperty("user.dir") + "\\servercache");
+            writer = new BufferedWriter(new FileWriter(serverCache));
+            String queryResult = TortillaQuery.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
+            System.out.println(queryResult);
+            StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
+            tokens.nextToken(); // first token is the response text
+            while (tokens.hasMoreTokens()) {
+                String address = tokens.nextToken();
+                if (address.equals("EOT")) {
+                    break;
+                } else {
+                    writer.write(getValue(address) + "\n");
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return serverList;
     }
 
     /**
@@ -63,7 +73,7 @@ public class TortillaQueryMaster {
      */
     protected String getValue(String ip) {
         try {
-            byte b[] = ip.getBytes("ISO-8859-1");
+            byte[] b = ip.getBytes("ISO-8859-1");
             int A = 0;
             int B = 0;
             int C = 0;
@@ -77,9 +87,9 @@ public class TortillaQueryMaster {
             port <<= 8;
             port |= b[5] & 0xFF;
             return A + "." + B + "." + C + "." + D + ":" + port;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "";
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
 }

@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author David
+ * @author dmaz
  */
 public class TortillaGameLauncherTest {
 
