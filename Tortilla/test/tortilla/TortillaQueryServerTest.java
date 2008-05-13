@@ -61,9 +61,9 @@ public class TortillaQueryServerTest {
     @Test
     public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        ArrayList<TortillaPlayer> players =
+        TortillaServer server =
                 queryS.getStatus("75.126.234.42:26000");
-        for (TortillaPlayer player : players) {
+        for (TortillaPlayer player : server.getPlayerList()) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }
         fail("Write a proper test for this.");

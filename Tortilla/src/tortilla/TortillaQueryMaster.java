@@ -8,47 +8,61 @@ import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  * Queries the master server for the list of servers.
- * Creates TortillaServer objects.
- * Puts those into a ConcurrentHashMap accessible with getServers();
  *
  * @author dmaz
  */
 public class TortillaQueryMaster {
 
+    private TortillaQuery query = new TortillaQuery();
     private static final int DPMASTER_PORT = 27950;
-    private static final String REQUEST = "xxxxgetservers Nexuiz 3";
+    private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
 
     /**
      * Retreives and saves the list of servers from the master server.
      */
     public void saveServerList() {
+        String queryResult = null;
         BufferedWriter writer = null;
-        try {
-            File serverCache = new File(System.getProperty("user.dir") + "\\servercache");
-            writer = new BufferedWriter(new FileWriter(serverCache));
-            String queryResult = TortillaQuery.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
+        
+        for (int i = 0; i < 3; i++) {
+            queryResult = query.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
             System.out.println(queryResult);
-            StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
-            tokens.nextToken(); // first token is the response text
-            while (tokens.hasMoreTokens()) {
-                String address = tokens.nextToken();
-                if (address.equals("EOT")) {
-                    break;
-                } else {
-                    writer.write(getValue(address) + "\n");
-                }
+            if (queryResult != null) {
+                break;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+        }
+        if (queryResult != null) {
             try {
-                writer.close();
+                File serverCache = new File("servercache");
+                writer = new BufferedWriter(new FileWriter(serverCache));
+                StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
+                tokens.nextToken(); // first token is the response text
+                while (tokens.hasMoreTokens()) {
+                    String address = tokens.nextToken();
+                    if (address.contains("EOT")) {
+                        break;
+                    } else if (address.length() == 5) {
+                        writer.write(getValue("\\" + address) + "\n");
+                    } else {
+                        writer.write(getValue(address) + "\n");
+                    }
+                }
             } catch (IOException ex) {
                 Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+        }
+        else {
+            JOptionPane.showMessageDialog(null,"Could not get list of servers");
         }
     }
 
@@ -65,10 +79,10 @@ public class TortillaQueryMaster {
 
     /**
      * Translates bytes in strings to IP addresses and ports.
-     * All numbers are big-endian oriented (most significant bytes first). 
-     * For instance, a server hosted at address 1.2.3.4 on port 2048 will 
+     * All numbers are big-endian oriented (most significant bytes first).
+     * For instance, a server hosted at address 1.2.3.4 on port 2048 will
      * be sent as: "\x01\x02\x03\x04\x08\x00".
-     * @param address String containing the data.
+     * @param ip String containing the data.
      * @return  String with the decoded data.
      */
     protected String getValue(String ip) {
@@ -89,6 +103,10 @@ public class TortillaQueryMaster {
             return A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ip);
             return null;
         }
     }
