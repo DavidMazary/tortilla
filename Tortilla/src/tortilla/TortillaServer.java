@@ -1,5 +1,7 @@
 package tortilla;
 
+import java.util.ArrayList;
+
 /**
  * A Nexuiz server object.
  * For each server show ping, hostname, mapname, playercount, ip.
@@ -16,6 +18,8 @@ public class TortillaServer implements java.io.Serializable {
     private int maxplayers;
     private int players;
     private int ping;
+    private int bots;
+    private ArrayList<TortillaPlayer> playerList;
 //    private boolean favorite;
 //    private boolean timeout;
     /**
@@ -192,6 +196,22 @@ public class TortillaServer implements java.io.Serializable {
 
     public void setGameVersion(String gameVersion) {
         this.gameVersion = gameVersion;
+    }
+
+    public int getBots() {
+        return bots;
+    }
+
+    public void setBots(String bots) {
+        this.bots = Integer.parseInt(bots);
+    }
+
+    public ArrayList<TortillaPlayer> getPlayerList() {
+        return playerList;
+    }
+
+    public void setPlayerList(ArrayList<TortillaPlayer> playerList) {
+        this.playerList = playerList;
     }
 
 //    /**

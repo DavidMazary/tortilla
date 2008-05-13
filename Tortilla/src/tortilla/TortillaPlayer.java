@@ -36,7 +36,7 @@ public class TortillaPlayer implements java.io.Serializable {
     protected String translateName(String name) {
         // Thanks to KadaverJack for showing me this lovely bit here :)
         char fontTable[] = {
-            '\0', '#', '#', '#', '#', '.', '#', '#',
+            ' ', '#', '#', '#', '#', '.', '#', '#',
             '#', 9, 10, '#', ' ', 13, '.', '.',
             '[', ']', '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', '.', '<', '=', '>',

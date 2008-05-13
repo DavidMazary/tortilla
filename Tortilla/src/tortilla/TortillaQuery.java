@@ -1,17 +1,10 @@
 package tortilla;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * TortillaQuery directly communicates with the master and
@@ -30,10 +23,8 @@ import java.util.logging.Logger;
 public class TortillaQuery {
     // Timeout used for the sockets
     private static final int TIMEOUT = 2000;
-    private static final int PACKET_SIZE = 12288;
-    private static final int LOCAL_PORT = 5401;
-    private static String challenge;
-    private static int ping;
+    private static final int PACKET_SIZE = 14400;
+    private int ping;
 
     /**
      * Builds the DatagramPacket we'll be using to query the server.
@@ -42,7 +33,7 @@ public class TortillaQuery {
      * @param port  Port to query server at
      * @return  DatagramPacket built by this method
      */
-    public static DatagramPacket getDatagramPacket(String request,
+    public DatagramPacket getDatagramPacket(String request,
             InetAddress inet, int port) {
         byte[] buff = request.getBytes();
         buff[0] = (byte) 0xff;		// indicates out-of-band command
@@ -59,13 +50,15 @@ public class TortillaQuery {
      * @param request   Request message to send to server
      * @return  String of the server's reply
      */
-    public static String getInfo(String ipStr, int port,
+    public String getInfo(String ipStr, int port,
             String request) {
         try {
 
             StringBuffer recStr = new StringBuffer("");
             DatagramSocket socket = null;
-            socket = new DatagramSocket(LOCAL_PORT);
+            // Use a random port for the query
+            int localPort = (int) (Math.random() * 5000) + 25000;
+            socket = new DatagramSocket(localPort);
             InetAddress address = InetAddress.getByName(ipStr);
             byte[] data = new byte[PACKET_SIZE];
             DatagramPacket inPacket = new DatagramPacket(data, PACKET_SIZE);
@@ -74,7 +67,7 @@ public class TortillaQuery {
 
             DatagramPacket out = getDatagramPacket(request, address, port);
             socket.send(out);
-            long sendTime = System.currentTimeMillis();
+            long sendTime = System.currentTimeMillis(); // ping timer
 
             socket.setSoTimeout(TIMEOUT);
             // get the response
@@ -84,36 +77,18 @@ public class TortillaQuery {
             recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(), "ISO-8859-1"));
             return recStr.toString();
         } catch (IOException ex) {
-            Logger.getLogger(TortillaQuery.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
-    
+
     /**
      * Returns the time elapsed in the communication.
      * This seems the best way to simulate <code>ping</code>
      * since Java doesn't do ICMP.
      * @return Int of ping-time to server in milliseconds.
      */
-    public static int getPing() {
+    public int getPing() {
         return ping;
-    }
-
-    /**
-     * Returns the String of our random challenge.
-     * @return Randomly generated string to use as challenge.
-     */
-    public static String getChallenge() {
-        return challenge;
-    }
-
-    /**
-     * Randomly generates a challenge string to validate a server.
-     */
-    public static void generateChallenge() {
-        Random random = new Random();
-        int r1 = random.nextInt();
-        challenge = Integer.toHexString(r1);
     }
 
     /**
@@ -125,7 +100,7 @@ public class TortillaQuery {
      * @param in    String of output from querying server
      * @return true if challenge response passes
      */
-    public static boolean checkChallenge(String in) {
+    public boolean checkChallenge(String in) {
         StringTokenizer tokens = new StringTokenizer(in, "\\");
         while (tokens.hasMoreTokens()) {
             String cmd = tokens.nextToken();
@@ -135,7 +110,7 @@ public class TortillaQuery {
 // in case someone tries to send through false package
             String val = tokens.nextToken();
             if (cmd.compareTo("challenge") == 0) {
-                if (val.compareTo(getChallenge()) == 0) {
+                if (val.compareTo("tortilla") == 0) {
                     return true;
                 } else {
                     return false;
