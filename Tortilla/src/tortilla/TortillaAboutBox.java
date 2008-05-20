@@ -8,12 +8,19 @@ import org.jdesktop.application.Action;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
 
+    /**
+     * Creates new About Box.
+     * @param parent
+     */
     public TortillaAboutBox(java.awt.Frame parent) {
         super(parent);
         initComponents();
         getRootPane().setDefaultButton(closeButton);
     }
 
+    /**
+     * Closes about box.
+     */
     @Action public void closeAboutBox() {
         setVisible(false);
     }
@@ -98,7 +105,7 @@ public class TortillaAboutBox extends javax.swing.JDialog {
                             .addComponent(appVendorLabel)
                             .addComponent(appHomepageLabel)))
                     .addComponent(appTitleLabel, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
+                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
                     .addComponent(closeButton))
                 .addContainerGap())
         );
@@ -122,7 +129,7 @@ public class TortillaAboutBox extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(homepageLabel)
                     .addComponent(appHomepageLabel))
-                .addGap(33, 33, Short.MAX_VALUE)
+                .addGap(40, 40, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
         );

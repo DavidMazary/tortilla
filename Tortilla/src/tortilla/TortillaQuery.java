@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
  */
 public class TortillaQuery {
     // Timeout used for the sockets
+
     private static final int TIMEOUT = 2000;
     private static final int PACKET_SIZE = 14400;
     private int ping;
@@ -36,7 +37,7 @@ public class TortillaQuery {
     public DatagramPacket getDatagramPacket(String request,
             InetAddress inet, int port) {
         byte[] buff = request.getBytes();
-        buff[0] = (byte) 0xff;		// indicates out-of-band command
+        buff[0] = (byte) 0xff;
         buff[1] = (byte) 0xff;
         buff[2] = (byte) 0xff;
         buff[3] = (byte) 0xff;
@@ -52,11 +53,11 @@ public class TortillaQuery {
      */
     public String getInfo(String ipStr, int port,
             String request) {
+        DatagramSocket socket = null;
         try {
 
             StringBuffer recStr = new StringBuffer("");
-            DatagramSocket socket = null;
-            // Use a random port for the query
+            // Use port range 25000 - 30000
             int localPort = (int) (Math.random() * 5000) + 25000;
             socket = new DatagramSocket(localPort);
             InetAddress address = InetAddress.getByName(ipStr);
@@ -74,7 +75,8 @@ public class TortillaQuery {
             socket.receive(inPacket);
             long receiveTime = System.currentTimeMillis();
             ping = (int) (receiveTime - sendTime);
-            recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(), "ISO-8859-1"));
+            recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(),
+                    "ISO-8859-1"));
             return recStr.toString();
         } catch (IOException ex) {
             return null;
@@ -107,7 +109,7 @@ public class TortillaQuery {
             if (!tokens.hasMoreTokens()) {
                 return false;
             }
-// in case someone tries to send through false package
+            // in case someone tries to send through false package
             String val = tokens.nextToken();
             if (cmd.compareTo("challenge") == 0) {
                 if (val.compareTo("tortilla") == 0) {

@@ -22,11 +22,12 @@ public class TortillaServer implements java.io.Serializable {
     private ArrayList<TortillaPlayer> playerList;
 //    private boolean favorite;
 //    private boolean timeout;
+
     /**
      * Constructor taking in no parameters.
      */
     public TortillaServer() {
-    /* Empty constructor */
+        /* Empty constructor */
     }
 
 //    /**
@@ -190,26 +191,52 @@ public class TortillaServer implements java.io.Serializable {
         this.game = game;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getGameVersion() {
         return gameVersion;
     }
 
+    /**
+     * 
+     * @param gameVersion
+     */
     public void setGameVersion(String gameVersion) {
         this.gameVersion = gameVersion;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getBots() {
         return bots;
     }
 
+    /**
+     * Store bot_number used on server.
+     * Bot count is deducted from player count.
+     * @param bots Number of bots running on a server.
+     */
     public void setBots(String bots) {
         this.bots = Integer.parseInt(bots);
+        this.players -= this.bots;
     }
 
+    /**
+     * 
+     * @return
+     */
     public ArrayList<TortillaPlayer> getPlayerList() {
         return playerList;
     }
 
+    /**
+     * Assigns an ArrayList of TortillaPlayers to this server.
+     * @param playerList ArrayList of TortillaPlayers to assign to this server.
+     */
     public void setPlayerList(ArrayList<TortillaPlayer> playerList) {
         this.playerList = playerList;
     }
