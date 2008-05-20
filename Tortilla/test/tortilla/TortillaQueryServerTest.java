@@ -4,7 +4,6 @@
  */
 package tortilla;
 
-import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class TortillaQueryServerTest {
         TortillaServer server = queryS.getInfo("75.126.234.42:26000");
         System.out.println("Ping: " + server.getPing());
         assertEquals("75.126.234.42:26000", server.getIp());
-        assertEquals(18, server.getMaxPlayers());
+        assertEquals(24, server.getMaxPlayers());
         assertEquals("Nexuiz", server.getGame());
         assertEquals("20000", server.getGameVersion());
     }

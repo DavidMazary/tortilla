@@ -1,7 +1,7 @@
 /*
  * TortillaApp.java
+ * @todo Application icon, artwork
  */
-
 package tortilla;
 
 import org.jdesktop.application.Application;
@@ -15,7 +15,8 @@ public class TortillaApp extends SingleFrameApplication {
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override protected void startup() {
+    @Override
+    protected void startup() {
         show(new TortillaView(this));
     }
 
@@ -23,8 +24,10 @@ public class TortillaApp extends SingleFrameApplication {
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
+     * @param root 
      */
-    @Override protected void configureWindow(java.awt.Window root) {
+    @Override
+    protected void configureWindow(java.awt.Window root) {
     }
 
     /**
@@ -37,6 +40,7 @@ public class TortillaApp extends SingleFrameApplication {
 
     /**
      * Main method launching the application.
+     * @param args 
      */
     public static void main(String[] args) {
         launch(TortillaApp.class, args);

@@ -4,6 +4,8 @@
 package tortilla;
 
 import java.awt.Frame;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -28,6 +30,7 @@ import javax.swing.table.TableColumn;
 
 /**
  * The application's main frame.
+ * @todo Create custom table (ineditable and properly sortable).
  */
 public class TortillaView extends FrameView {
 
@@ -40,27 +43,35 @@ public class TortillaView extends FrameView {
     private ConcurrentHashMap<String, TortillaServer> serverMap;
     private static final int MAX_PING = 200;
 
+    /**
+     *
+     * @param app
+     */
     public TortillaView(SingleFrameApplication app) {
         super(app);
 
         initComponents();
+        refresh();
 
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
         messageTimer = new Timer(messageTimeout, new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 statusMessageLabel.setText("");
             }
         });
         messageTimer.setRepeats(false);
-        int busyAnimationRate = resourceMap.getInteger("StatusBar.busyAnimationRate");
+        int busyAnimationRate = resourceMap.getInteger(
+                "StatusBar.busyAnimationRate");
         for (int i = 0; i < busyIcons.length; i++) {
             busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
         }
         busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
                 statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
@@ -68,12 +79,13 @@ public class TortillaView extends FrameView {
         });
         idleIcon = resourceMap.getIcon("StatusBar.idleIcon");
         statusAnimationLabel.setIcon(idleIcon);
-        progressBar.setVisible(false);
+//        progressBar.setVisible(false);
 
         // connecting action tasks to status bar via TaskMonitor
         TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
         taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
+            @Override
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 String propertyName = evt.getPropertyName();
                 if ("started".equals(propertyName)) {
@@ -82,27 +94,30 @@ public class TortillaView extends FrameView {
                         busyIconIndex = 0;
                         busyIconTimer.start();
                     }
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
+//                    progressBar.setVisible(true);
+//                    progressBar.setIndeterminate(true);
                 } else if ("done".equals(propertyName)) {
                     busyIconTimer.stop();
                     statusAnimationLabel.setIcon(idleIcon);
-                    progressBar.setVisible(false);
-                    progressBar.setValue(0);
+//                    progressBar.setVisible(false);
+//                    progressBar.setValue(0);
                 } else if ("message".equals(propertyName)) {
                     String text = (String) (evt.getNewValue());
                     statusMessageLabel.setText((text == null) ? "" : text);
                     messageTimer.restart();
                 } else if ("progress".equals(propertyName)) {
                     int value = (Integer) (evt.getNewValue());
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setValue(value);
+//                    progressBar.setVisible(true);
+//                    progressBar.setIndeterminate(false);
+//                    progressBar.setValue(value);
                 }
             }
         });
     }
 
+    /**
+     *
+     */
     @Action
     public void showAboutBox() {
         if (aboutBox == null) {
@@ -154,7 +169,6 @@ public class TortillaView extends FrameView {
         javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
         statusMessageLabel = new javax.swing.JLabel();
         statusAnimationLabel = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
         jLabel1 = new javax.swing.JLabel();
 
         mainPanel.setName("mainPanel"); // NOI18N
@@ -177,7 +191,9 @@ public class TortillaView extends FrameView {
         searchButton.setIcon(resourceMap.getIcon("searchButton.icon")); // NOI18N
         searchButton.setText(resourceMap.getString("searchButton.text")); // NOI18N
         searchButton.setToolTipText(resourceMap.getString("searchButton.toolTipText")); // NOI18N
+        searchButton.setMinimumSize(new java.awt.Dimension(42, 42));
         searchButton.setName("searchButton"); // NOI18N
+        searchButton.setPreferredSize(new java.awt.Dimension(42, 42));
         searchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchButtonActionPerformed(evt);
@@ -187,7 +203,9 @@ public class TortillaView extends FrameView {
         updateButton.setIcon(resourceMap.getIcon("updateButton.icon")); // NOI18N
         updateButton.setText(resourceMap.getString("updateButton.text")); // NOI18N
         updateButton.setToolTipText(resourceMap.getString("updateButton.toolTipText")); // NOI18N
+        updateButton.setMinimumSize(new java.awt.Dimension(42, 42));
         updateButton.setName("updateButton"); // NOI18N
+        updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
         updateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 updateButtonActionPerformed(evt);
@@ -197,7 +215,9 @@ public class TortillaView extends FrameView {
         refreshButton.setIcon(resourceMap.getIcon("refreshButton.icon")); // NOI18N
         refreshButton.setText(resourceMap.getString("refreshButton.text")); // NOI18N
         refreshButton.setToolTipText(resourceMap.getString("refreshButton.toolTipText")); // NOI18N
+        refreshButton.setMinimumSize(new java.awt.Dimension(42, 42));
         refreshButton.setName("refreshButton"); // NOI18N
+        refreshButton.setPreferredSize(new java.awt.Dimension(42, 42));
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 refreshButtonActionPerformed(evt);
@@ -207,7 +227,9 @@ public class TortillaView extends FrameView {
         connectButton.setIcon(resourceMap.getIcon("connectButton.icon")); // NOI18N
         connectButton.setText(resourceMap.getString("connectButton.text")); // NOI18N
         connectButton.setToolTipText(resourceMap.getString("connectButton.toolTipText")); // NOI18N
+        connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
         connectButton.setName("connectButton"); // NOI18N
+        connectButton.setPreferredSize(new java.awt.Dimension(42, 42));
         connectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 connectButtonActionPerformed(evt);
@@ -218,7 +240,6 @@ public class TortillaView extends FrameView {
 
         jTable1.setAutoCreateRowSorter(true);
         jTable1.setModel(getModel());
-        jTable1.setColumnSelectionAllowed(true);
         jTable1.setDoubleBuffered(true);
         jTable1.setName("jTable1"); // NOI18N
         jScrollPane1.setViewportView(jTable1);
@@ -229,15 +250,15 @@ public class TortillaView extends FrameView {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(updateButton)
+                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(refreshButton)
+                .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(connectButton)
+                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchButton))
+                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
@@ -247,13 +268,13 @@ public class TortillaView extends FrameView {
                     .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(refreshButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(updateButton))
-                    .addComponent(searchButton)
+                        .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -402,8 +423,6 @@ public class TortillaView extends FrameView {
         statusAnimationLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
 
-        progressBar.setName("progressBar"); // NOI18N
-
         javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
@@ -415,23 +434,16 @@ public class TortillaView extends FrameView {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 446, Short.MAX_VALUE)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(308, Short.MAX_VALUE)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(statusPanelSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(statusPanelLayout.createSequentialGroup()
-                        .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(statusMessageLabel)
-                            .addComponent(statusAnimationLabel))
-                        .addGap(12, 12, 12))
-                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(statusMessageLabel)
+                    .addComponent(statusAnimationLabel))
+                .addGap(12, 12, 12))
         );
 
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
@@ -441,6 +453,7 @@ public class TortillaView extends FrameView {
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
+
     /**
      * Get server list from master server when clicked.
      * @param evt
@@ -485,6 +498,11 @@ public class TortillaView extends FrameView {
         connect();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+    /**
+     * Creates a new "Add Private Server" dialog.
+     * @todo Implement "Add Private Server"
+     * @param evt
+     */
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         if (addPrivateServer == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
@@ -517,7 +535,6 @@ public class TortillaView extends FrameView {
     private javax.swing.JTable jTable1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton refreshButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchTextField;
@@ -533,11 +550,18 @@ public class TortillaView extends FrameView {
     private int busyIconIndex = 0;
     private JDialog aboutBox;
 
+    /**
+     * The custom DefaultTableModel used in TortillaView.
+     * @return The DefaultTableModel used here.
+     */
     public DefaultTableModel getModel() {
 //        model = new ServerTableModel();
         return model;
     }
 
+    /**
+     * Calls TortillaGameLauncher on selected server.
+     */
     public void connect() {
         int selectedRow = jTable1.getSelectedRow();
         int nameColumn = 1;
@@ -548,10 +572,14 @@ public class TortillaView extends FrameView {
                     nameColumn = i;
                 }
             }
-            String selectedServer = getModel().getValueAt(selectedRow, nameColumn).toString();
+            String selectedServer = getModel().getValueAt(selectedRow,
+                    nameColumn).toString();
             for (String ip : serverMap.keySet()) {
-                if (serverMap.get(ip).getHostname().contains(selectedServer)) {
-                    selectedIp = ip;
+                String exp = serverMap.get(ip).getHostname();
+                if (exp != null) {
+                    if (exp.contains(selectedServer)) {
+                        selectedIp = ip;
+                    }
                 }
             }
             launcher.setSdl(isUseSdl());
@@ -569,25 +597,24 @@ public class TortillaView extends FrameView {
 
     /**
      * Filter serverList according to search term.
+     * @todo Filter as each letter is typed,
+     * and remove filters when search box is emptied.
      */
     public void filter() {
-//        String query = searchTextField.getText().toLowerCase();
-//
-//        if (!query.equals("") && serverMap != null) {
-//            for (String ip : serverMap.keySet()) {
-//                if (!serverMap.get(ip).getHostname().toLowerCase().contains(query)) {
-//                    serverList.remove(ip);
-//                }
-//            }
-//            refresh();
-//        } else {
-//            update();
-//        }
+        String query = searchTextField.getText().toLowerCase();
+
+        if (!query.equals("") && getModel().getRowCount() != 0) {
+            for (int i = getModel().getRowCount() - 1; i >= 0; --i) {
+                if (!getModel().getValueAt(i, 1).toString().toLowerCase().
+                        contains(query)) {
+                    getModel().removeRow(i);
+                }
+            }
+        }
     }
 
     /**
      * Use TortillaQueryMaster to download new serverlist.
-     * @todo call refresh method when finished
      */
     public void update() {
         statusMessageLabel.setText("Updating...");
@@ -604,39 +631,94 @@ public class TortillaView extends FrameView {
             column = jTable1.getColumnModel().getColumn(i);
             if (i == 0 || i == 2 || i == 3) {
                 column.setPreferredWidth(24); //numerical columns smaller
+
             }
         }
         for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
             getModel().removeRow(j);
         }
         queryM.saveServerList();
+        refresh();
         statusMessageLabel.setText("");
     }
 
     /**
-     * Gets details of each server in serverlist, and puts those in servermap. 
-     * Each query is done in a separate thread, for speed.
-     * @todo call self when serverlist is null
+     * Gets details of each server in serverlist, and puts those in servermap.
      */
     public void refresh() {
+
+        if (getModel().getColumnCount() != 5) {
+            getModel().addColumn("Ping");
+            getModel().addColumn("Server");
+            getModel().addColumn("Players");
+            getModel().addColumn("Max");
+            getModel().addColumn("Map");
+        }
+        TableColumn column;
+        for (int i = 0; i < 4; i++) {
+            column = jTable1.getColumnModel().getColumn(i);
+            if (i == 0 || i == 2 || i == 3) {
+                column.setPreferredWidth(24); //numerical columns smaller
+
+            }
+        }
+        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
+            getModel().removeRow(j);
+        }
+        if (serverList == null) {
+            BufferedReader reader = null;
+            try {
+                FileReader fReader = new FileReader("servercache");
+                reader = new BufferedReader(fReader);
+                serverList = new ArrayList<String>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    serverList.add(line);
+                }
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Click update to begin...");
+            } catch (IOException ex) {
+                Logger.getLogger(TortillaView.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        }
         if (serverList != null) {
             SwingWorker worker = new SwingWorker<ConcurrentHashMap<String, TortillaServer>, Void>() {
 
                 @Override
                 public ConcurrentHashMap<String, TortillaServer> doInBackground() {
-                    final ConcurrentHashMap<String, TortillaServer> tempSL = new ConcurrentHashMap<String, TortillaServer>();
+                    final ConcurrentHashMap<String, TortillaServer> tempSL =
+                            new ConcurrentHashMap<String, TortillaServer>();
                     for (final String ip : serverList) {
                         class ServerQuerier extends Thread {
 
-                            public void run() { 
-                                tempSL.put(ip, queryS.getInfo(ip));
+                            @Override
+                            public void run() {
+                                TortillaServer server = queryS.getInfo(ip);
+                                if (server != null) {
+                                    tempSL.put(ip, queryS.getInfo(ip));
+                                }
                             }
                         }
                         Thread querier = new ServerQuerier();
                         querier.start();
-                    } try {                    
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e){}
+                    }
+                    try {
+                        if (!busyIconTimer.isRunning()) {
+                            statusAnimationLabel.setIcon(busyIcons[0]);
+                            busyIconIndex = 0;
+                            busyIconTimer.start();
+                        }
+                        statusMessageLabel.setText("Refreshing...");
+                        Thread.sleep(3000);
+                        statusMessageLabel.setText("");
+                        busyIconTimer.stop();
+                        statusAnimationLabel.setIcon(idleIcon);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(TortillaView.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }
                     return tempSL;
                 }
 
@@ -677,70 +759,61 @@ public class TortillaView extends FrameView {
                             if (permission) {
                                 getModel().addRow(
                                         new Object[]{ping, hostname,
-                                    players, maxplayers, map
-                                });
-                            } else {
-                                serverList.remove(Ip);
+                                            players, maxplayers, map
+                                        });
                             }
                             count++;
                         }
                         statusMessageLabel.setText("");
                     } catch (InterruptedException ignore) {
-                    } catch (java.util.concurrent.ExecutionException e) {
-                        String why = null;
-                        Throwable cause = e.getCause();
-                        if (cause != null) {
-                            why = cause.getMessage();
-                        } else {
-                            why = e.getMessage();
-                        }
-                        System.err.println("Error retrieving file: " + why);
+                    } catch (java.util.concurrent.ExecutionException ex) {
+                        Logger.getLogger(TortillaView.class.getName()).
+                                log(Level.SEVERE, null, ex);
                     }
                 }
             };
             worker.execute();
-        } else {
-            try {
-                FileReader fReader = new FileReader("servercache");
-                BufferedReader reader = new BufferedReader(fReader);
-                serverList = new ArrayList<String>();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    serverList.add(line);
-                }
-                for (String server : serverList) {
-                    System.out.println(server);
-                }
-            } catch (FileNotFoundException e) {
-                update();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isHideEmpty() {
         return jCheckBoxMenuItem4.getState();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isUseSdl() {
         return jCheckBoxMenuItem3.getState();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isHideFull() {
         return jCheckBoxMenuItem5.getState();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isHideHighPing() {
         return jCheckBoxMenuItem1.getState();
     }
-    
-    class ServerTableModel extends DefaultTableModel {
+
+    static class ServerTableModel extends DefaultTableModel {
 
         String[] columnNames = {
             "Ping", "Server", "Players", "Max", "Map"
         };
-        
+
 
 //        Object data[][];
 
@@ -794,7 +867,6 @@ public class TortillaView extends FrameView {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
-//SwingWorker<ArrayList<String>, Void>        
         }
     }
 }

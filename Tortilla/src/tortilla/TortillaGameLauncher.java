@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
  * @author dmaz
  */
 public class TortillaGameLauncher {
+
     private boolean sdl;
     private String ip;
     private File game;
@@ -17,8 +18,7 @@ public class TortillaGameLauncher {
      * True if TortillaGameLauncher will be using the SDL game binary.
      * @return Whether TortillaGameLauncher is launching SDL.
      */
-    public boolean isSdl()
-    {
+    public boolean isSdl() {
         return sdl;
     }
 
@@ -27,70 +27,51 @@ public class TortillaGameLauncher {
      * This preference will come from the checkbox in the options menu.
      * @param sdl True if using SDL
      */
-    public void setSdl(boolean sdl)
-    {
+    public void setSdl(boolean sdl) {
         this.sdl = sdl;
     }
 
     /**
      * Launch game, depending on OS and isSdl().
      */
-    public void playGame()
-    {
+    public void playGame() {
         String cmd;
-        String osName = new String (System.getProperty("os.name"));
+        String osName = System.getProperty("os.name");
         String userDir = System.getProperty("user.dir");
 
-        if (osName.contains("Windows"))
-        {
-            if (isSdl())
-            {
+        if (osName.contains("Windows")) {
+            if (isSdl()) {
                 game = new File(userDir + "\\nexuiz-sdl.exe");
-                cmd = new String(game.toString() + " -basedir "
-                        + userDir + " +connect " + getIp());
-            }
-            else
-            {
+                cmd = game.toString() + " -basedir " + userDir + " +connect " +
+                        getIp();
+            } else {
                 game = new File(userDir + "\\nexuiz.exe");
-                cmd = new String(game.toString() + " -basedir "
-                        + userDir + " +connect " + getIp());
+                cmd = game.toString() + " -basedir " + userDir + " +connect " +
+                        getIp();
             }
-        }
-        else if (osName.contains("Linux") || osName.contains("Solaris") ||
-                osName.contains("FreeBSD"))
-        {
-            if (isSdl())
-            {
+        } else if (osName.contains("Linux") || osName.contains("Solaris") ||
+                osName.contains("FreeBSD")) {
+            if (isSdl()) {
                 game = new File(userDir + "/nexuiz-linux-sdl.sh");
-                cmd = new String(game.toString() + "+connect " + getIp());
-            }
-            else
-            {
+                cmd = game.toString() + " +connect " + getIp();
+            } else {
                 game = new File(userDir + "/nexuiz-linux-glx.sh");
-                cmd = new String(game.toString() + "+connect " + getIp());
+                cmd = game.toString() + " +connect " + getIp();
             }
+        } else {
+            cmd = "touch ~/wtf";
         }
-        else
-        {
-            cmd = new String("touch ~/wtf");
-        }
-        
-        if (game.exists())
-        {
-            try
-            {
+
+        if (game.exists()) {
+            try {
                 Runtime runtime = Runtime.getRuntime();
                 runtime.exec(cmd);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(new Frame(), 
-                    "Game not found.\nTortilla must be within the game folder");
+        } else {
+            JOptionPane.showMessageDialog(new Frame(),
+                    "Game not found.\nTortilla must be within the Nexuiz folder");
         }
     }
 
@@ -98,8 +79,7 @@ public class TortillaGameLauncher {
      * IP address being used by a TortillaGameLauncher.
      * @return String of IP address
      */
-    public String getIp()
-    {
+    public String getIp() {
         return ip;
     }
 
@@ -107,9 +87,7 @@ public class TortillaGameLauncher {
      * Assign IP address for TortillaGameLauncher to connect.
      * @param ip Address to connect.
      */
-    public void setIp(String ip)
-    {
+    public void setIp(String ip) {
         this.ip = ip;
     }
-
 }

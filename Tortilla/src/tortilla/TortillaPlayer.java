@@ -20,8 +20,11 @@ public class TortillaPlayer implements java.io.Serializable {
     /*
      * Constructor taking in no parameters
      */
+    /**
+     * 
+     */
     public TortillaPlayer() {
-    // empty constructor
+        // empty constructor
     }
 
     /**
@@ -31,6 +34,7 @@ public class TortillaPlayer implements java.io.Serializable {
      * The font table is taken from the Nexuiz source code.
      * I can't thank KadaverJack enough for this, saved me so much time. :)
      *
+     * @param name 
      * @return Player's name converted to normal text
      */
     protected String translateName(String name) {
@@ -110,26 +114,50 @@ public class TortillaPlayer implements java.io.Serializable {
         return spec;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @param newName
+     */
     public void setName(String newName) {
         this.name = translateName(newName);
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getScore() {
         return score;
     }
 
+    /**
+     * 
+     * @param score
+     */
     public void setScore(int score) {
         this.score = score;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getPing() {
         return ping;
     }
 
+    /**
+     * 
+     * @param ping
+     */
     public void setPing(int ping) {
         this.ping = ping;
     }

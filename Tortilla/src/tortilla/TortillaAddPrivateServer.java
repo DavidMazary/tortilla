@@ -3,7 +3,6 @@
  *
  * Created on April 2, 2008, 1:38 PM
  */
-
 package tortilla;
 
 /**
@@ -11,12 +10,12 @@ package tortilla;
  * @author  david
  */
 public class TortillaAddPrivateServer extends javax.swing.JFrame {
-    
+
     /** Creates new form TortillaAddPrivateServer */
     public TortillaAddPrivateServer() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -126,20 +125,20 @@ public class TortillaAddPrivateServer extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2FocusGained
 
     private void jTextField2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField2FocusLost
-        jTextField2.select(0,0);
+        jTextField2.select(0, 0);
     }//GEN-LAST:event_jTextField2FocusLost
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 new TortillaAddPrivateServer().setVisible(true);
             }
         });
     }
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -148,5 +147,4 @@ public class TortillaAddPrivateServer extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
-    
 }

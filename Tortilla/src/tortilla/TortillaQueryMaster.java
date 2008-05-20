@@ -23,14 +23,14 @@ public class TortillaQueryMaster {
 
     /**
      * Retreives and saves the list of servers from the master server.
+     * @todo Modify while to handle strings containing the "\\" delimiter.
      */
     public void saveServerList() {
         String queryResult = null;
         BufferedWriter writer = null;
-        
+
         for (int i = 0; i < 3; i++) {
             queryResult = query.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
-            System.out.println(queryResult);
             if (queryResult != null) {
                 break;
             }
@@ -41,28 +41,30 @@ public class TortillaQueryMaster {
                 writer = new BufferedWriter(new FileWriter(serverCache));
                 StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
                 tokens.nextToken(); // first token is the response text
+
                 while (tokens.hasMoreTokens()) {
                     String address = tokens.nextToken();
                     if (address.contains("EOT")) {
                         break;
-                    } else if (address.length() == 5) {
-                        writer.write(getValue("\\" + address) + "\n");
-                    } else {
+//                    } else if (address.length() == 5) {
+//                        writer.write(getValue("\\" + address) + "\n");
+                    } else if (address.length() == 6) {
                         writer.write(getValue(address) + "\n");
                     }
                 }
             } catch (IOException ex) {
-                Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+                        Level.SEVERE, null, ex);
             } finally {
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+                            Level.SEVERE, null, ex);
                 }
             }
-        }
-        else {
-            JOptionPane.showMessageDialog(null,"Could not get list of servers");
+        } else {
+            JOptionPane.showMessageDialog(null, "Could not reach master server");
         }
     }
 
@@ -102,10 +104,12 @@ public class TortillaQueryMaster {
             port |= b[5] & 0xFF;
             return A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+                    Level.SEVERE, null, ex);
             return null;
         } catch (ArrayIndexOutOfBoundsException ex) {
-            Logger.getLogger(TortillaQueryMaster.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+                    Level.SEVERE, null, ex);
             System.err.println(ip);
             return null;
         }
