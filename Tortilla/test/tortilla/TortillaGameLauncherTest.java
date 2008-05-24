@@ -47,10 +47,10 @@ public class TortillaGameLauncherTest {
     @Test
     public void playGame()
     {
-        System.out.println("playGame");
-        TortillaGameLauncher instance = new TortillaGameLauncher();
-        instance.setIp("private.optimalclan.com:26001");
-        instance.playGame();
+//        System.out.println("playGame");
+//        TortillaGameLauncher instance = new TortillaGameLauncher();
+//        instance.setIp("private.optimalclan.com:26001");
+//        instance.playGame();
         fail("Unable to test without putting Nexuiz in project foler");
     }
 }

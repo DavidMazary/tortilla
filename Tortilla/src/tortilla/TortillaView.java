@@ -26,11 +26,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 
 /**
  * The application's main frame.
  * @todo Create custom table (ineditable and properly sortable).
+ * @todo Implement Favorite servers.
  */
 public class TortillaView extends FrameView {
 
@@ -44,8 +44,8 @@ public class TortillaView extends FrameView {
     private static final int MAX_PING = 200;
 
     /**
-     *
-     * @param app
+     * Create a new TortillaView using given SingleFrameApplication.
+     * @param app Application calling TortillaView
      */
     public TortillaView(SingleFrameApplication app) {
         super(app);
@@ -94,22 +94,22 @@ public class TortillaView extends FrameView {
                         busyIconIndex = 0;
                         busyIconTimer.start();
                     }
-//                    progressBar.setVisible(true);
-//                    progressBar.setIndeterminate(true);
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
                 } else if ("done".equals(propertyName)) {
                     busyIconTimer.stop();
                     statusAnimationLabel.setIcon(idleIcon);
-//                    progressBar.setVisible(false);
-//                    progressBar.setValue(0);
+                    progressBar.setVisible(false);
+                    progressBar.setValue(0);
                 } else if ("message".equals(propertyName)) {
                     String text = (String) (evt.getNewValue());
                     statusMessageLabel.setText((text == null) ? "" : text);
                     messageTimer.restart();
                 } else if ("progress".equals(propertyName)) {
                     int value = (Integer) (evt.getNewValue());
-//                    progressBar.setVisible(true);
-//                    progressBar.setIndeterminate(false);
-//                    progressBar.setValue(value);
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(value);
                 }
             }
         });
@@ -137,104 +137,42 @@ public class TortillaView extends FrameView {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
-        searchTextField = new javax.swing.JTextField();
-        searchButton = new javax.swing.JButton();
-        updateButton = new javax.swing.JButton();
-        refreshButton = new javax.swing.JButton();
-        connectButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jToolBar1 = new javax.swing.JToolBar();
+        updateButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        detailButton = new javax.swing.JButton();
+        favoriteButton = new javax.swing.JButton();
+        connectButton = new javax.swing.JButton();
+        searchTextField = new javax.swing.JTextField();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        optionsMenu = new javax.swing.JMenu();
+        sdlCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        viewMenu = new javax.swing.JMenu();
+        refreshMenuItem = new javax.swing.JMenuItem();
+        updateMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxMenuItem2 = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxMenuItem4 = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxMenuItem5 = new javax.swing.JCheckBoxMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jCheckBoxMenuItem3 = new javax.swing.JCheckBoxMenuItem();
-        jMenu3 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        showEmptyCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        showFullCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        favoritesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        serverMenu = new javax.swing.JMenu();
+        connectMenuItem = new javax.swing.JMenuItem();
+        favoriteMenuItem = new javax.swing.JMenuItem();
+        detailMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        addPrivateServerMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
-        javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
         statusMessageLabel = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
         statusAnimationLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
 
         mainPanel.setName("mainPanel"); // NOI18N
-
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
-        searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
-        searchTextField.setToolTipText(resourceMap.getString("searchTextField.toolTipText")); // NOI18N
-        searchTextField.setName("searchTextField"); // NOI18N
-        searchTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchTextFieldActionPerformed(evt);
-            }
-        });
-        searchTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                searchTextFieldFocusGained(evt);
-            }
-        });
-
-        searchButton.setIcon(resourceMap.getIcon("searchButton.icon")); // NOI18N
-        searchButton.setText(resourceMap.getString("searchButton.text")); // NOI18N
-        searchButton.setToolTipText(resourceMap.getString("searchButton.toolTipText")); // NOI18N
-        searchButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        searchButton.setName("searchButton"); // NOI18N
-        searchButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        searchButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchButtonActionPerformed(evt);
-            }
-        });
-
-        updateButton.setIcon(resourceMap.getIcon("updateButton.icon")); // NOI18N
-        updateButton.setText(resourceMap.getString("updateButton.text")); // NOI18N
-        updateButton.setToolTipText(resourceMap.getString("updateButton.toolTipText")); // NOI18N
-        updateButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        updateButton.setName("updateButton"); // NOI18N
-        updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        updateButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonActionPerformed(evt);
-            }
-        });
-
-        refreshButton.setIcon(resourceMap.getIcon("refreshButton.icon")); // NOI18N
-        refreshButton.setText(resourceMap.getString("refreshButton.text")); // NOI18N
-        refreshButton.setToolTipText(resourceMap.getString("refreshButton.toolTipText")); // NOI18N
-        refreshButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        refreshButton.setName("refreshButton"); // NOI18N
-        refreshButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        refreshButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButtonActionPerformed(evt);
-            }
-        });
-
-        connectButton.setIcon(resourceMap.getIcon("connectButton.icon")); // NOI18N
-        connectButton.setText(resourceMap.getString("connectButton.text")); // NOI18N
-        connectButton.setToolTipText(resourceMap.getString("connectButton.toolTipText")); // NOI18N
-        connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        connectButton.setName("connectButton"); // NOI18N
-        connectButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        connectButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectButtonActionPerformed(evt);
-            }
-        });
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -242,39 +180,121 @@ public class TortillaView extends FrameView {
         jTable1.setModel(getModel());
         jTable1.setDoubleBuffered(true);
         jTable1.setName("jTable1"); // NOI18N
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTable1FocusGained(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        jToolBar1.setBorder(null);
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+        jToolBar1.setBorderPainted(false);
+        jToolBar1.setName("jToolBar1"); // NOI18N
+        jToolBar1.setPreferredSize(new java.awt.Dimension(162, 42));
+
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
+        updateButton.setIcon(resourceMap.getIcon("updateButton.icon")); // NOI18N
+        updateButton.setText(resourceMap.getString("updateButton.text")); // NOI18N
+        updateButton.setToolTipText(resourceMap.getString("updateButton.toolTipText")); // NOI18N
+        updateButton.setFocusable(false);
+        updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        updateButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        updateButton.setName("updateButton"); // NOI18N
+        updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        updateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(updateButton);
+
+        refreshButton.setIcon(resourceMap.getIcon("refreshButton.icon")); // NOI18N
+        refreshButton.setText(resourceMap.getString("refreshButton.text")); // NOI18N
+        refreshButton.setToolTipText(resourceMap.getString("refreshButton.toolTipText")); // NOI18N
+        refreshButton.setFocusable(false);
+        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        refreshButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        refreshButton.setName("refreshButton"); // NOI18N
+        refreshButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(refreshButton);
+
+        detailButton.setIcon(resourceMap.getIcon("detailButton.icon")); // NOI18N
+        detailButton.setText(resourceMap.getString("detailButton.text")); // NOI18N
+        detailButton.setToolTipText(resourceMap.getString("detailButton.toolTipText")); // NOI18N
+        detailButton.setFocusable(false);
+        detailButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        detailButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        detailButton.setName("detailButton"); // NOI18N
+        detailButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        detailButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(detailButton);
+
+        favoriteButton.setIcon(resourceMap.getIcon("favoriteButton.icon")); // NOI18N
+        favoriteButton.setToolTipText(resourceMap.getString("favoriteButton.toolTipText")); // NOI18N
+        favoriteButton.setFocusable(false);
+        favoriteButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        favoriteButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        favoriteButton.setName("favoriteButton"); // NOI18N
+        favoriteButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        favoriteButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(favoriteButton);
+
+        connectButton.setIcon(resourceMap.getIcon("connectButton.icon")); // NOI18N
+        connectButton.setText(resourceMap.getString("connectButton.text")); // NOI18N
+        connectButton.setToolTipText(resourceMap.getString("connectButton.toolTipText")); // NOI18N
+        connectButton.setFocusable(false);
+        connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        connectButton.setName("connectButton"); // NOI18N
+        connectButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(connectButton);
+
+        searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
+        searchTextField.setName("searchTextField"); // NOI18N
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(refreshButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(12, 12, 12)
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
+                .addGap(1, 1, 1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -290,119 +310,137 @@ public class TortillaView extends FrameView {
 
         menuBar.add(fileMenu);
 
-        jMenu1.setMnemonic('V');
-        jMenu1.setText(resourceMap.getString("viewMenu.text")); // NOI18N
-        jMenu1.setName("viewMenu"); // NOI18N
+        optionsMenu.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
+        optionsMenu.setName("optionsMenu"); // NOI18N
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
-        jMenuItem1.setIcon(resourceMap.getIcon("refreshMenuItem.icon")); // NOI18N
-        jMenuItem1.setText(resourceMap.getString("refreshMenuItem.text")); // NOI18N
-        jMenuItem1.setToolTipText(resourceMap.getString("refreshMenuItem.toolTipText")); // NOI18N
-        jMenuItem1.setName("refreshMenuItem"); // NOI18N
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        sdlCheckBoxMenuItem.setSelected(true);
+        sdlCheckBoxMenuItem.setText(resourceMap.getString("sdlCheckBoxMenuItem.text")); // NOI18N
+        sdlCheckBoxMenuItem.setToolTipText(resourceMap.getString("sdlCheckBoxMenuItem.toolTipText")); // NOI18N
+        sdlCheckBoxMenuItem.setName("sdlCheckBoxMenuItem"); // NOI18N
+        optionsMenu.add(sdlCheckBoxMenuItem);
+
+        menuBar.add(optionsMenu);
+
+        viewMenu.setMnemonic('V');
+        viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
+        viewMenu.setName("viewMenu"); // NOI18N
+
+        refreshMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        refreshMenuItem.setIcon(resourceMap.getIcon("refreshMenuItem.icon")); // NOI18N
+        refreshMenuItem.setText(resourceMap.getString("refreshMenuItem.text")); // NOI18N
+        refreshMenuItem.setToolTipText(resourceMap.getString("refreshMenuItem.toolTipText")); // NOI18N
+        refreshMenuItem.setName("refreshMenuItem"); // NOI18N
+        refreshMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                refreshMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        viewMenu.add(refreshMenuItem);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem2.setIcon(resourceMap.getIcon("updateMenuItem.icon")); // NOI18N
-        jMenuItem2.setText(resourceMap.getString("updateMenuItem.text")); // NOI18N
-        jMenuItem2.setToolTipText(resourceMap.getString("updateMenuItem.toolTipText")); // NOI18N
-        jMenuItem2.setName("updateMenuItem"); // NOI18N
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        updateMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, java.awt.event.InputEvent.CTRL_MASK));
+        updateMenuItem.setIcon(resourceMap.getIcon("updateMenuItem.icon")); // NOI18N
+        updateMenuItem.setText(resourceMap.getString("updateMenuItem.text")); // NOI18N
+        updateMenuItem.setToolTipText(resourceMap.getString("updateMenuItem.toolTipText")); // NOI18N
+        updateMenuItem.setName("updateMenuItem"); // NOI18N
+        updateMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                updateMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        viewMenu.add(updateMenuItem);
 
         jSeparator2.setName("jSeparator2"); // NOI18N
-        jMenu1.add(jSeparator2);
+        viewMenu.add(jSeparator2);
 
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText(resourceMap.getString("jCheckBoxMenuItem1.text")); // NOI18N
         jCheckBoxMenuItem1.setToolTipText(resourceMap.getString("jCheckBoxMenuItem1.toolTipText")); // NOI18N
         jCheckBoxMenuItem1.setName("jCheckBoxMenuItem1"); // NOI18N
-        jMenu1.add(jCheckBoxMenuItem1);
-
-        jCheckBoxMenuItem2.setText(resourceMap.getString("favoritesCheckBoxMenuItem.text")); // NOI18N
-        jCheckBoxMenuItem2.setToolTipText(resourceMap.getString("favoritesCheckBoxMenuItem.toolTipText")); // NOI18N
-        jCheckBoxMenuItem2.setEnabled(false);
-        jCheckBoxMenuItem2.setName("favoritesCheckBoxMenuItem"); // NOI18N
-        jMenu1.add(jCheckBoxMenuItem2);
-
-        jCheckBoxMenuItem4.setSelected(true);
-        jCheckBoxMenuItem4.setText(resourceMap.getString("showEmptyCheckBoxMenuItem.text")); // NOI18N
-        jCheckBoxMenuItem4.setToolTipText(resourceMap.getString("showEmptyCheckBoxMenuItem.toolTipText")); // NOI18N
-        jCheckBoxMenuItem4.setName("showEmptyCheckBoxMenuItem"); // NOI18N
-        jMenu1.add(jCheckBoxMenuItem4);
-
-        jCheckBoxMenuItem5.setText(resourceMap.getString("showFullCheckBoxMenuItem.text")); // NOI18N
-        jCheckBoxMenuItem5.setToolTipText(resourceMap.getString("showFullCheckBoxMenuItem.toolTipText")); // NOI18N
-        jCheckBoxMenuItem5.setName("showFullCheckBoxMenuItem"); // NOI18N
-        jMenu1.add(jCheckBoxMenuItem5);
-
-        menuBar.add(jMenu1);
-
-        jMenu2.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
-        jMenu2.setName("optionsMenu"); // NOI18N
-
-        jCheckBoxMenuItem3.setSelected(true);
-        jCheckBoxMenuItem3.setText(resourceMap.getString("sdlCheckBoxMenuItem.text")); // NOI18N
-        jCheckBoxMenuItem3.setToolTipText(resourceMap.getString("sdlCheckBoxMenuItem.toolTipText")); // NOI18N
-        jCheckBoxMenuItem3.setName("sdlCheckBoxMenuItem"); // NOI18N
-        jMenu2.add(jCheckBoxMenuItem3);
-
-        menuBar.add(jMenu2);
-
-        jMenu3.setText(resourceMap.getString("jMenu3.text")); // NOI18N
-        jMenu3.setName("jMenu3"); // NOI18N
-
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
-        jMenuItem3.setIcon(resourceMap.getIcon("connectMenuItem.icon")); // NOI18N
-        jMenuItem3.setText(resourceMap.getString("connectMenuItem.text")); // NOI18N
-        jMenuItem3.setToolTipText(resourceMap.getString("connectMenuItem.toolTipText")); // NOI18N
-        jMenuItem3.setName("connectMenuItem"); // NOI18N
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                jCheckBoxMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem3);
+        viewMenu.add(jCheckBoxMenuItem1);
 
-        jMenuItem4.setIcon(resourceMap.getIcon("viewPlayersMenuItem.icon")); // NOI18N
-        jMenuItem4.setText(resourceMap.getString("viewPlayersMenuItem.text")); // NOI18N
-        jMenuItem4.setToolTipText(resourceMap.getString("viewPlayersMenuItem.toolTipText")); // NOI18N
-        jMenuItem4.setEnabled(false);
-        jMenuItem4.setName("viewPlayersMenuItem"); // NOI18N
-        jMenu3.add(jMenuItem4);
+        showEmptyCheckBoxMenuItem.setSelected(true);
+        showEmptyCheckBoxMenuItem.setText(resourceMap.getString("showEmptyCheckBoxMenuItem.text")); // NOI18N
+        showEmptyCheckBoxMenuItem.setToolTipText(resourceMap.getString("showEmptyCheckBoxMenuItem.toolTipText")); // NOI18N
+        showEmptyCheckBoxMenuItem.setName("showEmptyCheckBoxMenuItem"); // NOI18N
+        showEmptyCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showEmptyCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(showEmptyCheckBoxMenuItem);
+
+        showFullCheckBoxMenuItem.setText(resourceMap.getString("showFullCheckBoxMenuItem.text")); // NOI18N
+        showFullCheckBoxMenuItem.setToolTipText(resourceMap.getString("showFullCheckBoxMenuItem.toolTipText")); // NOI18N
+        showFullCheckBoxMenuItem.setName("showFullCheckBoxMenuItem"); // NOI18N
+        showFullCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showFullCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(showFullCheckBoxMenuItem);
+
+        favoritesCheckBoxMenuItem.setText(resourceMap.getString("favoritesCheckBoxMenuItem.text")); // NOI18N
+        favoritesCheckBoxMenuItem.setToolTipText(resourceMap.getString("favoritesCheckBoxMenuItem.toolTipText")); // NOI18N
+        favoritesCheckBoxMenuItem.setEnabled(false);
+        favoritesCheckBoxMenuItem.setName("favoritesCheckBoxMenuItem"); // NOI18N
+        favoritesCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                favoritesCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        viewMenu.add(favoritesCheckBoxMenuItem);
+
+        menuBar.add(viewMenu);
+
+        serverMenu.setText(resourceMap.getString("serverMenu.text")); // NOI18N
+        serverMenu.setName("serverMenu"); // NOI18N
+
+        connectMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
+        connectMenuItem.setIcon(resourceMap.getIcon("connectMenuItem.icon")); // NOI18N
+        connectMenuItem.setText(resourceMap.getString("connectMenuItem.text")); // NOI18N
+        connectMenuItem.setToolTipText(resourceMap.getString("connectMenuItem.toolTipText")); // NOI18N
+        connectMenuItem.setName("connectMenuItem"); // NOI18N
+        connectMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectMenuItemActionPerformed(evt);
+            }
+        });
+        serverMenu.add(connectMenuItem);
+
+        favoriteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        favoriteMenuItem.setIcon(resourceMap.getIcon("favoriteMenuItem.icon")); // NOI18N
+        favoriteMenuItem.setText(resourceMap.getString("favoriteMenuItem.text")); // NOI18N
+        favoriteMenuItem.setName("favoriteMenuItem"); // NOI18N
+        serverMenu.add(favoriteMenuItem);
+
+        detailMenuItem.setIcon(resourceMap.getIcon("detailMenuItem.icon")); // NOI18N
+        detailMenuItem.setText(resourceMap.getString("detailMenuItem.text")); // NOI18N
+        detailMenuItem.setToolTipText(resourceMap.getString("detailMenuItem.toolTipText")); // NOI18N
+        detailMenuItem.setName("detailMenuItem"); // NOI18N
+        serverMenu.add(detailMenuItem);
 
         jSeparator3.setName("jSeparator3"); // NOI18N
-        jMenu3.add(jSeparator3);
+        serverMenu.add(jSeparator3);
 
-        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem6.setIcon(resourceMap.getIcon("addFavoritesMenuItem.icon")); // NOI18N
-        jMenuItem6.setText(resourceMap.getString("addFavoritesMenuItem.text")); // NOI18N
-        jMenuItem6.setEnabled(false);
-        jMenuItem6.setName("addFavoritesMenuItem"); // NOI18N
-        jMenu3.add(jMenuItem6);
-
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem5.setIcon(resourceMap.getIcon("addPrivateServerMenuItem.icon")); // NOI18N
-        jMenuItem5.setText(resourceMap.getString("addPrivateServerMenuItem.text")); // NOI18N
-        jMenuItem5.setToolTipText(resourceMap.getString("addPrivateServerMenuItem.toolTipText")); // NOI18N
-        jMenuItem5.setEnabled(false);
-        jMenuItem5.setName("addPrivateServerMenuItem"); // NOI18N
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+        addPrivateServerMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        addPrivateServerMenuItem.setIcon(resourceMap.getIcon("addPrivateServerMenuItem.icon")); // NOI18N
+        addPrivateServerMenuItem.setText(resourceMap.getString("addPrivateServerMenuItem.text")); // NOI18N
+        addPrivateServerMenuItem.setToolTipText(resourceMap.getString("addPrivateServerMenuItem.toolTipText")); // NOI18N
+        addPrivateServerMenuItem.setEnabled(false);
+        addPrivateServerMenuItem.setName("addPrivateServerMenuItem"); // NOI18N
+        addPrivateServerMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
+                addPrivateServerMenuItemActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem5);
+        serverMenu.add(addPrivateServerMenuItem);
 
-        menuBar.add(jMenu3);
+        menuBar.add(serverMenu);
 
         helpMenu.setMnemonic('H');
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
@@ -416,9 +454,10 @@ public class TortillaView extends FrameView {
 
         statusPanel.setName("statusPanel"); // NOI18N
 
-        statusPanelSeparator.setName("statusPanelSeparator"); // NOI18N
-
         statusMessageLabel.setName("statusMessageLabel"); // NOI18N
+
+        progressBar.setEnabled(false);
+        progressBar.setName("progressBar"); // NOI18N
 
         statusAnimationLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
@@ -427,27 +466,26 @@ public class TortillaView extends FrameView {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 446, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 316, Short.MAX_VALUE)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addComponent(statusPanelSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(statusMessageLabel)
-                    .addComponent(statusAnimationLabel))
-                .addGap(12, 12, 12))
+                .addGap(2, 2, 2)
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(statusMessageLabel)
+                        .addComponent(statusAnimationLabel))
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
-
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
 
         setComponent(mainPanel);
         setMenuBar(menuBar);
@@ -458,9 +496,9 @@ public class TortillaView extends FrameView {
      * Get server list from master server when clicked.
      * @param evt
      */
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void updateMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateMenuItemActionPerformed
         update();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+}//GEN-LAST:event_updateMenuItemActionPerformed
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
         update();
@@ -474,74 +512,93 @@ public class TortillaView extends FrameView {
         refresh();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void refreshMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshMenuItemActionPerformed
         refresh();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+}//GEN-LAST:event_refreshMenuItemActionPerformed
 
     /**
      * When searchTextField gains focus, highlight text in the box.
      * @param evt
      */
-    private void searchTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_searchTextFieldFocusGained
-        searchTextField.selectAll();
-    }//GEN-LAST:event_searchTextFieldFocusGained
-
-    private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchTextFieldActionPerformed
-        filter();
-    }//GEN-LAST:event_searchTextFieldActionPerformed
-
-    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-        filter();
-    }//GEN-LAST:event_searchButtonActionPerformed
-
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectMenuItemActionPerformed
         connect();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+}//GEN-LAST:event_connectMenuItemActionPerformed
 
     /**
      * Creates a new "Add Private Server" dialog.
      * @todo Implement "Add Private Server"
      * @param evt
      */
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+    private void addPrivateServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPrivateServerMenuItemActionPerformed
         if (addPrivateServer == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
             addPrivateServer = new TortillaAddPrivateServer();
             addPrivateServer.setLocationRelativeTo(mainFrame);
         }
         TortillaApp.getApplication().show(addPrivateServer);
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
+}//GEN-LAST:event_addPrivateServerMenuItemActionPerformed
+
+private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
+    refreshTable();
+}//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
+
+private void showEmptyCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showEmptyCheckBoxMenuItemActionPerformed
+    refreshTable();
+}//GEN-LAST:event_showEmptyCheckBoxMenuItemActionPerformed
+
+private void showFullCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showFullCheckBoxMenuItemActionPerformed
+    refreshTable();
+}//GEN-LAST:event_showFullCheckBoxMenuItemActionPerformed
+
+private void favoritesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_favoritesCheckBoxMenuItemActionPerformed
+    refreshTable();
+}//GEN-LAST:event_favoritesCheckBoxMenuItemActionPerformed
+
+private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
+    refreshTable();
+}//GEN-LAST:event_searchTextFieldKeyTyped
+
+private void jTable1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusGained
+    connectButton.setEnabled(true);
+    connectMenuItem.setEnabled(true);
+    detailButton.setEnabled(true);
+    detailMenuItem.setEnabled(true);
+    favoriteButton.setEnabled(true);
+    favoriteMenuItem.setEnabled(true);
+}//GEN-LAST:event_jTable1FocusGained
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem addPrivateServerMenuItem;
     private javax.swing.JButton connectButton;
+    private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JButton detailButton;
+    private javax.swing.JMenuItem detailMenuItem;
+    private javax.swing.JButton favoriteButton;
+    private javax.swing.JMenuItem favoriteMenuItem;
+    private javax.swing.JCheckBoxMenuItem favoritesCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem3;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem4;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem5;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTable jTable1;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu optionsMenu;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton refreshButton;
-    private javax.swing.JButton searchButton;
+    private javax.swing.JMenuItem refreshMenuItem;
+    private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
     private javax.swing.JTextField searchTextField;
+    private javax.swing.JMenu serverMenu;
+    private javax.swing.JCheckBoxMenuItem showEmptyCheckBoxMenuItem;
+    private javax.swing.JCheckBoxMenuItem showFullCheckBoxMenuItem;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JButton updateButton;
+    private javax.swing.JMenuItem updateMenuItem;
+    private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
     private final Timer busyIconTimer;
@@ -582,7 +639,7 @@ public class TortillaView extends FrameView {
                     }
                 }
             }
-            launcher.setSdl(isUseSdl());
+            launcher.setSdl(sdlCheckBoxMenuItem.getState());
             launcher.setIp(selectedIp);
             launcher.playGame();
         } else if (serverMap == null) {
@@ -596,50 +653,42 @@ public class TortillaView extends FrameView {
     }
 
     /**
-     * Filter serverList according to search term.
-     * @todo Filter as each letter is typed,
-     * and remove filters when search box is emptied.
-     */
-    public void filter() {
-        String query = searchTextField.getText().toLowerCase();
-
-        if (!query.equals("") && getModel().getRowCount() != 0) {
-            for (int i = getModel().getRowCount() - 1; i >= 0; --i) {
-                if (!getModel().getValueAt(i, 1).toString().toLowerCase().
-                        contains(query)) {
-                    getModel().removeRow(i);
-                }
-            }
-        }
-    }
-
-    /**
      * Use TortillaQueryMaster to download new serverlist.
      */
     public void update() {
-        statusMessageLabel.setText("Updating...");
-        // set up table
-        if (getModel().getColumnCount() != 5) {
-            getModel().addColumn("Ping");
-            getModel().addColumn("Server");
-            getModel().addColumn("Players");
-            getModel().addColumn("Max");
-            getModel().addColumn("Map");
-        }
-        TableColumn column;
-        for (int i = 0; i < 4; i++) {
-            column = jTable1.getColumnModel().getColumn(i);
-            if (i == 0 || i == 2 || i == 3) {
-                column.setPreferredWidth(24); //numerical columns smaller
+        SwingWorker Task = new SwingWorker<Void, Void>() {
+            /*
+             * Main task. Executed in background thread.
+             */
 
+            @Override
+            public Void doInBackground() {
+                updateButton.setEnabled(false);
+                updateMenuItem.setEnabled(false);
+                statusMessageLabel.setText("Updating...");
+                if (!busyIconTimer.isRunning()) {
+                    statusAnimationLabel.setIcon(busyIcons[0]);
+                    busyIconIndex = 0;
+                    busyIconTimer.start();
+                }
+                queryM.saveServerList();
+                statusMessageLabel.setText("");
+                busyIconTimer.stop();
+                statusAnimationLabel.setIcon(idleIcon);
+                updateButton.setEnabled(true);
+                updateMenuItem.setEnabled(true);
+                return null;
             }
-        }
-        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
-            getModel().removeRow(j);
-        }
-        queryM.saveServerList();
-        refresh();
-        statusMessageLabel.setText("");
+
+            /*
+             * Executed in event dispatch thread
+             */
+            @Override
+            public void done() {
+                refresh();
+            }
+        };
+        Task.execute();
     }
 
     /**
@@ -654,17 +703,7 @@ public class TortillaView extends FrameView {
             getModel().addColumn("Max");
             getModel().addColumn("Map");
         }
-        TableColumn column;
-        for (int i = 0; i < 4; i++) {
-            column = jTable1.getColumnModel().getColumn(i);
-            if (i == 0 || i == 2 || i == 3) {
-                column.setPreferredWidth(24); //numerical columns smaller
 
-            }
-        }
-        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
-            getModel().removeRow(j);
-        }
         if (serverList == null) {
             BufferedReader reader = null;
             try {
@@ -676,20 +715,20 @@ public class TortillaView extends FrameView {
                     serverList.add(line);
                 }
             } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(null,
-                        "Click update to begin...");
+                statusMessageLabel.setText("Click update to begin...");
             } catch (IOException ex) {
                 Logger.getLogger(TortillaView.class.getName()).
                         log(Level.SEVERE, null, ex);
             }
         }
+
         if (serverList != null) {
-            SwingWorker worker = new SwingWorker<ConcurrentHashMap<String, TortillaServer>, Void>() {
+            SwingWorker worker = new SwingWorker<Void, Void>() {
 
                 @Override
-                public ConcurrentHashMap<String, TortillaServer> doInBackground() {
-                    final ConcurrentHashMap<String, TortillaServer> tempSL =
-                            new ConcurrentHashMap<String, TortillaServer>();
+                public Void doInBackground() {
+                    serverMap = new ConcurrentHashMap<String, TortillaServer>();
+
                     for (final String ip : serverList) {
                         class ServerQuerier extends Thread {
 
@@ -697,7 +736,7 @@ public class TortillaView extends FrameView {
                             public void run() {
                                 TortillaServer server = queryS.getInfo(ip);
                                 if (server != null) {
-                                    tempSL.put(ip, queryS.getInfo(ip));
+                                    serverMap.put(ip, server);
                                 }
                             }
                         }
@@ -705,71 +744,35 @@ public class TortillaView extends FrameView {
                         querier.start();
                     }
                     try {
-                        if (!busyIconTimer.isRunning()) {
-                            statusAnimationLabel.setIcon(busyIcons[0]);
-                            busyIconIndex = 0;
-                            busyIconTimer.start();
-                        }
+                        refreshButton.setEnabled(false);
+                        refreshMenuItem.setEnabled(false);
                         statusMessageLabel.setText("Refreshing...");
-                        Thread.sleep(3000);
+                        progressBar.setVisible(true);
+                        progressBar.setIndeterminate(false);
+                        for (int i = 1; i < 100; i++) {
+                            progressBar.setValue(i);
+                            Thread.sleep(30);
+                        }
+                        progressBar.setVisible(false);
                         statusMessageLabel.setText("");
-                        busyIconTimer.stop();
-                        statusAnimationLabel.setIcon(idleIcon);
+                        refreshButton.setEnabled(true);
+                        refreshMenuItem.setEnabled(true);
+                        connectButton.setEnabled(false);
+                        connectMenuItem.setEnabled(false);
+                        detailButton.setEnabled(false);
+                        detailMenuItem.setEnabled(false);
+                        favoriteButton.setEnabled(false);
+                        favoriteMenuItem.setEnabled(false);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(TortillaView.class.getName()).
                                 log(Level.SEVERE, null, ex);
                     }
-                    return tempSL;
+                    return null;
                 }
 
                 @Override
                 public void done() {
-                    try {
-                        statusMessageLabel.setText("");
-                        serverMap = get();
-                        int ping;
-                        String hostname;
-                        int players;
-                        int maxplayers;
-                        String map;
-                        int count = 0;
-                        boolean permission;
-                        for (String Ip : serverMap.keySet()) {
-                            permission = true;
-                            ping = serverMap.get(Ip).getPing();
-                            hostname = serverMap.get(Ip).getHostname();
-                            players = serverMap.get(Ip).getPlayerCount();
-                            maxplayers = serverMap.get(Ip).getMaxPlayers();
-                            map = serverMap.get(Ip).getMap();
-                            if (isHideEmpty()) {
-                                if (players == 0) {
-                                    permission = false;
-                                }
-                            }
-                            if (isHideFull()) {
-                                if (players == maxplayers) {
-                                    permission = false;
-                                }
-                            }
-                            if (isHideHighPing()) {
-                                if (ping > MAX_PING) {
-                                    permission = false;
-                                }
-                            }
-                            if (permission) {
-                                getModel().addRow(
-                                        new Object[]{ping, hostname,
-                                            players, maxplayers, map
-                                        });
-                            }
-                            count++;
-                        }
-                        statusMessageLabel.setText("");
-                    } catch (InterruptedException ignore) {
-                    } catch (java.util.concurrent.ExecutionException ex) {
-                        Logger.getLogger(TortillaView.class.getName()).
-                                log(Level.SEVERE, null, ex);
-                    }
+                    refreshTable();
                 }
             };
             worker.execute();
@@ -777,35 +780,59 @@ public class TortillaView extends FrameView {
     }
 
     /**
-     *
-     * @return
+     * Refreshes the Table of server data using the stored serverMap.
      */
-    public boolean isHideEmpty() {
-        return jCheckBoxMenuItem4.getState();
-    }
+    protected void refreshTable() {
+        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
+            getModel().removeRow(j);
+        }
+        int ping;
+        String hostname;
+        int players;
+        int maxplayers;
+        String map;
+        int count = 0;
+        boolean permission;
+        for (String Ip : serverMap.keySet()) {
+            permission = true;
+            ping = serverMap.get(Ip).getPing();
+            hostname = serverMap.get(Ip).getHostname();
+            players = serverMap.get(Ip).getPlayerCount();
+            maxplayers = serverMap.get(Ip).getMaxPlayers();
+            map = serverMap.get(Ip).getMap();
+            if (showEmptyCheckBoxMenuItem.getState()) {
+                if (players == 0) {
+                    permission = false;
+                }
+            }
+            if (showFullCheckBoxMenuItem.getState()) {
+                if (players == maxplayers) {
+                    permission = false;
+                }
+            }
+            if (jCheckBoxMenuItem1.getState()) {
+                if (ping > MAX_PING) {
+                    permission = false;
+                }
+            }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isUseSdl() {
-        return jCheckBoxMenuItem3.getState();
-    }
+            String query = searchTextField.getText().toLowerCase();
+            if (!query.equals("") && hostname != null) {
+                if (!hostname.toLowerCase().contains(query)) {
+                    permission = false;
+                }
+            } else if (hostname == null) {
+                permission = false;
+            }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isHideFull() {
-        return jCheckBoxMenuItem5.getState();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isHideHighPing() {
-        return jCheckBoxMenuItem1.getState();
+            if (permission) {
+                getModel().addRow(
+                        new Object[]{ping, hostname,
+                            players, maxplayers, map
+                        });
+            }
+            count++;
+        }
     }
 
     static class ServerTableModel extends DefaultTableModel {
@@ -851,7 +878,7 @@ public class TortillaView extends FrameView {
          */
         @Override
         public Class getColumnClass(int column) {
-            Class dataType = Object.class;
+            Class dataType = String.class;
             if (column == 0 || column == 2 || column == 3) {
                 dataType = Number.class;
             }
