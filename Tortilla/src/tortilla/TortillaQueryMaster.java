@@ -23,13 +23,13 @@ public class TortillaQueryMaster {
 
     /**
      * Retreives and saves the list of servers from the master server.
-     * @todo Modify while to handle strings containing the "\\" delimiter.
+     * @todo Modify while-loop to handle strings containing the "\\" delimiter.
      */
     public void saveServerList() {
         String queryResult = null;
         BufferedWriter writer = null;
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             queryResult = query.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
             if (queryResult != null) {
                 break;
@@ -53,6 +53,7 @@ public class TortillaQueryMaster {
                     }
                 }
             } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Could not save server list");
                 Logger.getLogger(TortillaQueryMaster.class.getName()).log(
                         Level.SEVERE, null, ex);
             } finally {
