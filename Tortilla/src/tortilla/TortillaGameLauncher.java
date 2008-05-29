@@ -49,7 +49,7 @@ public class TortillaGameLauncher {
                 cmd = game.toString() + " -basedir " + userDir + " +connect " +
                         getIp();
             }
-        } else if (osName.contains("Linux") || osName.contains("Solaris") ||
+        } else if (osName.contains("Linux") || osName.contains("SunOS") ||
                 osName.contains("FreeBSD")) {
             if (isSdl()) {
                 game = new File(userDir + "/nexuiz-linux-sdl.sh");

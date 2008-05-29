@@ -20,8 +20,6 @@ public class TortillaServer implements java.io.Serializable {
     private int ping;
     private int bots;
     private ArrayList<TortillaPlayer> playerList;
-//    private boolean favorite;
-//    private boolean timeout;
 
     /**
      * Constructor taking in no parameters.
@@ -30,14 +28,6 @@ public class TortillaServer implements java.io.Serializable {
         /* Empty constructor */
     }
 
-//    /**
-//     * This is used if a server is timing out.
-//     * @return True if server has timed out.
-//     */
-//    public boolean getTimeout()
-//    {
-//        return isTimeout();
-//    }
     /**
      * Whether server is full or not.
      * @return Status of server fullness.
@@ -54,13 +44,6 @@ public class TortillaServer implements java.io.Serializable {
         return (getPlayerCount() == 0);
     }
 
-//    /**
-//     * Set this server's favorite status.
-//     * @param favorite True if server is to be favorite.
-//     */
-//    public void setFavorite(boolean favorite) {
-//        this.favorite = favorite;
-//    }
     /**
      * Hostname of this server.
      * @return Hostname.
@@ -240,22 +223,4 @@ public class TortillaServer implements java.io.Serializable {
     public void setPlayerList(ArrayList<TortillaPlayer> playerList) {
         this.playerList = playerList;
     }
-
-//    /**
-//     * Whether server is favorite or not.
-//     * @return True is server is favorite.
-//     */
-//    public boolean isFavorite()
-//    {
-//        return favorite;
-//    }
-
-//    /**
-//     * This is used if a server is timing out.
-//     * @return True if server has timed out.
-//     */
-//    public boolean isTimeout()
-//    {
-//        return timeout;
-//    }
 }

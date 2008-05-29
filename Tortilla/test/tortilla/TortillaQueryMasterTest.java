@@ -78,15 +78,16 @@ public class TortillaQueryMasterTest {
 //        }
     }
     
-//    /**
-//     * Test of getServers method.
-//     * This is an unreliable and useless test atm.
-//     */
-//    @Test
-//    public void testGetValue() {
-//        System.out.println("testGetValue");
+    /**
+     * Test of getServers method.
+     * This is an unreliable and useless test atm.
+     */
+    @Test
+    public void testGetValue() {
+        System.out.println("testGetValue");
 //        String expResult = "75.126.234.42:26002";
-//        String result = instance.getValue("K~ê*e?");
+        String result = instance.getValue("//////");
+        System.out.println(result);
 //        assertEquals(result, expResult);
-//    }
+    }
 }
