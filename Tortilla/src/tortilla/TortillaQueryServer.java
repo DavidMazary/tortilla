@@ -32,14 +32,13 @@ public class TortillaQueryServer {
         for (int i = 0; i < 1; i++) {
             queryResult = query.getInfo(ip[0], port,
                     "xxxxgetinfo tortilla");
-            if (queryResult != null) {
+            if (!queryResult.equals("0")) {
                 break;
             }
         }
 
         TortillaServer tortillaServer = new TortillaServer();
-        if (queryResult != null && queryResult.length() > 0 && !queryResult.
-                equals("Request timed out.")) {
+        if (!queryResult.equals("0")) {
             tortillaServer = processServer(queryResult, ipStr);
         }
         return tortillaServer;
@@ -62,16 +61,17 @@ public class TortillaQueryServer {
         for (int i = 0; i < 1; i++) {
             queryResult = query.getInfo(ip[0], port,
                     "xxxxgetstatus tortilla");
-            if (queryResult != null) {
+            if (!queryResult.equals("0")) {
                 break;
             }
         }
 
-        if (queryResult != null || queryResult.length() > 0) {
+        if (!queryResult.equals("0")) {
             queryResult = queryResult.substring(queryResult.indexOf("\\"));
             queryResult = queryResult.replaceAll(
                     "\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");
             String input;
+            
             try {
                 BufferedReader in = new BufferedReader(
                         new StringReader(queryResult));

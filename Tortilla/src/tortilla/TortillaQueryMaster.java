@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -70,7 +71,8 @@ public class TortillaQueryMaster {
         String[] master = {"ghdigital.com", "dpmaster.deathmask.net",
             "dpmaster.tchr.no"
         };
-        return master[(int) (Math.random() * 3)];
+        Random r = new Random();
+        return master[r.nextInt(3)];
     }
 
     /**

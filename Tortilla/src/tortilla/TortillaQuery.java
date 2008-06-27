@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 /**
@@ -58,7 +59,8 @@ public class TortillaQuery {
 
             StringBuffer recStr = new StringBuffer("");
             // Use port range 25000 - 30000
-            int localPort = (int) (Math.random() * 5000) + 25000;
+            Random r = new Random();
+            int localPort = r.nextInt(5000) + 25000;
             socket = new DatagramSocket(localPort);
             InetAddress address = InetAddress.getByName(ipStr);
             byte[] data = new byte[PACKET_SIZE];
@@ -79,7 +81,7 @@ public class TortillaQuery {
                     "ISO-8859-1"));
             return recStr.toString();
         } catch (IOException ex) {
-            return null;
+            return "0";
         }
     }
 
