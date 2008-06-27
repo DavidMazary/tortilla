@@ -147,7 +147,6 @@ public class TortillaView extends FrameView {
         hideHighPingMenuItem = new javax.swing.JCheckBoxMenuItem();
         hideEmptyMenuItem = new javax.swing.JCheckBoxMenuItem();
         hideFullMenuItem = new javax.swing.JCheckBoxMenuItem();
-        favoritesMenuItem = new javax.swing.JCheckBoxMenuItem();
         optionsMenu = new javax.swing.JMenu();
         sdlCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
@@ -279,7 +278,6 @@ public class TortillaView extends FrameView {
         fileMenu.setName("fileMenu"); // NOI18N
 
         addPrivateServerMenuItem.setAction(actionMap.get("showPrivateServerBox")); // NOI18N
-        addPrivateServerMenuItem.setMnemonic('a');
         addPrivateServerMenuItem.setText(resourceMap.getString("addPrivateServerMenuItem.text")); // NOI18N
         addPrivateServerMenuItem.setFocusPainted(true);
         addPrivateServerMenuItem.setName("addPrivateServerMenuItem"); // NOI18N
@@ -289,7 +287,6 @@ public class TortillaView extends FrameView {
         fileMenu.add(jSeparator1);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
-        exitMenuItem.setMnemonic('x');
         exitMenuItem.setName("exitMenuItem"); // NOI18N
         fileMenu.add(exitMenuItem);
 
@@ -333,18 +330,6 @@ public class TortillaView extends FrameView {
             }
         });
         viewMenu.add(hideFullMenuItem);
-
-        favoritesMenuItem.setMnemonic('v');
-        favoritesMenuItem.setText(resourceMap.getString("favoritesMenuItem.text")); // NOI18N
-        favoritesMenuItem.setToolTipText(resourceMap.getString("favoritesMenuItem.toolTipText")); // NOI18N
-        favoritesMenuItem.setIcon(resourceMap.getIcon("favoritesMenuItem.icon")); // NOI18N
-        favoritesMenuItem.setName("favoritesMenuItem"); // NOI18N
-        favoritesMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                favoritesMenuItemActionPerformed(evt);
-            }
-        });
-        viewMenu.add(favoritesMenuItem);
 
         menuBar.add(viewMenu);
 
@@ -449,10 +434,6 @@ private void hideFullMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     refreshTable();
 }//GEN-LAST:event_hideFullMenuItemActionPerformed
 
-private void favoritesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_favoritesMenuItemActionPerformed
-    refreshTable();
-}//GEN-LAST:event_favoritesMenuItemActionPerformed
-
 private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
     refreshTable();
 }//GEN-LAST:event_searchTextFieldKeyTyped
@@ -471,7 +452,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton connectButton;
     private javax.swing.JButton detailButton;
-    private javax.swing.JCheckBoxMenuItem favoritesMenuItem;
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
     private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
     private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
@@ -664,6 +644,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         @Override
         protected void succeeded(Object result) {
             updateButton.setEnabled(true);
+            refreshButton.doClick();
         }
     }
 
@@ -704,12 +685,17 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                     while ((line = reader.readLine()) != null) {
                         serverList.add(line);
                     }
+                    reader.close();
                 } catch (FileNotFoundException e) {
+
                     statusMessageLabel.setText("Click update to begin...");
                 } catch (IOException ex) {
                     Logger.getLogger(TortillaView.class.getName()).
                             log(Level.SEVERE, null, ex);
                 }
+//                finally {
+//                    reader.close();
+//                } 
             }
 
             serverMap = new ConcurrentHashMap<String, TortillaServer>();
