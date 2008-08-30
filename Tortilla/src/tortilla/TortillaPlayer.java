@@ -78,8 +78,9 @@ public class TortillaPlayer implements java.io.Serializable {
             byte nameBytes[] = name.getBytes("ISO-8859-1");
             StringBuffer sb = new StringBuffer("");
 
+            // Character will correspond with unsigned byte.
             for (int i = 0; i < nameBytes.length; i++) {
-                sb.append(fontTable[nameBytes[i] + 128]);
+                sb.append(fontTable[nameBytes[i] & 0xff]);
             }
 
             return sb.toString();

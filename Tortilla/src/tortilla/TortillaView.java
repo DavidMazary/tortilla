@@ -7,21 +7,15 @@ import java.awt.Frame;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
-import org.jdesktop.application.TaskMonitor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.swing.Timer;
-import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -41,70 +35,6 @@ public class TortillaView extends FrameView {
         super(app);
 
         initComponents();
-
-        // status bar initialization - message timeout, idle icon and busy animation, etc
-        ResourceMap resourceMap = getResourceMap();
-        int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
-        messageTimer = new Timer(messageTimeout, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                statusMessageLabel.setText("");
-            }
-        });
-        messageTimer.setRepeats(false);
-        int busyAnimationRate = resourceMap.getInteger(
-                "StatusBar.busyAnimationRate");
-        for (int i = 0; i < busyIcons.length; i++) {
-            busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
-        }
-        busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
-                statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
-            }
-        });
-        idleIcon = resourceMap.getIcon("StatusBar.idleIcon");
-        statusAnimationLabel.setIcon(idleIcon);
-//        progressBar.setVisible(false);
-
-        // connecting action tasks to status bar via TaskMonitor
-        TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
-        taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                String propertyName = evt.getPropertyName();
-                if ("started".equals(propertyName)) {
-                    if (!busyIconTimer.isRunning()) {
-                        statusAnimationLabel.setIcon(busyIcons[0]);
-                        busyIconIndex = 0;
-                        busyIconTimer.start();
-                    }
-                    cancelButton.setEnabled(true);
-                    cancel = false;
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
-                } else if ("done".equals(propertyName)) {
-                    busyIconTimer.stop();
-                    statusAnimationLabel.setIcon(idleIcon);
-                    cancelButton.setEnabled(false);
-                    progressBar.setVisible(false);
-                    progressBar.setValue(0);
-                } else if ("message".equals(propertyName)) {
-                    String text = (String) (evt.getNewValue());
-                    statusMessageLabel.setText((text == null) ? "" : text);
-                    messageTimer.restart();
-                } else if ("progress".equals(propertyName)) {
-                    int value = (Integer) (evt.getNewValue());
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setValue(value);
-                }
-            }
-        });
     }
 
     /**
@@ -140,8 +70,6 @@ public class TortillaView extends FrameView {
         connectButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        addPrivateServerMenuItem = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         hideHighPingMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -151,10 +79,6 @@ public class TortillaView extends FrameView {
         sdlCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
-        statusPanel = new javax.swing.JPanel();
-        statusMessageLabel = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
-        statusAnimationLabel = new javax.swing.JLabel();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -208,7 +132,6 @@ public class TortillaView extends FrameView {
         jToolBar1.add(updateButton);
 
         refreshButton.setAction(actionMap.get("refresh")); // NOI18N
-        refreshButton.setText(resourceMap.getString("refreshButton.text")); // NOI18N
         refreshButton.setFocusable(false);
         refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         refreshButton.setMinimumSize(new java.awt.Dimension(42, 42));
@@ -228,7 +151,6 @@ public class TortillaView extends FrameView {
         jToolBar1.add(cancelButton);
 
         detailButton.setAction(actionMap.get("viewServer")); // NOI18N
-        detailButton.setText(resourceMap.getString("detailButton.text")); // NOI18N
         detailButton.setFocusable(false);
         detailButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         detailButton.setMinimumSize(new java.awt.Dimension(42, 42));
@@ -238,7 +160,6 @@ public class TortillaView extends FrameView {
         jToolBar1.add(detailButton);
 
         connectButton.setAction(actionMap.get("connect")); // NOI18N
-        connectButton.setText(resourceMap.getString("connectButton.text")); // NOI18N
         connectButton.setFocusable(false);
         connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
@@ -255,7 +176,7 @@ public class TortillaView extends FrameView {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
@@ -267,7 +188,7 @@ public class TortillaView extends FrameView {
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(1, 1, 1)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -276,15 +197,6 @@ public class TortillaView extends FrameView {
         fileMenu.setMnemonic('F');
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
-
-        addPrivateServerMenuItem.setAction(actionMap.get("showPrivateServerBox")); // NOI18N
-        addPrivateServerMenuItem.setText(resourceMap.getString("addPrivateServerMenuItem.text")); // NOI18N
-        addPrivateServerMenuItem.setFocusPainted(true);
-        addPrivateServerMenuItem.setName("addPrivateServerMenuItem"); // NOI18N
-        fileMenu.add(addPrivateServerMenuItem);
-
-        jSeparator1.setName("jSeparator1"); // NOI18N
-        fileMenu.add(jSeparator1);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -356,49 +268,8 @@ public class TortillaView extends FrameView {
 
         menuBar.add(helpMenu);
 
-        statusPanel.setName("statusPanel"); // NOI18N
-
-        statusMessageLabel.setName("statusMessageLabel"); // NOI18N
-
-        progressBar.setDoubleBuffered(true);
-        progressBar.setEnabled(false);
-        progressBar.setName("progressBar"); // NOI18N
-
-        statusAnimationLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
-
-        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
-        statusPanel.setLayout(statusPanelLayout);
-        statusPanelLayout.setHorizontalGroup(
-            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(statusPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 314, Short.MAX_VALUE)
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(statusPanelLayout.createSequentialGroup()
-                        .addGap(162, 162, 162)
-                        .addComponent(statusAnimationLabel))
-                    .addGroup(statusPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        statusPanelLayout.setVerticalGroup(
-            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(statusMessageLabel)
-                        .addComponent(statusAnimationLabel)))
-                .addGap(20, 20, 20))
-        );
-
         setComponent(mainPanel);
         setMenuBar(menuBar);
-        setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -448,7 +319,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     detailButton.setEnabled(false);
 }//GEN-LAST:event_jTable1FocusLost
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem addPrivateServerMenuItem;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton connectButton;
     private javax.swing.JButton detailButton;
@@ -456,27 +326,17 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
     private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable jTable1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
-    private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton refreshButton;
     private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
     private javax.swing.JTextField searchTextField;
-    private javax.swing.JLabel statusAnimationLabel;
-    private javax.swing.JLabel statusMessageLabel;
-    private javax.swing.JPanel statusPanel;
     private javax.swing.JButton updateButton;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
-    private final Timer messageTimer;
-    private final Timer busyIconTimer;
-    private final Icon idleIcon;
-    private final Icon[] busyIcons = new Icon[15];
-    private int busyIconIndex = 0;
     private JDialog aboutBox;
     private JDialog addPrivateServerBox;
     private TortillaGameLauncher launcher = new TortillaGameLauncher();
@@ -685,10 +545,10 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                     while ((line = reader.readLine()) != null) {
                         serverList.add(line);
                     }
-                    reader.close();
-                } catch (FileNotFoundException e) {
-
-                    statusMessageLabel.setText("Click update to begin...");
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(TortillaView.class.getName()).
+                            log(Level.SEVERE, null, ex);
+//                    reader.close();
                 } catch (IOException ex) {
                     Logger.getLogger(TortillaView.class.getName()).
                             log(Level.SEVERE, null, ex);
