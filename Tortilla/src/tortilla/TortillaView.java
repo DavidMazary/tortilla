@@ -82,6 +82,7 @@ public class TortillaView extends FrameView {
 
         mainPanel.setName("mainPanel"); // NOI18N
 
+        jScrollPane1.setDoubleBuffered(true);
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
         jTable1.setAutoCreateRowSorter(true);
@@ -175,18 +176,18 @@ public class TortillaView extends FrameView {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(1, 1, 1)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
         );
@@ -345,7 +346,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private DefaultTableModel model = new DefaultTableModel();
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, TortillaServer> serverMap;
-    private static final int MAX_PING = 200;
+    private static final int MAX_PING = 100;
     private boolean cancel;
 
     /**
@@ -360,7 +361,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
-    protected void refreshTable() {
+    protected synchronized void refreshTable() {
         for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
             getModel().removeRow(j);
         }
@@ -569,12 +570,14 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
                         if (server != null) {
                             serverMap.put(ip, server);
+                            refreshTable();
                         }
                     }
                 }
                 Thread querier = new ServerQuerier();
                 querier.start();
             }
+            // Progress percent to apply to progressbar.
             int progress = 0;
             try {
                 while (progress < 100 && !isCancel()) {
@@ -591,7 +594,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         @Override
         protected void succeeded(Object result) {
-            refreshTable();
             refreshButton.setEnabled(true);
         }
     }
