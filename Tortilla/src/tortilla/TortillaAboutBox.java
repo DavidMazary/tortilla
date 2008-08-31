@@ -1,9 +1,14 @@
 /*
  * TortillaAboutBox.java
  */
-
 package tortilla;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
@@ -21,7 +26,8 @@ public class TortillaAboutBox extends javax.swing.JDialog {
     /**
      * Closes about box.
      */
-    @Action public void closeAboutBox() {
+    @Action
+    public void closeAboutBox() {
         setVisible(false);
     }
 
@@ -79,6 +85,11 @@ public class TortillaAboutBox extends javax.swing.JDialog {
 
         appHomepageLabel.setText(resourceMap.getString("Application.homepage")); // NOI18N
         appHomepageLabel.setName("appHomepageLabel"); // NOI18N
+        appHomepageLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                appHomepageLabelMouseClicked(evt);
+            }
+        });
 
         appDescLabel.setText(resourceMap.getString("appDescLabel.text")); // NOI18N
         appDescLabel.setName("appDescLabel"); // NOI18N
@@ -129,16 +140,38 @@ public class TortillaAboutBox extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(homepageLabel)
                     .addComponent(appHomepageLabel))
-                .addGap(40, 40, Short.MAX_VALUE)
+                .addGap(55, 55, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
+    /**
+     * Display homepage if this label is clicked.
+     * @param evt Mouse event which will trigger this action.
+     */
+private void appHomepageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appHomepageLabelMouseClicked
+    Desktop desktop = null;
+    if (Desktop.isDesktopSupported()) {
+        desktop = Desktop.getDesktop();
+        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+            URI uri = null;
+            try {
+                uri = new URI("http://code.google.com/p/tortilla/");
+                desktop.browse(uri);
+            } catch (IOException ex) {
+                Logger.getLogger(TortillaAboutBox.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(TortillaAboutBox.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}//GEN-LAST:event_appHomepageLabelMouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     // End of variables declaration//GEN-END:variables
-    
 }

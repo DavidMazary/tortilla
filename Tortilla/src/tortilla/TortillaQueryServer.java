@@ -58,7 +58,7 @@ public class TortillaQueryServer {
                 new ArrayList<TortillaPlayer>();
         String queryResult = null;
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 2; i++) {
             queryResult = query.getInfo(ip[0], port,
                     "xxxxgetstatus tortilla");
             if (!queryResult.equals("0")) {
