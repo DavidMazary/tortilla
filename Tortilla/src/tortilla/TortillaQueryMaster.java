@@ -95,9 +95,9 @@ public class TortillaQueryMaster {
             B |= b[1] & 0xff;
             C |= b[2] & 0xff;
             D |= b[3] & 0xff;
-            port |= b[4] & 0xFF;
+            port |= b[4] & 0xff;
             port <<= 8;
-            port |= b[5] & 0xFF;
+            port |= b[5] & 0xff;
             return A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(TortillaQueryMaster.class.getName()).log(

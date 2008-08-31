@@ -4,6 +4,8 @@
 package tortilla;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdesktop.application.Action;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -29,16 +32,29 @@ public class TortillaView extends FrameView {
 
     /**
      * Create a new TortillaView using given SingleFrameApplication.
+     * TODO Smooth refreshes (overwrite new values, don't delete data first).
      * @param app Application calling TortillaView
      */
     public TortillaView(SingleFrameApplication app) {
         super(app);
 
         initComponents();
+        updateButton.doClick();
+
+        // Refreshes serverlist every 20 seconds.
+        int delay = 20000;
+        ActionListener refreshTask = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                refreshButton.doClick();
+            }
+        };
+        new Timer(delay, refreshTask).start();
     }
 
     /**
-     *
+     * Display about box.
      */
     @Action
     public void showAboutBox() {
@@ -65,7 +81,6 @@ public class TortillaView extends FrameView {
         jToolBar1 = new javax.swing.JToolBar();
         updateButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
-        cancelButton = new javax.swing.JButton();
         detailButton = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
@@ -146,11 +161,6 @@ public class TortillaView extends FrameView {
         });
         jToolBar1.add(refreshButton);
 
-        cancelButton.setAction(actionMap.get("cancelTask")); // NOI18N
-        cancelButton.setFocusable(false);
-        cancelButton.setName("cancelButton"); // NOI18N
-        jToolBar1.add(cancelButton);
-
         detailButton.setAction(actionMap.get("viewServer")); // NOI18N
         detailButton.setFocusable(false);
         detailButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -173,10 +183,10 @@ public class TortillaView extends FrameView {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -184,12 +194,12 @@ public class TortillaView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(1, 1, 1)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -285,15 +295,6 @@ public class TortillaView extends FrameView {
         refresh();
     }//GEN-LAST:event_refreshButtonActionPerformed
 
-    /**
-     * When searchTextField gains focus, highlight text in the box.
-     * @param evt
-     */
-    /**
-     * Creates a new "Add Private Server" dialog.
-     * @todo Implement "Add Private Server"
-     * @param evt
-     */
 private void hideHighPingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideHighPingMenuItemActionPerformed
     refreshTable();
 }//GEN-LAST:event_hideHighPingMenuItemActionPerformed
@@ -320,7 +321,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     detailButton.setEnabled(false);
 }//GEN-LAST:event_jTable1FocusLost
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelButton;
     private javax.swing.JButton connectButton;
     private javax.swing.JButton detailButton;
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
@@ -346,16 +346,32 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private DefaultTableModel model = new DefaultTableModel();
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, TortillaServer> serverMap;
-    private static final int MAX_PING = 100;
-    private boolean cancel;
+    private static final int MAX_PING = 120;
 
     /**
      * The custom DefaultTableModel used in TortillaView.
      * @return The DefaultTableModel used here.
      */
-    public DefaultTableModel getModel() {
+    public synchronized DefaultTableModel getModel() {
 //        model = new ServerTableModel();
         return model;
+    }
+
+    /**
+     * Toggle availability of buttons under certain conditions.
+     * States: 0 for Update/Refresh clicked, 
+     * 1 for Update/Refresh finished,
+     * 
+     * @param state State of buttons.
+     */
+    protected void toggleButtons(int state) {
+        if (state == 0) {
+            updateButton.setEnabled(false);
+            refreshButton.setEnabled(false);
+        } else if (state == 1) {
+            updateButton.setEnabled(true);
+            refreshButton.setEnabled(true);
+        }
     }
 
     /**
@@ -414,70 +430,65 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         }
     }
 
-    public boolean isCancel() {
-        return cancel;
-    }
-
-    static class ServerTableModel extends DefaultTableModel {
-
-        String[] columnNames = {
-            "Ping", "Server", "Players", "Max", "Map"
-        };
-//        Object data[][];
-
+//    static class ServerTableModel extends DefaultTableModel {
+//
+//        String[] columnNames = {
+//            "Ping", "Server", "Players", "Max", "Map"
+//        };
+////        Object data[][];
+//
+////        /**
+////         * Returns the number of rows in the model.
+////         * A JTable uses this method to determine how many rows it should display.
+////         * This method should be quick, as it is called frequently during rendering.
+////         * @return the number of rows in the model
+////         */
+////        @Override
+////        public int getRowCount() {
+////            return data.length;
+////        }
+////
 //        /**
-//         * Returns the number of rows in the model.
-//         * A JTable uses this method to determine how many rows it should display.
-//         * This method should be quick, as it is called frequently during rendering.
-//         * @return the number of rows in the model
+//         * Returns the number of columns in the model.
+//         * A JTable uses this method to determine how
+//         * many columns it should create and display by default.
+//         * @return the number of columns in the model
 //         */
 //        @Override
-//        public int getRowCount() {
-//            return data.length;
+//        public int getColumnCount() {
+//            return columnNames.length;
 //        }
 //
-        /**
-         * Returns the number of columns in the model.
-         * A JTable uses this method to determine how
-         * many columns it should create and display by default.
-         * @return the number of columns in the model
-         */
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        @Override
-        public String getColumnName(int index) {
-            return columnNames[index];
-        }
-
-        /**
-         * Treat my numbers with more respect Mr. Table!
-         * @param column the column whose value is to be queried
-         * @return the value Class of the specified column
-         */
-        @Override
-        public Class getColumnClass(int column) {
-            Class dataType = String.class;
-            if (column == 0 || column == 2 || column == 3) {
-                dataType = Number.class;
-            }
-            return dataType;
-        }
-
-        /**
-         * No editing of any cells.
-         * @param row the row whose value is to be queried
-         * @param column the column whose value is to be queried
-         * @return True if cell is editable at given coordinates
-         */
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    }
-
+//        @Override
+//        public String getColumnName(int index) {
+//            return columnNames[index];
+//        }
+//
+//        /**
+//         * Treat my numbers with more respect Mr. Table!
+//         * @param column the column whose value is to be queried
+//         * @return the value Class of the specified column
+//         */
+//        @Override
+//        public Class getColumnClass(int column) {
+//            Class dataType = String.class;
+//            if (column == 0 || column == 2 || column == 3) {
+//                dataType = Number.class;
+//            }
+//            return dataType;
+//        }
+//
+//        /**
+//         * No editing of any cells.
+//         * @param row the row whose value is to be queried
+//         * @param column the column whose value is to be queried
+//         * @return True if cell is editable at given coordinates
+//         */
+//        @Override
+//        public boolean isCellEditable(int row, int column) {
+//            return false;
+//        }
+//    }
     /**
      * Use TortillaQueryMaster to download new serverlist.
      */
@@ -490,7 +501,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         UpdateTask(org.jdesktop.application.Application app) {
             super(app);
-            updateButton.setEnabled(false);
+            toggleButtons(0);
         }
 
         @Override
@@ -498,13 +509,13 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
             this.setMessage("Updating...");
             do {
                 queryM.saveServerList();
-            } while (!queryM.isDone() && !isCancel());
+            } while (!queryM.isDone());
             return null;
         }
 
         @Override
         protected void succeeded(Object result) {
-            updateButton.setEnabled(true);
+            toggleButtons(1);
             refreshButton.doClick();
         }
     }
@@ -527,38 +538,49 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 getModel().addColumn("Players");
                 getModel().addColumn("Max");
                 getModel().addColumn("Map");
+
+                jTable1.getColumnModel().getColumn(0).setMaxWidth(36);
+                jTable1.getColumnModel().getColumn(2).setMaxWidth(48);
+                jTable1.getColumnModel().getColumn(3).setMaxWidth(36);
+                jTable1.getColumnModel().getColumn(4).setMaxWidth(150);
             }
 
-            refreshButton.setEnabled(false);
+            toggleButtons(0);
         }
 
         @Override
-        protected Object doInBackground() {
+        protected synchronized Object doInBackground() {
             this.setMessage("Refreshing...");
 
             if (serverList == null) {
                 BufferedReader reader = null;
+                FileReader fReader = null;
                 try {
-                    reader = new BufferedReader(new FileReader("servercache"));
+                    fReader = new FileReader("servercache");
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(TortillaView.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+                try {
+                    reader = new BufferedReader(fReader);
                     serverList = new ArrayList<String>();
                     String line;
 
                     while ((line = reader.readLine()) != null) {
                         serverList.add(line);
                     }
+
+                    reader.close();
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(TortillaView.class.getName()).
                             log(Level.SEVERE, null, ex);
-//                    reader.close();
                 } catch (IOException ex) {
                     Logger.getLogger(TortillaView.class.getName()).
                             log(Level.SEVERE, null, ex);
                 }
-//                finally {
-//                    reader.close();
-//                } 
             }
 
+            // FindBugs complains that this is unsynchronized.
             serverMap = new ConcurrentHashMap<String, TortillaServer>();
 
             for (final String ip : serverList) {
@@ -577,24 +599,12 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 Thread querier = new ServerQuerier();
                 querier.start();
             }
-            // Progress percent to apply to progressbar.
-            int progress = 0;
-            try {
-                while (progress < 100 && !isCancel()) {
-                    this.setProgress(progress);
-                    Thread.sleep(60);
-                    progress++;
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(TortillaView.class.getName()).
-                        log(Level.SEVERE, null, ex);
-            }
             return null;  // return your result
         }
 
         @Override
         protected void succeeded(Object result) {
-            refreshButton.setEnabled(true);
+            toggleButtons(1);
         }
     }
 
@@ -610,7 +620,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
      * Calls TortillaGameLauncher on selected server.
      */
     @Action
-    public void connect() {
+    public synchronized void connect() {
         int selectedRow = jTable1.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = "";
@@ -650,13 +660,5 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
             addPrivateServerBox.setLocationRelativeTo(mainFrame);
         }
         TortillaApp.getApplication().show(addPrivateServerBox);
-    }
-
-    /**
-     * Cancels refresh or update.
-     */
-    @Action()
-    public void cancelTask() {
-        cancel = true;
     }
 }
