@@ -43,7 +43,7 @@
                       </Group>
                   </Group>
                   <Component id="appTitleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="appDescLabel" alignment="0" pref="408" max="32767" attributes="0"/>
+                  <Component id="appDescLabel" alignment="0" pref="260" max="32767" attributes="0"/>
                   <Component id="closeButton" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -171,6 +171,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="appHomepageLabel">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" resourceKey="appHomepageLabel.foreground"/>
         <Property name="text" type="java.lang.String" resourceKey="Application.homepage"/>
         <Property name="name" type="java.lang.String" value="appHomepageLabel" noResource="true"/>
       </Properties>
