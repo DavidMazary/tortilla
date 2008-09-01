@@ -1,10 +1,7 @@
 package tortilla;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,47 +17,33 @@ public class TortillaQueryMaster {
     private TortillaQuery query = new TortillaQuery();
     private static final int DPMASTER_PORT = 27950;
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
-    private boolean done = false;
-
+//    private boolean done = false;
     /**
      * Retreives and saves the list of servers from the master server.
      * Note that servers containing the "\\" delimiter in their byte string
      * are probable.
      */
-    public void saveServerList() {
+    public ArrayList<String> getServerList() {
         String queryResult = null;
-        BufferedWriter writer = null;
+        ArrayList<String> serverList = null;
 
         queryResult = query.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
 
         if (queryResult != null) {
-            try {
-                File serverCache = new File("servercache");
-                writer = new BufferedWriter(new FileWriter(serverCache));
-                int index = queryResult.indexOf("\\");
-                String address;
+            serverList = new ArrayList<String>();
+            int index = queryResult.indexOf("\\");
+            String address;
 
-                while (index + 7 < queryResult.length()) {
-                    address = queryResult.substring(index + 1, index + 7);
-                    writer.write(getValue(address) + "\n");
-                    index += 7;
-                }
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Could not save server list");
-                Logger.getLogger(TortillaQueryMaster.class.getName()).log(
-                        Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    writer.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(TortillaQueryMaster.class.getName()).log(
-                            Level.SEVERE, null, ex);
-                }
-                done = true;
+            // Each IP address + delimiter is 7 characters
+            while (index + 7 < queryResult.length()) {
+                address = queryResult.substring(index + 1, index + 7);
+                serverList.add(getValue(address));
+                index += 7;
             }
         } else {
             JOptionPane.showMessageDialog(null, "Could not reach master server");
         }
+        return serverList;
     }
 
     /**
@@ -109,9 +92,5 @@ public class TortillaQueryMaster {
             System.err.println(ip);
             return null;
         }
-    }
-
-    boolean isDone() {
-        return done;
     }
 }
