@@ -6,16 +6,10 @@ package tortilla;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
@@ -42,7 +36,7 @@ public class TortillaView extends FrameView {
         updateButton.doClick();
 
         // Refreshes serverlist every 20 seconds.
-        int delay = 20000;
+        int delay = 90000;
         ActionListener refreshTask = new ActionListener() {
 
             @Override
@@ -507,9 +501,9 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         @Override
         protected Object doInBackground() {
             this.setMessage("Updating...");
-            do {
-                queryM.saveServerList();
-            } while (!queryM.isDone());
+//            do {
+            serverList = queryM.getServerList();
+//            } while (!queryM.isDone());
             return null;
         }
 
@@ -551,34 +545,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         @Override
         protected Object doInBackground() {
             this.setMessage("Refreshing...");
-
-            if (serverList == null) {
-                BufferedReader reader = null;
-                FileReader fReader = null;
-                try {
-                    fReader = new FileReader("servercache");
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(TortillaView.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                }
-                try {
-                    reader = new BufferedReader(fReader);
-                    serverList = new ArrayList<String>();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        serverList.add(line);
-                    }
-
-                    reader.close();
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(TortillaView.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(TortillaView.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                }
-            }
 
             // FindBugs complains that this is unsynchronized.
             serverMap = new ConcurrentHashMap<String, TortillaServer>();

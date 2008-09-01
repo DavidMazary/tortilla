@@ -71,7 +71,7 @@ public class TortillaQueryServer {
             queryResult = queryResult.replaceAll(
                     "\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");
             String input;
-            
+
             try {
                 BufferedReader in = new BufferedReader(
                         new StringReader(queryResult));
