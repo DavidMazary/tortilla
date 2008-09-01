@@ -137,7 +137,7 @@ public class TortillaAddPrivateServer extends javax.swing.JDialog {
     }
 
     /**
-     * @todo If privateservers DNE, create it.
+     * TODO If private server DNE, create it.
      * Else check if server exists on the list
      * Write address to file
      */

@@ -20,9 +20,6 @@ public class TortillaPlayer implements java.io.Serializable {
     /*
      * Constructor taking in no parameters
      */
-    /**
-     * 
-     */
     public TortillaPlayer() {
         // empty constructor
     }
@@ -76,7 +73,7 @@ public class TortillaPlayer implements java.io.Serializable {
 
         try {
             byte nameBytes[] = name.getBytes("ISO-8859-1");
-            StringBuffer sb = new StringBuffer("");
+            StringBuilder sb = new StringBuilder("");
 
             // Character will correspond with unsigned byte.
             for (int i = 0; i < nameBytes.length; i++) {

@@ -23,7 +23,6 @@ import java.util.StringTokenizer;
  */
 public class TortillaQuery {
     // Timeout used for the sockets
-
     private static final int TIMEOUT = 2000;
     private static final int PACKET_SIZE = 14400;
     private int ping;
@@ -57,7 +56,7 @@ public class TortillaQuery {
         DatagramSocket socket = null;
         try {
 
-            StringBuffer recStr = new StringBuffer("");
+            StringBuilder recStr = new StringBuilder();
             // Use port range 25000 - 30000
             Random r = new Random();
             int localPort = r.nextInt(5000) + 25000;
@@ -79,6 +78,7 @@ public class TortillaQuery {
             ping = (int) (receiveTime - sendTime);
             recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(),
                     "ISO-8859-1"));
+
             return recStr.toString();
         } catch (IOException ex) {
             return "0";

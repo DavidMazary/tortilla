@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * The application's main frame.
- * @todo Create custom table (ineditable and properly sortable).
+ * TODO Create custom table (ineditable and properly sortable).
  */
 public class TortillaView extends FrameView {
 
@@ -549,7 +549,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         }
 
         @Override
-        protected synchronized Object doInBackground() {
+        protected Object doInBackground() {
             this.setMessage("Refreshing...");
 
             if (serverList == null) {
