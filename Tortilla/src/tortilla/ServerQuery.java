@@ -117,33 +117,22 @@ public class ServerQuery extends AbstractQuery {
         Server server = new Server();
         queryResult = queryResult.substring(queryResult.indexOf("\\"));
         StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
-        if (tokens.nextToken().equals("gamename")) {
-            server.setGame(tokens.nextToken());
-            if (tokens.nextToken().equals("modname")) {
-                // Include mods other than "data"
-                tokens.nextToken();
-                if (tokens.nextToken().equals("gameversion")) {
-                    server.setGameVersion(tokens.nextToken());
-                    if (tokens.nextToken().equals("sv_maxclients")) {
-                        server.setMaxPlayers(tokens.nextToken());
-                        if (tokens.nextToken().equals("clients")) {
-                            server.setPlayerCount(tokens.nextToken());
-                            if (tokens.nextToken().equals("bots")) {
-                                server.setBots(tokens.nextToken());
-                                if (tokens.nextToken().equals("mapname")) {
-                                    server.setMap(tokens.nextToken());
-                                }
-                            } else {
-                                server.setMap(tokens.nextToken());
-                            }
-                            if (tokens.nextToken().equals("hostname")) {
-                                server.setHostname(tokens.nextToken());
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        tokens.nextToken(); // gamename
+        server.setGame(tokens.nextToken());
+        tokens.nextToken(); // modname
+        tokens.nextToken(); // will be "data" usually; ignoring.
+        tokens.nextToken(); // gameversion
+        server.setGameVersion(tokens.nextToken());
+        tokens.nextToken();  // sv_maxclients
+        server.setMaxPlayers(tokens.nextToken());
+        tokens.nextToken();  // clients
+        server.setPlayerCount(tokens.nextToken());
+        tokens.nextToken();   // bots
+        server.setBots(tokens.nextToken());
+        tokens.nextToken(); // mapname
+        server.setMap(tokens.nextToken());
+        tokens.nextToken(); // hostname
+        server.setHostname(tokens.nextToken());
         server.setPing(getPing());
         server.setIp(ipStr);
         if (server.getHostname() == null) {

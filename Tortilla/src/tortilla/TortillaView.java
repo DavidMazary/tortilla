@@ -380,7 +380,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         int players;
         int maxplayers;
         String map;
-        int count = 0;
         boolean permission;
         for (String Ip : serverMap.keySet()) {
             permission = true;
@@ -420,7 +419,6 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                             players, maxplayers, map
                         });
             }
-            count++;
         }
     }
 

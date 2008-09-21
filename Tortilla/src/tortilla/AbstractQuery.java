@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Random;
-import java.util.StringTokenizer;
+//import java.util.StringTokenizer;
 
 /**
  * AbstractQuery directly communicates with the master and
@@ -54,6 +54,8 @@ public abstract class AbstractQuery {
     public String getInfo(String ipStr, int port,
             String request) {
         DatagramSocket socket = null;
+        String info;
+
         try {
 
             StringBuilder recStr = new StringBuilder();
@@ -79,10 +81,12 @@ public abstract class AbstractQuery {
             recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(),
                     "ISO-8859-1"));
 
-            return recStr.toString();
+            info = recStr.toString();
         } catch (IOException ex) {
-            return "0";
+            info = "0";
         }
+
+        return info;
     }
 
     /**
@@ -95,32 +99,33 @@ public abstract class AbstractQuery {
         return ping;
     }
 
-    /**
-     * Checks that the challenge response is correct.
-     * This protects against fake servers.
-     * This is from
-     * <a href="ftp://ftp.idsoftware.com/idstuff/quake3/docs/server.txt">
-     * id's quake 3 server commands howto</a>
-     * @param in    String of output from querying server
-     * @return true if challenge response passes
-     */
-    public boolean checkChallenge(String in) {
-        StringTokenizer tokens = new StringTokenizer(in, "\\");
-        while (tokens.hasMoreTokens()) {
-            String cmd = tokens.nextToken();
-            if (!tokens.hasMoreTokens()) {
-                return false;
-            }
-            // in case someone tries to send through false package
-            String val = tokens.nextToken();
-            if (cmd.compareTo("challenge") == 0) {
-                if (val.compareTo("tortilla") == 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Checks that the challenge response is correct.
+//     * This protects against fake servers.
+//     * This is from
+//     * <a href="ftp://ftp.idsoftware.com/idstuff/quake3/docs/server.txt">
+//     * id's quake 3 server commands howto</a>
+//     * @param in    String of output from querying server
+//     * @return true if challenge response passes
+//     */
+//    public boolean checkChallenge(String in) {
+//        StringTokenizer tokens = new StringTokenizer(in, "\\");
+//        boolean correct = false;
+//
+//        while (tokens.hasMoreTokens()) {
+//            String cmd = tokens.nextToken();
+//            if (!tokens.hasMoreTokens()) {
+//                correct = false;
+//            }
+//            // in case someone tries to send through false package
+//            String val = tokens.nextToken();
+//            if (cmd.compareTo("challenge") == 0) {
+//                if (val.compareTo("tortilla") == 0) {
+//                    correct = true;
+//                }
+//            }
+//        }
+//        return correct;
+//    }
+    
 }

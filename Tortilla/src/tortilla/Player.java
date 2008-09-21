@@ -1,6 +1,8 @@
 package tortilla;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Nexuiz player object.
@@ -70,6 +72,7 @@ public class Player implements java.io.Serializable {
             'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
             'x', 'y', 'z', '{', '|', '}', '~', '<'
         };
+        String playerName = "";
 
         try {
             byte nameBytes[] = name.getBytes("ISO-8859-1");
@@ -80,10 +83,12 @@ public class Player implements java.io.Serializable {
                 sb.append(fontTable[nameBytes[i] & 0xff]);
             }
 
-            return sb.toString();
-        } catch (UnsupportedEncodingException e) {
-            return "";
+            playerName = sb.toString();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return playerName;
     }
 
     /**
