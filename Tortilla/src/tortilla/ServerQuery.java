@@ -13,31 +13,29 @@ import java.util.logging.Logger;
  * Query a particular game server using <code>getstatus</code>.
  * @author dmaz
  */
-public class TortillaQueryServer {
-
-    private TortillaQuery query = new TortillaQuery();
+public class ServerQuery extends AbstractQuery {
 
     /**
-     * Creates a TortillaServer containing all of the server info,
+     * Creates a Server containing all of the server info,
      * excluding player names, scores, and pings.
      * 
      * @param ipStr     String of IP address of this server
-     * @return  TortillaServer containing the info of this server.
+     * @return  Server containing the info of this server.
      */
-    public TortillaServer getInfo(String ipStr) {
+    public Server getInfo(String ipStr) {
         String ip[] = ipStr.split(":");
         int port = Integer.parseInt(ip[1]);
         String queryResult = null;
 
         for (int i = 0; i < 1; i++) {
-            queryResult = query.getInfo(ip[0], port,
+            queryResult = getInfo(ip[0], port,
                     "xxxxgetinfo tortilla");
             if (!queryResult.equals("0")) {
                 break;
             }
         }
 
-        TortillaServer tortillaServer = new TortillaServer();
+        Server tortillaServer = new Server();
         if (!queryResult.equals("0")) {
             tortillaServer = processServer(queryResult, ipStr);
         }
@@ -48,18 +46,18 @@ public class TortillaQueryServer {
      * Gets a tortillaserver including its list of tortillaplayers.
      *
      * @param ipStr     String of IP address of server
-     * @return  TortillaServer including ArrayList of TortillaPlayers
+     * @return  Server including ArrayList of TortillaPlayers
      */
-    public TortillaServer getStatus(String ipStr) {
+    public Server getStatus(String ipStr) {
         String ip[] = ipStr.split(":");
         int port = Integer.parseInt(ip[1]);
-        TortillaServer tortillaServer = new TortillaServer();
-        ArrayList<TortillaPlayer> tortillaPlayers =
-                new ArrayList<TortillaPlayer>();
+        Server tortillaServer = new Server();
+        ArrayList<Player> tortillaPlayers =
+                new ArrayList<Player>();
         String queryResult = null;
 
         for (int i = 0; i < 2; i++) {
-            queryResult = query.getInfo(ip[0], port,
+            queryResult = getInfo(ip[0], port,
                     "xxxxgetstatus tortilla");
             if (!queryResult.equals("0")) {
                 break;
@@ -91,16 +89,16 @@ public class TortillaQueryServer {
     /**
      * From a line in the queryResult, retreive player info.
      * @param queryResult String of the line to process.
-     * @return TortillaPlayer which is created.
+     * @return Player which is created.
      */
-    protected TortillaPlayer processPlayer(String queryResult) {
+    protected Player processPlayer(String queryResult) {
         Scanner scanner = new Scanner(queryResult);
         int score = scanner.nextInt();
         int ping = scanner.nextInt();
         scanner.useDelimiter("\"");
         scanner.next();
         String name = scanner.next();
-        TortillaPlayer player = new TortillaPlayer();
+        Player player = new Player();
         player.setScore(score);
         // Some leading and trailing chars may be converted to whitespace.
         player.setName(name.trim());
@@ -109,14 +107,14 @@ public class TortillaQueryServer {
     }
 
     /**
-     * Take the server info from the queryResult and build a TortillaServer.
+     * Take the server info from the queryResult and build a Server.
      * Response will look like this: <code>\gamename\Nexuiz\modname\data\gameversion\20000\sv_maxclients\18\clients\6\bots\0\mapname\ctctf6\hostname\Galt's Gulch - CTF - 2.4 - TX, USA\protocol\3\challenge\tortilla</code>
      * @param queryResult String of the server info.
      * @param ipStr 
-     * @return TortillaServer which is created.
+     * @return Server which is created.
      */
-    protected TortillaServer processServer(String queryResult, String ipStr) {
-        TortillaServer server = new TortillaServer();
+    protected Server processServer(String queryResult, String ipStr) {
+        Server server = new Server();
         queryResult = queryResult.substring(queryResult.indexOf("\\"));
         StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
         if (tokens.nextToken().equals("gamename")) {
@@ -146,7 +144,7 @@ public class TortillaQueryServer {
                 }
             }
         }
-        server.setPing(query.getPing());
+        server.setPing(getPing());
         server.setIp(ipStr);
         if (server.getHostname() == null) {
             server = null;

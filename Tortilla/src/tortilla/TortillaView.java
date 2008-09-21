@@ -334,12 +334,12 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
     private JDialog addPrivateServerBox;
-    private TortillaGameLauncher launcher = new TortillaGameLauncher();
-    private TortillaQueryMaster queryM = new TortillaQueryMaster();
-    private TortillaQueryServer queryS = new TortillaQueryServer();
+    private GameLauncher launcher = new GameLauncher();
+    private MasterQuery queryM = new MasterQuery();
+    private ServerQuery queryS = new ServerQuery();
     private DefaultTableModel model = new DefaultTableModel();
     private ArrayList<String> serverList;
-    private ConcurrentHashMap<String, TortillaServer> serverMap;
+    private ConcurrentHashMap<String, Server> serverMap;
     private static final int MAX_PING = 120;
 
     /**
@@ -484,7 +484,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 //        }
 //    }
     /**
-     * Use TortillaQueryMaster to download new serverlist.
+     * Use MasterQuery to download new serverlist.
      */
     @Action
     public Task update() {
@@ -547,14 +547,14 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
             this.setMessage("Refreshing...");
 
             // FindBugs complains that this is unsynchronized.
-            serverMap = new ConcurrentHashMap<String, TortillaServer>();
+            serverMap = new ConcurrentHashMap<String, Server>();
 
             for (final String ip : serverList) {
                 class ServerQuerier extends Thread {
 
                     @Override
                     public void run() {
-                        TortillaServer server = queryS.getInfo(ip);
+                        Server server = queryS.getInfo(ip);
 
                         if (server != null) {
                             serverMap.put(ip, server);
@@ -583,7 +583,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     }
 
     /**
-     * Calls TortillaGameLauncher on selected server.
+     * Calls GameLauncher on selected server.
      */
     @Action
     public synchronized void connect() {
@@ -622,7 +622,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     public void showPrivateServerBox() {
         if (addPrivateServerBox == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
-            addPrivateServerBox = new TortillaAddPrivateServer(mainFrame, false);
+            addPrivateServerBox = new TortillaAddPrivate(mainFrame, false);
             addPrivateServerBox.setLocationRelativeTo(mainFrame);
         }
         TortillaApp.getApplication().show(addPrivateServerBox);

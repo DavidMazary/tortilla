@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 /**
- * TortillaQuery directly communicates with the master and
+ * AbstractQuery directly communicates with the master and
  * individual game servers. <br/>
  * The darkplaces dpmaster server is based on the Quake 3 Arena server
  * and therefore very similar. <br/>
@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
  * Server Discovery for Quake III Arena, Wolfenstein Enemy Territory and Quake 4</a>
  * @author DeadEd, dmaz
  */
-public class TortillaQuery {
+public abstract class AbstractQuery {
     // Timeout used for the sockets
     private static final int TIMEOUT = 2000;
     private static final int PACKET_SIZE = 14400;

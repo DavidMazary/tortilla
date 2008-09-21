@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author dmaz
  */
-public class TortillaGameLauncherTest {
+public class GameLauncherTest {
 
-    public TortillaGameLauncherTest() {
+    public GameLauncherTest() {
     }
 
     @BeforeClass

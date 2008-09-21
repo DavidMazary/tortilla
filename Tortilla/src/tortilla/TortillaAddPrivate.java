@@ -1,5 +1,5 @@
 /*
- * TortillaAddPrivateServer.java
+ * TortillaAddPrivate.java
  *
  * Created on May 26, 2008, 6:03 PM
  */
@@ -12,10 +12,10 @@ import org.jdesktop.application.Action;
  *
  * @author  david
  */
-public class TortillaAddPrivateServer extends javax.swing.JDialog {
+public class TortillaAddPrivate extends javax.swing.JDialog {
 
-    /** Creates new form TortillaAddPrivateServer */
-    public TortillaAddPrivateServer(java.awt.Frame parent, boolean modal) {
+    /** Creates new form TortillaAddPrivate */
+    public TortillaAddPrivate(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -40,7 +40,7 @@ public class TortillaAddPrivateServer extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaAddPrivateServer.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaAddPrivate.class);
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setName("jLabel1"); // NOI18N
 
@@ -56,7 +56,7 @@ public class TortillaAddPrivateServer extends javax.swing.JDialog {
         jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
         jLabel3.setName("jLabel3"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaAddPrivateServer.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaAddPrivate.class, this);
         jButton1.setAction(actionMap.get("cancel")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
 
@@ -120,7 +120,7 @@ public class TortillaAddPrivateServer extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                TortillaAddPrivateServer dialog = new TortillaAddPrivateServer(new javax.swing.JFrame(), true);
+                TortillaAddPrivate dialog = new TortillaAddPrivate(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);

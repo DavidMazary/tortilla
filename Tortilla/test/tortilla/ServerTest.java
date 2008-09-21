@@ -8,14 +8,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests TortillaServer.
+ * Tests Server.
  * @author dmaz
  */
-public class TortillaServerTest {
+public class ServerTest {
     
-    TortillaServer instance;
+    Server instance;
 
-    public TortillaServerTest() {
+    public ServerTest() {
     }
 
     @BeforeClass
@@ -30,7 +30,7 @@ public class TortillaServerTest {
 
     @Before
     public void setUp() {
-        instance = new TortillaServer();
+        instance = new Server();
     }
 
     @After
@@ -38,7 +38,7 @@ public class TortillaServerTest {
     }
 
     /**
-     * Test of isFull method, of class TortillaServer.
+     * Test of isFull method, of class Server.
      */
     @Test
     public void isFull()
@@ -52,7 +52,7 @@ public class TortillaServerTest {
     }
 
     /**
-     * Test of isEmpty method, of class TortillaServer.
+     * Test of isEmpty method, of class Server.
      */
     @Test
     public void isEmpty()

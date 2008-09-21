@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Later, this class will also store if a server is a favorite or is timed-out.
  * @author dmaz
  */
-public class TortillaServer implements java.io.Serializable {
+public class Server implements java.io.Serializable {
 
     private String ip;
     private String hostname;
@@ -19,12 +19,12 @@ public class TortillaServer implements java.io.Serializable {
     private int players;
     private int ping;
     private int bots;
-    private ArrayList<TortillaPlayer> playerList;
+    private ArrayList<Player> playerList;
 
     /**
      * Constructor taking in no parameters.
      */
-    public TortillaServer() {
+    public Server() {
         /* Empty constructor */
     }
 
@@ -212,7 +212,7 @@ public class TortillaServer implements java.io.Serializable {
      * 
      * @return
      */
-    public ArrayList<TortillaPlayer> getPlayerList() {
+    public ArrayList<Player> getPlayerList() {
         return playerList;
     }
 
@@ -220,7 +220,7 @@ public class TortillaServer implements java.io.Serializable {
      * Assigns an ArrayList of TortillaPlayers to this server.
      * @param playerList ArrayList of TortillaPlayers to assign to this server.
      */
-    public void setPlayerList(ArrayList<TortillaPlayer> playerList) {
+    public void setPlayerList(ArrayList<Player> playerList) {
         this.playerList = playerList;
     }
 }

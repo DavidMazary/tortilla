@@ -8,15 +8,15 @@ import javax.swing.JOptionPane;
  * Launches the game.
  * @author dmaz
  */
-public class TortillaGameLauncher {
+public class GameLauncher {
 
     private boolean sdl;
     private String ip;
     private File game;
 
     /**
-     * True if TortillaGameLauncher will be using the SDL game binary.
-     * @return Whether TortillaGameLauncher is launching SDL.
+     * True if GameLauncher will be using the SDL game binary.
+     * @return Whether GameLauncher is launching SDL.
      */
     public boolean isSdl() {
         return sdl;
@@ -76,7 +76,7 @@ public class TortillaGameLauncher {
     }
 
     /**
-     * IP address being used by a TortillaGameLauncher.
+     * IP address being used by a GameLauncher.
      * @return String of IP address
      */
     public String getIp() {
@@ -84,7 +84,7 @@ public class TortillaGameLauncher {
     }
 
     /**
-     * Assign IP address for TortillaGameLauncher to connect.
+     * Assign IP address for GameLauncher to connect.
      * @param ip Address to connect.
      */
     public void setIp(String ip) {
