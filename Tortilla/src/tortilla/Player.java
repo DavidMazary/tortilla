@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
  * Also converts special characters into displayable text in player names.
  * @author dmaz
  */
-public class TortillaPlayer implements java.io.Serializable {
+public class Player implements java.io.Serializable {
 
     private String name;
     private int score;
@@ -20,7 +20,7 @@ public class TortillaPlayer implements java.io.Serializable {
     /*
      * Constructor taking in no parameters
      */
-    public TortillaPlayer() {
+    public Player() {
         // empty constructor
     }
 

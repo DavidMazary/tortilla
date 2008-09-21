@@ -12,9 +12,8 @@ import javax.swing.JOptionPane;
  *
  * @author dmaz
  */
-public class TortillaQueryMaster {
+public class MasterQuery extends AbstractQuery {
 
-    private TortillaQuery query = new TortillaQuery();
     private static final int DPMASTER_PORT = 27950;
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
 //    private boolean done = false;
@@ -27,7 +26,7 @@ public class TortillaQueryMaster {
         String queryResult = null;
         ArrayList<String> serverList = null;
 
-        queryResult = query.getInfo(getMaster(), DPMASTER_PORT, REQUEST);
+        queryResult = getInfo(getMaster(), DPMASTER_PORT, REQUEST);
 
         if (queryResult != null) {
             serverList = new ArrayList<String>();
@@ -83,11 +82,11 @@ public class TortillaQueryMaster {
             port |= b[5] & 0xff;
             return A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+            Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
             return null;
         } catch (ArrayIndexOutOfBoundsException ex) {
-            Logger.getLogger(TortillaQueryMaster.class.getName()).log(
+            Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
             System.err.println(ip);
             return null;

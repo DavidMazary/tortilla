@@ -16,11 +16,11 @@ import static org.junit.Assert.*;
  *
  * @author dmaz
  */
-public class TortillaPlayerTest {
+public class PlayerTest {
     
-    TortillaPlayer instance;
+    Player instance;
 
-    public TortillaPlayerTest() {
+    public PlayerTest() {
     }
 
     @BeforeClass
@@ -35,7 +35,7 @@ public class TortillaPlayerTest {
 
     @Before
     public void setUp() {
-        instance = new TortillaPlayer();
+        instance = new Player();
     }
 
     @After
@@ -43,7 +43,7 @@ public class TortillaPlayerTest {
     }
 
     /**
-     * Test of isBot method, of class TortillaPlayer.
+     * Test of isBot method, of class Player.
      */
     @Test
     public void isBot()
@@ -56,7 +56,7 @@ public class TortillaPlayerTest {
     }
 
     /**
-     * Test of isSpec method, of class TortillaPlayer.
+     * Test of isSpec method, of class Player.
      */
     @Test
     public void isSpec()
@@ -69,7 +69,7 @@ public class TortillaPlayerTest {
     }
 
     /**
-     * Test of translateName method, of class TortillaPlayer.
+     * Test of translateName method, of class Player.
      */
     @Test
     public void testTranslateName()

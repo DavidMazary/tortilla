@@ -15,11 +15,11 @@ import static org.junit.Assert.*;
  *
  * @author dmaz
  */
-public class TortillaQueryServerTest {
+public class QueryServerTest {
 
-    TortillaQueryServer queryS;
+    ServerQuery queryS;
 
-    public TortillaQueryServerTest() {
+    public QueryServerTest() {
     }
 
     @BeforeClass
@@ -32,7 +32,7 @@ public class TortillaQueryServerTest {
 
     @Before
     public void setUp() {
-        queryS = new TortillaQueryServer();
+        queryS = new ServerQuery();
     }
 
     @After
@@ -45,7 +45,7 @@ public class TortillaQueryServerTest {
     @Test
     public void testQueryServer() {
         System.out.println("testQueryServer");
-        TortillaServer server = queryS.getInfo("75.126.234.42:26000");
+        Server server = queryS.getInfo("75.126.234.42:26000");
         System.out.println("Ping: " + server.getPing());
         assertEquals("75.126.234.42:26000", server.getIp());
         assertEquals(24, server.getMaxPlayers());
@@ -60,9 +60,9 @@ public class TortillaQueryServerTest {
     @Test
     public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        TortillaServer server =
+        Server server =
                 queryS.getStatus("75.126.234.42:26000");
-        for (TortillaPlayer player : server.getPlayerList()) {
+        for (Player player : server.getPlayerList()) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }
         fail("Write a proper test for this.");
@@ -74,7 +74,7 @@ public class TortillaQueryServerTest {
 //    public void testQueryTimeoutServer()
 //    {
 //        System.out.println("testQueryTimeoutServer");
-//        TortillaServer server = queryS.getInfo("www.vt.edu", 26000);
+//        Server server = queryS.getInfo("www.vt.edu", 26000);
 //        assertTrue(server.getTimeout());
 //    }
 }

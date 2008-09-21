@@ -16,14 +16,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests TortillaQueryMaster.
+ * Tests MasterQuery.
  * @author dmaz
  */
-public class TortillaQueryMasterTest {
+public class QueryMasterTest {
 
-    TortillaQueryMaster instance;
+    MasterQuery instance;
 
-    public TortillaQueryMasterTest() {
+    public QueryMasterTest() {
     }
 
     @BeforeClass
@@ -36,7 +36,7 @@ public class TortillaQueryMasterTest {
 
     @Before
     public void setUp() {
-        instance = new TortillaQueryMaster();
+        instance = new MasterQuery();
     }
 
     @After
@@ -44,7 +44,7 @@ public class TortillaQueryMasterTest {
     }
 
     /**
-     * Test of getMaster method, of class TortillaQueryMaster.
+     * Test of getMaster method, of class MasterQuery.
      */
     @Test
     public void testGetMaster() {
@@ -65,15 +65,15 @@ public class TortillaQueryMasterTest {
 //        try {
             System.out.println("testGetServers");
 //            input = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/servercache"));
-            instance.saveServerList();
+//            instance.saveServerList();
 //            System.out.println(input.toString());
 //        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(TortillaQueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(QueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
 //        } finally {
 //            try {
 //                input.close();
 //            } catch (IOException ex) {
-//                Logger.getLogger(TortillaQueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(QueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
     }
