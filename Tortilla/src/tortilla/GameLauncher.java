@@ -13,6 +13,7 @@ public class GameLauncher {
     private boolean sdl;
     private String ip;
     private File game;
+    private static final String CONNECT = " +connect ";
 
     /**
      * True if GameLauncher will be using the SDL game binary.
@@ -42,21 +43,21 @@ public class GameLauncher {
         if (osName.contains("Windows")) {
             if (isSdl()) {
                 game = new File(userDir + "\\nexuiz-sdl.exe");
-                cmd = game.toString() + " -basedir " + userDir + " +connect " +
+                cmd = game.toString() + " -basedir " + userDir + CONNECT +
                         getIp();
             } else {
                 game = new File(userDir + "\\nexuiz.exe");
-                cmd = game.toString() + " -basedir " + userDir + " +connect " +
+                cmd = game.toString() + " -basedir " + userDir + CONNECT +
                         getIp();
             }
         } else if (osName.contains("Linux") || osName.contains("SunOS") ||
                 osName.contains("FreeBSD")) {
             if (isSdl()) {
                 game = new File(userDir + "/nexuiz-linux-sdl.sh");
-                cmd = game.toString() + " +connect " + getIp();
+                cmd = game.toString() + CONNECT + getIp();
             } else {
                 game = new File(userDir + "/nexuiz-linux-glx.sh");
-                cmd = game.toString() + " +connect " + getIp();
+                cmd = game.toString() + CONNECT + getIp();
             }
         } else {
             cmd = "touch ~/wtf";

@@ -66,6 +66,8 @@ public class MasterQuery extends AbstractQuery {
      * @return  String with the decoded data.
      */
     protected String getValue(String ip) {
+        String value = null;
+        
         try {
             byte[] b = ip.getBytes("ISO-8859-1");
             int A = 0;
@@ -80,16 +82,15 @@ public class MasterQuery extends AbstractQuery {
             port |= b[4] & 0xff;
             port <<= 8;
             port |= b[5] & 0xff;
-            return A + "." + B + "." + C + "." + D + ":" + port;
+            value = A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
-            return null;
         } catch (ArrayIndexOutOfBoundsException ex) {
             Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
             System.err.println(ip);
-            return null;
         }
+        return value;
     }
 }

@@ -15,6 +15,7 @@ public class Server implements java.io.Serializable {
     private String map;
     private String game;
     private String gameVersion;
+    private String modname;
     private int maxplayers;
     private int players;
     private int ping;
@@ -26,22 +27,6 @@ public class Server implements java.io.Serializable {
      */
     public Server() {
         /* Empty constructor */
-    }
-
-    /**
-     * Whether server is full or not.
-     * @return Status of server fullness.
-     */
-    public boolean isFull() {
-        return (getPlayerCount() == getMaxPlayers());
-    }
-
-    /**
-     * Whether server is empty or not.
-     * @return Status of server emptiness.
-     */
-    public boolean isEmpty() {
-        return (getPlayerCount() == 0);
     }
 
     /**
@@ -222,5 +207,13 @@ public class Server implements java.io.Serializable {
      */
     public void setPlayerList(ArrayList<Player> playerList) {
         this.playerList = playerList;
+    }
+
+    public String getModname() {
+        return modname;
+    }
+
+    public void setModname(String modname) {
+        this.modname = modname;
     }
 }
