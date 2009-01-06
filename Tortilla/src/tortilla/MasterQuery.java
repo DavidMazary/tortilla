@@ -16,11 +16,11 @@ public class MasterQuery extends AbstractQuery {
 
     private static final int DPMASTER_PORT = 27950;
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
-//    private boolean done = false;
     /**
      * Retreives and saves the list of servers from the master server.
      * Note that servers containing the "\\" delimiter in their byte string
      * are probable.
+     * @return An ArrayList of server query results
      */
     public ArrayList<String> getServerList() {
         String queryResult = null;

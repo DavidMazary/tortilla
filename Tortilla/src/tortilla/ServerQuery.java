@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,29 +114,23 @@ public class ServerQuery extends AbstractQuery {
      */
     protected Server processServer(String queryResult, String ipStr) {
         Server server = new Server();
-        queryResult = queryResult.substring(queryResult.indexOf("\\"));
-        StringTokenizer tokens = new StringTokenizer(queryResult, "\\");
-        tokens.nextToken(); // gamename
-        server.setGame(tokens.nextToken());
-        tokens.nextToken(); // modname
-        tokens.nextToken(); // will be "data" usually; ignoring.
-        tokens.nextToken(); // gameversion
-        server.setGameVersion(tokens.nextToken());
-        tokens.nextToken();  // sv_maxclients
-        server.setMaxPlayers(tokens.nextToken());
-        tokens.nextToken();  // clients
-        server.setPlayerCount(tokens.nextToken());
-        tokens.nextToken();   // bots
-        server.setBots(tokens.nextToken());
-        tokens.nextToken(); // mapname
-        server.setMap(tokens.nextToken());
-        tokens.nextToken(); // hostname
-        server.setHostname(tokens.nextToken());
+        String[] serverData = queryResult.split("\\\\");
+
+        server.setGame(serverData[2]);
+        server.setModname(serverData[4]);
+        server.setGameVersion(serverData[6]);
+        server.setMaxPlayers(Integer.parseInt(serverData[8]));
+        server.setPlayerCount(Integer.parseInt(serverData[10]));
+        try {
+            server.setBotCount(Integer.parseInt(serverData[12]));
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(TortillaView.class.getName()).
+                    log(Level.INFO, null, ex);
+        }
+        server.setMap(serverData[14]);
+        server.setHostname(serverData[16]);
         server.setPing(getPing());
         server.setIp(ipStr);
-        if (server.getHostname() == null) {
-            server = null;
-        }
         return server;
     }
 }

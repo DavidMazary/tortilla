@@ -2,6 +2,8 @@ package tortilla;
 
 import java.awt.Frame;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -43,32 +45,31 @@ public class GameLauncher {
         if (osName.contains("Windows")) {
             if (isSdl()) {
                 game = new File(userDir + "\\nexuiz-sdl.exe");
-                cmd = game.toString() + " -basedir " + userDir + CONNECT +
-                        getIp();
             } else {
                 game = new File(userDir + "\\nexuiz.exe");
-                cmd = game.toString() + " -basedir " + userDir + CONNECT +
-                        getIp();
             }
+            cmd = game.toString() + " -basedir " + userDir + CONNECT + getIp();
         } else if (osName.contains("Linux") || osName.contains("SunOS") ||
                 osName.contains("FreeBSD")) {
             if (isSdl()) {
                 game = new File(userDir + "/nexuiz-linux-sdl.sh");
-                cmd = game.toString() + CONNECT + getIp();
             } else {
                 game = new File(userDir + "/nexuiz-linux-glx.sh");
-                cmd = game.toString() + CONNECT + getIp();
             }
+            cmd = game.toString() + CONNECT + getIp();
         } else {
-            cmd = "touch ~/wtf";
+            JOptionPane.showMessageDialog(new Frame(),
+                    "OS not supported.");
+            cmd = "";
         }
 
-        if (game.exists()) {
+        if (!cmd.isEmpty() && game.exists()) {
             try {
                 Runtime runtime = Runtime.getRuntime();
                 runtime.exec(cmd);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                Logger.getLogger(GameLauncher.class.getName()).log(
+                        Level.SEVERE, null, ex);
             }
         } else {
             JOptionPane.showMessageDialog(new Frame(),

@@ -179,8 +179,8 @@ public class TortillaView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -358,14 +358,9 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
      * 
      * @param state State of buttons.
      */
-    protected void toggleButtons(int state) {
-        if (state == 0) {
-            updateButton.setEnabled(false);
-            refreshButton.setEnabled(false);
-        } else if (state == 1) {
-            updateButton.setEnabled(true);
-            refreshButton.setEnabled(true);
-        }
+    protected void toggleButtons(boolean state) {
+        updateButton.setEnabled(state);
+        refreshButton.setEnabled(state);
     }
 
     /**
@@ -377,24 +372,26 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         }
         int ping;
         String hostname;
-        int players;
+        int playerCount;
         int maxplayers;
         String map;
         boolean permission;
+        ArrayList<Player> players;
         for (String Ip : serverMap.keySet()) {
             permission = true;
             ping = serverMap.get(Ip).getPing();
+            players = serverMap.get(Ip).getPlayerList();
             hostname = serverMap.get(Ip).getHostname();
-            players = serverMap.get(Ip).getPlayerCount();
+            playerCount = serverMap.get(Ip).getPlayerCount();
             maxplayers = serverMap.get(Ip).getMaxPlayers();
             map = serverMap.get(Ip).getMap();
             if (hideEmptyMenuItem.getState()) {
-                if (players == 0) {
+                if (playerCount == 0) {
                     permission = false;
                 }
             }
             if (hideFullMenuItem.getState()) {
-                if (players == maxplayers) {
+                if (playerCount == maxplayers) {
                     permission = false;
                 }
             }
@@ -409,6 +406,15 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 if (!hostname.toLowerCase().contains(query)) {
                     permission = false;
                 }
+                // Search for players too
+                if (players != null) {
+                    for (Player player : players) {
+                        if (player.getName().toLowerCase().contains(query)) {
+                            permission = true;
+                            break;
+                        }
+                    }
+                }
             } else if (hostname == null) {
                 permission = false;
             }
@@ -416,7 +422,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
             if (permission) {
                 getModel().addRow(
                         new Object[]{ping, hostname,
-                            players, maxplayers, map
+                            playerCount, maxplayers, map
                         });
             }
         }
@@ -483,6 +489,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 //    }
     /**
      * Use MasterQuery to download new serverlist.
+     * @return
      */
     @Action
     public Task update() {
@@ -493,27 +500,26 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         UpdateTask(org.jdesktop.application.Application app) {
             super(app);
-            toggleButtons(0);
+            toggleButtons(false);
         }
 
         @Override
         protected Object doInBackground() {
             this.setMessage("Updating...");
-//            do {
             serverList = queryM.getServerList();
-//            } while (!queryM.isDone());
             return null;
         }
 
         @Override
         protected void succeeded(Object result) {
-            toggleButtons(1);
+            toggleButtons(true);
             refreshButton.doClick();
         }
     }
 
     /**
      * Gets details of each server in serverlist, and puts those in servermap.
+     * @return
      */
     @Action
     public Task refresh() {
@@ -537,7 +543,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 jTable1.getColumnModel().getColumn(4).setMaxWidth(150);
             }
 
-            toggleButtons(0);
+            toggleButtons(false);
         }
 
         @Override
@@ -568,7 +574,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         @Override
         protected void succeeded(Object result) {
-            toggleButtons(1);
+            toggleButtons(true);
         }
     }
 
@@ -588,6 +594,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         int selectedRow = jTable1.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = "";
+
         if (selectedRow != -1) {
             for (int i = 0; i < getModel().getColumnCount(); i++) {
                 if (getModel().getColumnName(i).contains("Server")) {
@@ -604,6 +611,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                     }
                 }
             }
+            
             launcher.setSdl(sdlCheckBoxMenuItem.getState());
             launcher.setIp(selectedIp);
             launcher.playGame();
