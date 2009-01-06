@@ -37,10 +37,10 @@ public abstract class AbstractQuery {
     public DatagramPacket getDatagramPacket(String request,
             InetAddress inet, int port) {
         byte[] buff = request.getBytes();
-        buff[0] = (byte) 0xff;
-        buff[1] = (byte) 0xff;
-        buff[2] = (byte) 0xff;
-        buff[3] = (byte) 0xff;
+        buff[0] |= 0xff;
+        buff[1] |= 0xff;
+        buff[2] |= 0xff;
+        buff[3] |= 0xff;
         return new DatagramPacket(buff, buff.length, inet, port);
     }
 
@@ -71,13 +71,13 @@ public abstract class AbstractQuery {
 
             DatagramPacket out = getDatagramPacket(request, address, port);
             socket.send(out);
-            long sendTime = System.currentTimeMillis(); // ping timer
+            int sendTime = (int)System.currentTimeMillis(); // ping timer
 
             socket.setSoTimeout(TIMEOUT);
             // get the response
             socket.receive(inPacket);
-            long receiveTime = System.currentTimeMillis();
-            ping = (int) (receiveTime - sendTime);
+            int receiveTime = (int)System.currentTimeMillis();
+            ping = receiveTime - sendTime;
             recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(),
                     "ISO-8859-1"));
 
@@ -127,5 +127,4 @@ public abstract class AbstractQuery {
 //        }
 //        return correct;
 //    }
-    
 }

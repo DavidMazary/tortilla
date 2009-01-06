@@ -19,15 +19,8 @@ public class Server implements java.io.Serializable {
     private int maxplayers;
     private int players;
     private int ping;
-    private int bots;
+    private int botCount;
     private ArrayList<Player> playerList;
-
-    /**
-     * Constructor taking in no parameters.
-     */
-    public Server() {
-        /* Empty constructor */
-    }
 
     /**
      * Hostname of this server.
@@ -94,15 +87,6 @@ public class Server implements java.io.Serializable {
     }
 
     /**
-     * Update current number of players.
-     * Takes in a String parameter.
-     * @param newPlayers New player count on server.
-     */
-    public void setPlayerCount(String newPlayers) {
-        players = Integer.parseInt(newPlayers);
-    }
-
-    /**
      * Update ping to server.
      * @param newPing New ping from client to server.
      */
@@ -132,15 +116,6 @@ public class Server implements java.io.Serializable {
      */
     public void setMaxPlayers(int maxplayers) {
         this.maxplayers = maxplayers;
-    }
-
-    /**
-     * Update maximum number of players.
-     * Takes in a string parameter.
-     * @param maxplayers New maximum player limit for server.
-     */
-    public void setMaxPlayers(String maxplayers) {
-        this.maxplayers = Integer.parseInt(maxplayers);
     }
 
     /**
@@ -179,18 +154,18 @@ public class Server implements java.io.Serializable {
      * 
      * @return
      */
-    public int getBots() {
-        return bots;
+    public int getBotCount() {
+        return botCount;
     }
 
     /**
      * Store bot_number used on server.
      * Bot count is deducted from player count.
-     * @param bots Number of bots running on a server.
+     * @param botCount Number of bots running on a server.
      */
-    public void setBots(String bots) {
-        this.bots = Integer.parseInt(bots);
-        this.players -= this.bots;
+    public void setBotCount(int botCount) {
+        this.botCount = botCount;
+        this.players -= this.botCount;
     }
 
     /**

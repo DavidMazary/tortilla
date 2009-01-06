@@ -16,15 +16,6 @@ public class Player implements java.io.Serializable {
     private String name;
     private int score;
     private int ping;
-    private boolean bot;
-    private boolean spec;
-
-    /*
-     * Constructor taking in no parameters
-     */
-    public Player() {
-        // empty constructor
-    }
 
     /**
      * Translate special characters into displayable text in player names.
@@ -79,8 +70,8 @@ public class Player implements java.io.Serializable {
             StringBuilder sb = new StringBuilder("");
 
             // Character will correspond with unsigned byte.
-            for (int i = 0; i < nameBytes.length; i++) {
-                sb.append(fontTable[nameBytes[i] & 0xff]);
+            for (byte b : nameBytes) {
+                sb.append(fontTable[b & 0xff]);
             }
 
             playerName = sb.toString();
@@ -96,12 +87,7 @@ public class Player implements java.io.Serializable {
      * @return True if player is a bot.
      */
     public boolean isBot() {
-        if (getPing() == 0) {
-            bot = true;
-        } else {
-            bot = false;
-        }
-        return bot;
+        return getPing() == 0;
     }
 
     /**
@@ -109,12 +95,7 @@ public class Player implements java.io.Serializable {
      * @return true if player is spectating.
      */
     public boolean isSpec() {
-        if (getScore() == -666) {
-            spec = true;
-        } else {
-            spec = false;
-        }
-        return spec;
+        return getScore() == -666;
     }
 
     /**
