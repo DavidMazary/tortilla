@@ -26,7 +26,7 @@ public class ServerQuery extends AbstractQuery {
         int port = Integer.parseInt(ip[1]);
         String queryResult = null;
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             queryResult = getInfo(ip[0], port,
                     "xxxxgetinfo tortilla");
             if (!queryResult.equals("0")) {
@@ -72,11 +72,13 @@ public class ServerQuery extends AbstractQuery {
             try {
                 BufferedReader in = new BufferedReader(
                         new StringReader(queryResult));
-                tortillaServer = processServer(in.readLine(), ipStr);
-                while ((input = in.readLine()) != null) {
-                    tortillaPlayers.add(processPlayer(input));
+                if ((input = in.readLine()) != null) {
+                    tortillaServer = processServer(input, ipStr);
+                    while ((input = in.readLine()) != null) {
+                        tortillaPlayers.add(processPlayer(input));
+                    }
+                    tortillaServer.setPlayerList(tortillaPlayers);
                 }
-                tortillaServer.setPlayerList(tortillaPlayers);
             } catch (IOException ex) {
                 Logger.getLogger(TortillaView.class.getName()).
                         log(Level.SEVERE, null, ex);
@@ -109,7 +111,7 @@ public class ServerQuery extends AbstractQuery {
      * Take the server info from the queryResult and build a Server.
      * Response will look like this: <code>\gamename\Nexuiz\modname\data\gameversion\20000\sv_maxclients\18\clients\6\bots\0\mapname\ctctf6\hostname\Galt's Gulch - CTF - 2.4 - TX, USA\protocol\3\challenge\tortilla</code>
      * @param queryResult String of the server info.
-     * @param ipStr 
+     * @param ipStr The address of the server.
      * @return Server which is created.
      */
     protected Server processServer(String queryResult, String ipStr) {
@@ -121,14 +123,15 @@ public class ServerQuery extends AbstractQuery {
         server.setGameVersion(serverData[6]);
         server.setMaxPlayers(Integer.parseInt(serverData[8]));
         server.setPlayerCount(Integer.parseInt(serverData[10]));
-        try {
+        if (serverData[11].equals("bots")) {
             server.setBotCount(Integer.parseInt(serverData[12]));
-        } catch (NumberFormatException ex) {
-            Logger.getLogger(TortillaView.class.getName()).
-                    log(Level.INFO, null, ex);
+            server.setMap(serverData[14]);
+            server.setHostname(serverData[16]);
+        } else {
+            // queryResult does not contain bot count
+            server.setMap(serverData[12]);
+            server.setHostname(serverData[14]);
         }
-        server.setMap(serverData[14]);
-        server.setHostname(serverData[16]);
         server.setPing(getPing());
         server.setIp(ipStr);
         return server;
