@@ -11,12 +11,13 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.AbstractTableModel;
 
 /**
  * The application's main frame.
@@ -336,18 +337,17 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private JDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private ServerQuery queryS = new ServerQuery();
-    private DefaultTableModel model = new DefaultTableModel();
+    private ServerTableModel model = new ServerTableModel(COLUMN_NAMES);
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, Server> serverMap;
-    private static final int MAX_PING = 120;
+    private static final int HIGH_PING = 120;
+    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
 
     /**
      * The custom DefaultTableModel used in TortillaView.
      * @return The DefaultTableModel used here.
      */
-    public synchronized DefaultTableModel getModel() {
-//        model = new ServerTableModel();
+    public AbstractTableModel getModel() {
         return model;
     }
 
@@ -366,10 +366,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
-    protected synchronized void refreshTable() {
-        for (int j = getModel().getRowCount() - 1; j >= 0; j--) {
-            getModel().removeRow(j);
-        }
+    protected void refreshTable() {
         int ping;
         String hostname;
         int playerCount;
@@ -377,116 +374,177 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         String map;
         boolean permission;
         ArrayList<Player> players;
-        for (String Ip : serverMap.keySet()) {
-            permission = true;
-            ping = serverMap.get(Ip).getPing();
-            players = serverMap.get(Ip).getPlayerList();
-            hostname = serverMap.get(Ip).getHostname();
-            playerCount = serverMap.get(Ip).getPlayerCount();
-            maxplayers = serverMap.get(Ip).getMaxPlayers();
-            map = serverMap.get(Ip).getMap();
-            if (hideEmptyMenuItem.getState()) {
-                if (playerCount == 0) {
-                    permission = false;
-                }
-            }
-            if (hideFullMenuItem.getState()) {
-                if (playerCount == maxplayers) {
-                    permission = false;
-                }
-            }
-            if (hideHighPingMenuItem.getState()) {
-                if (ping > MAX_PING) {
-                    permission = false;
-                }
-            }
 
-            String query = searchTextField.getText().toLowerCase();
-            if (!query.equals("") && hostname != null) {
-                if (!hostname.toLowerCase().contains(query)) {
-                    permission = false;
-                }
-                // Search for players too
-                if (players != null) {
-                    for (Player player : players) {
-                        if (player.getName().toLowerCase().contains(query)) {
-                            permission = true;
-                            break;
-                        }
+        Server current;
+        for (String Ip : serverMap.keySet()) {
+            if ((current = serverMap.get(Ip)) != null) {
+                permission = true;
+                ping = current.getPing();
+                players = current.getPlayerList();
+                hostname = current.getHostname();
+                playerCount = current.getPlayerCount();
+                maxplayers = current.getMaxPlayers();
+                map = current.getMap();
+
+                if (hideEmptyMenuItem.getState()) {
+                    if (playerCount == 0) {
+                        permission = false;
                     }
                 }
-            } else if (hostname == null) {
-                permission = false;
-            }
+                if (hideFullMenuItem.getState()) {
+                    if (playerCount == maxplayers) {
+                        permission = false;
+                    }
+                }
+                if (hideHighPingMenuItem.getState()) {
+                    if (ping > HIGH_PING) {
+                        permission = false;
+                    }
+                }
 
-            if (permission) {
-                getModel().addRow(
-                        new Object[]{ping, hostname,
-                            playerCount, maxplayers, map
-                        });
+                String query = searchTextField.getText().toLowerCase();
+                if (!query.isEmpty()) {
+                    if (hostname != null && !hostname.toLowerCase().contains(query)) {
+                        permission = false;
+                    }
+                    // Search for player matches; requires getstatus query
+//                    if (players != null) {
+//                        for (Player player : players) {
+//                            if (player.getName().toLowerCase().contains(query)) {
+//                                permission = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+                    if (map != null && map.toLowerCase().contains(query)) {
+                        permission = true;
+                    }
+                }
+
+                if (permission) {
+                    model.addRow(current);
+                }
             }
         }
     }
 
-//    static class ServerTableModel extends DefaultTableModel {
-//
-//        String[] columnNames = {
-//            "Ping", "Server", "Players", "Max", "Map"
-//        };
-////        Object data[][];
-//
-////        /**
-////         * Returns the number of rows in the model.
-////         * A JTable uses this method to determine how many rows it should display.
-////         * This method should be quick, as it is called frequently during rendering.
-////         * @return the number of rows in the model
-////         */
-////        @Override
-////        public int getRowCount() {
-////            return data.length;
-////        }
-////
-//        /**
-//         * Returns the number of columns in the model.
-//         * A JTable uses this method to determine how
-//         * many columns it should create and display by default.
-//         * @return the number of columns in the model
-//         */
-//        @Override
-//        public int getColumnCount() {
-//            return columnNames.length;
-//        }
-//
-//        @Override
-//        public String getColumnName(int index) {
-//            return columnNames[index];
-//        }
-//
-//        /**
-//         * Treat my numbers with more respect Mr. Table!
-//         * @param column the column whose value is to be queried
-//         * @return the value Class of the specified column
-//         */
-//        @Override
-//        public Class getColumnClass(int column) {
-//            Class dataType = String.class;
-//            if (column == 0 || column == 2 || column == 3) {
-//                dataType = Number.class;
-//            }
-//            return dataType;
-//        }
-//
-//        /**
-//         * No editing of any cells.
-//         * @param row the row whose value is to be queried
-//         * @param column the column whose value is to be queried
-//         * @return True if cell is editable at given coordinates
-//         */
-//        @Override
-//        public boolean isCellEditable(int row, int column) {
-//            return false;
-//        }
-//    }
+    /**
+     * Model of the table used to display servers.
+     */
+    @SuppressWarnings("serial")
+    class ServerTableModel extends AbstractTableModel {
+
+        public static final int PING = 0;
+        public static final int SERVER = 1;
+        public static final int PLAYERS = 2;
+        public static final int MAX = 3;
+        public static final int MAP = 4;
+        protected String[] columnNames;
+        private Vector<Server> dataVector;
+
+        public ServerTableModel(String[] columnNames) {
+            this.columnNames = columnNames;
+            dataVector = new Vector<Server>();
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        @Override
+        public Class getColumnClass(int column) {
+            switch (column) {
+                case PING:
+                case PLAYERS:
+                case MAX:
+                    return Integer.class;
+                case SERVER:
+                case MAP:
+                    return String.class;
+                default:
+                    return Object.class;
+            }
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            Server server = dataVector.get(row);
+            switch (column) {
+                case PING:
+                    return server.getPing();
+                case PLAYERS:
+                    return server.getPlayerCount();
+                case MAX:
+                    return server.getMaxPlayers();
+                case SERVER:
+                    return server.getHostname();
+                case MAP:
+                    return server.getMap();
+                default:
+                    return new Object();
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int row, int column) {
+            Server server = dataVector.get(row);
+            switch (column) {
+                case PING:
+                    server.setPing((Integer) value);
+                    break;
+                case PLAYERS:
+                    server.setPlayerCount((Integer) value);
+                    break;
+                case MAX:
+                    server.setMaxPlayers((Integer) value);
+                    break;
+                case SERVER:
+                    server.setHostname((String) value);
+                    break;
+                case MAP:
+                    server.setMap((String) value);
+                    break;
+                default:
+                    System.out.println("invalid index");
+            }
+            fireTableCellUpdated(row, column);
+        }
+
+        @Override
+        public int getRowCount() {
+            return dataVector.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public void addRow(Server newServer) {
+            if (!dataVector.contains(newServer)) {
+                dataVector.add(newServer);
+                fireTableRowsInserted(
+                        dataVector.size() - 1,
+                        dataVector.size() - 1);
+            }
+        }
+
+        public void deleteRow(Server newServer) {
+            if (dataVector.contains(newServer)) {
+                dataVector.remove(newServer);
+                fireTableRowsDeleted(
+                        dataVector.size() - 1,
+                        dataVector.size() - 1);
+            }
+        }
+    }
+
     /**
      * Use MasterQuery to download new serverlist.
      * @return
@@ -519,69 +577,40 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
     /**
      * Gets details of each server in serverlist, and puts those in servermap.
-     * @return
      */
     @Action
-    public Task refresh() {
-        return new RefreshTask(getApplication());
-    }
+    public void refresh() {
+        toggleButtons(false);
+        serverMap = new ConcurrentHashMap<String, Server>();
 
-    private class RefreshTask extends org.jdesktop.application.Task<Object, Void> {
+        for (final String ip : serverList) {
+            class ServerQuerier extends Thread {
 
-        RefreshTask(org.jdesktop.application.Application app) {
-            super(app);
-            if (getModel().getColumnCount() != 5) {
-                getModel().addColumn("Ping");
-                getModel().addColumn("Server");
-                getModel().addColumn("Players");
-                getModel().addColumn("Max");
-                getModel().addColumn("Map");
-
-                jTable1.getColumnModel().getColumn(0).setMaxWidth(36);
-                jTable1.getColumnModel().getColumn(2).setMaxWidth(48);
-                jTable1.getColumnModel().getColumn(3).setMaxWidth(36);
-                jTable1.getColumnModel().getColumn(4).setMaxWidth(150);
-            }
-
-            toggleButtons(false);
-        }
-
-        @Override
-        protected Object doInBackground() {
-            this.setMessage("Refreshing...");
-
-            // FindBugs complains that this is unsynchronized.
-            serverMap = new ConcurrentHashMap<String, Server>();
-
-            for (final String ip : serverList) {
-                class ServerQuerier extends Thread {
-
-                    @Override
-                    public void run() {
-                        Server server = queryS.getInfo(ip);
-
-                        if (server != null) {
-                            serverMap.put(ip, server);
-                            refreshTable();
-                        }
+                @Override
+                public void run() {
+                    Server server = new ServerQuery().getStatus(ip);
+                    if (server.getHostname() != null) {
+                        serverMap.putIfAbsent(ip, server);
                     }
+                    refreshTable();
                 }
-                Thread querier = new ServerQuerier();
-                querier.start();
             }
-            return null;  // return your result
-        }
+            (new ServerQuerier()).start();
 
-        @Override
-        protected void succeeded(Object result) {
             toggleButtons(true);
         }
     }
 
+    /**
+     * Stub.
+     */
     @Action
     public void addFavorite() {
     }
 
+    /**
+     * Stub.
+     */
     @Action
     public void viewServer() {
     }
@@ -590,28 +619,28 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
      * Calls GameLauncher on selected server.
      */
     @Action
-    public synchronized void connect() {
+    public void connect() {
         int selectedRow = jTable1.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = "";
 
         if (selectedRow != -1) {
-            for (int i = 0; i < getModel().getColumnCount(); i++) {
-                if (getModel().getColumnName(i).contains("Server")) {
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                if (model.getColumnName(i).contains("Server")) {
                     nameColumn = i;
                 }
             }
-            String selectedServer = getModel().getValueAt(selectedRow,
+            String selectedServer = model.getValueAt(selectedRow,
                     nameColumn).toString();
+            Server current;
             for (String ip : serverMap.keySet()) {
-                String exp = serverMap.get(ip).getHostname();
-                if (exp != null) {
-                    if (exp.contains(selectedServer)) {
+                if ((current = serverMap.get(ip)) != null) {
+                    if (current.getHostname().equals(selectedServer)) {
                         selectedIp = ip;
                     }
                 }
             }
-            
+
             launcher.setSdl(sdlCheckBoxMenuItem.getState());
             launcher.setIp(selectedIp);
             launcher.playGame();
