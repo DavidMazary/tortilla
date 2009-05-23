@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  * Also converts special characters into displayable text in player names.
  * @author dmaz
  */
-public class Player implements java.io.Serializable {
+public class Player {
 
     private String name;
     private int score;

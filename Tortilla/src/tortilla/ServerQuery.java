@@ -26,16 +26,16 @@ public class ServerQuery extends AbstractQuery {
         int port = Integer.parseInt(ip[1]);
         String queryResult = null;
 
-        for (int i = 0; i < 3; i++) {
+        querySuccess = false;
+        int queryTries = 0;
+        while (!querySuccess && (queryTries < 2)) {
             queryResult = getInfo(ip[0], port,
                     "xxxxgetinfo tortilla");
-            if (!queryResult.equals("0")) {
-                break;
-            }
+            queryTries++;
         }
 
-        Server tortillaServer = new Server();
-        if (!queryResult.equals("0")) {
+        Server tortillaServer = null;
+        if (querySuccess) {
             tortillaServer = processServer(queryResult, ipStr);
         }
         return tortillaServer;
@@ -50,20 +50,20 @@ public class ServerQuery extends AbstractQuery {
     public Server getStatus(String ipStr) {
         String ip[] = ipStr.split(":");
         int port = Integer.parseInt(ip[1]);
-        Server tortillaServer = new Server();
-        ArrayList<Player> tortillaPlayers =
-                new ArrayList<Player>();
+        Server tortillaServer = null;
+        ArrayList<Player> tortillaPlayers = new ArrayList<Player>();
         String queryResult = null;
 
-        for (int i = 0; i < 2; i++) {
+
+        querySuccess = false;
+        int queryTries = 0;
+        while (!querySuccess && (queryTries < 2)) {
             queryResult = getInfo(ip[0], port,
                     "xxxxgetstatus tortilla");
-            if (!queryResult.equals("0")) {
-                break;
-            }
+            queryTries++;
         }
 
-        if (!queryResult.equals("0")) {
+        if (querySuccess) {
             queryResult = queryResult.substring(queryResult.indexOf("\\"));
             queryResult = queryResult.replaceAll(
                     "\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");

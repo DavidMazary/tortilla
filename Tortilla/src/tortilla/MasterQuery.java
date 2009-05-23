@@ -28,7 +28,7 @@ public class MasterQuery extends AbstractQuery {
 
         queryResult = getInfo(getMaster(), DPMASTER_PORT, REQUEST);
 
-        if (queryResult != null) {
+        if (querySuccess) {
             serverList = new ArrayList<String>();
             int index = queryResult.indexOf("\\");
             String address;
