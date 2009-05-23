@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Later, this class will also store if a server is a favorite or is timed-out.
  * @author dmaz
  */
-public class Server implements java.io.Serializable {
+public class Server {
 
     private String ip;
     private String hostname;

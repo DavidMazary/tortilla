@@ -1,9 +1,12 @@
 package tortilla;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.PortUnreachableException;
+import java.net.SocketTimeoutException;
 import java.util.Random;
 //import java.util.StringTokenizer;
 
@@ -14,7 +17,7 @@ import java.util.Random;
  * and therefore very similar. <br/>
  * Documentation of these protocols are:
  * <a href="ftp://ftp.idsoftware.com/idstuff/quake3/docs/server.txt">id's quake
- * 3 server commands howto</a>, 
+ * 3 server commands howto</a>,
  * <a href="http://svn.icculus.org/twilight/trunk/dpmaster/doc/techinfo.txt?view=markup">
  * dpmaster's Technical Information document</a> G. Armitage's
  * <a href="http://caia.swin.edu.au/reports/070730A/CAIA-TR-070730A.pdf">
@@ -23,9 +26,15 @@ import java.util.Random;
  */
 public abstract class AbstractQuery {
     // Timeout used for the sockets
+
     private static final int TIMEOUT = 2000;
     private static final int PACKET_SIZE = 14400;
+    // Using port range 25000-30000
+    private static final int PORT = 25000;
+    private static final int PORT_RANGE = 5000;
     private int ping;
+
+    protected boolean querySuccess;
 
     /**
      * Builds the DatagramPacket we'll be using to query the server.
@@ -53,37 +62,41 @@ public abstract class AbstractQuery {
      */
     public String getInfo(String ipStr, int port,
             String request) {
-        DatagramSocket socket = null;
-        String info;
+        String info = "0";
+        Random r = new Random();
+        int localPort = r.nextInt(PORT_RANGE) + PORT;
+        byte[] buffer = new byte[PACKET_SIZE];
+        DatagramPacket inPacket = new DatagramPacket(buffer, PACKET_SIZE);
+        DatagramSocket socket;
 
         try {
-
-            StringBuilder recStr = new StringBuilder();
-            // Use port range 25000 - 30000
-            Random r = new Random();
-            int localPort = r.nextInt(5000) + 25000;
-            socket = new DatagramSocket(localPort);
             InetAddress address = InetAddress.getByName(ipStr);
-            byte[] data = new byte[PACKET_SIZE];
-            DatagramPacket inPacket = new DatagramPacket(data, PACKET_SIZE);
 
-            socket.connect(address, port);
+            // Check for port collisions
+            try {
+                socket = new DatagramSocket(localPort);
+                socket.connect(address, port);
+            } catch (BindException ex) {
+                localPort = r.nextInt(PORT_RANGE) + PORT;
+                socket = new DatagramSocket(localPort);
+                socket.connect(address, port);
+            }
 
             DatagramPacket out = getDatagramPacket(request, address, port);
             socket.send(out);
-            int sendTime = (int)System.currentTimeMillis(); // ping timer
+            long sendTime = System.currentTimeMillis(); // ping timer
 
             socket.setSoTimeout(TIMEOUT);
-            // get the response
-            socket.receive(inPacket);
-            int receiveTime = (int)System.currentTimeMillis();
-            ping = receiveTime - sendTime;
-            recStr.append(new String(inPacket.getData(), 0, inPacket.getLength(),
-                    "ISO-8859-1"));
+            socket.receive(inPacket); // get the response
+            long receiveTime = System.currentTimeMillis();
+            socket.close();
 
-            info = recStr.toString();
+            ping = (int) (receiveTime - sendTime);
+            info = new String(inPacket.getData(), 0, inPacket.getLength(),
+                    "ISO-8859-1");
+            querySuccess = true;
         } catch (IOException ex) {
-            info = "0";
+            querySuccess = false;
         }
 
         return info;

@@ -4,8 +4,8 @@
 package tortilla;
 
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -16,12 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.Timer;
+//import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 
 /**
  * The application's main frame.
- * TODO Create custom table (ineditable and properly sortable).
  */
 public class TortillaView extends FrameView {
 
@@ -36,16 +35,16 @@ public class TortillaView extends FrameView {
         initComponents();
         updateButton.doClick();
 
-        // Refreshes serverlist every 20 seconds.
-        int delay = 90000;
-        ActionListener refreshTask = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                refreshButton.doClick();
-            }
-        };
-        new Timer(delay, refreshTask).start();
+//        // Refreshes serverlist every 20 seconds.
+//        int delay = 90000;
+//        ActionListener refreshTask = new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent evt) {
+//                refreshButton.doClick();
+//            }
+//        };
+//        new Timer(delay, refreshTask).start();
     }
 
     /**
@@ -340,7 +339,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private ServerTableModel model = new ServerTableModel(COLUMN_NAMES);
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, Server> serverMap;
-    private static final int HIGH_PING = 120;
+    private static final int HIGH_PING = 200;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
 
     /**
@@ -372,13 +371,13 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
         int playerCount;
         int maxplayers;
         String map;
-        boolean permission;
+        boolean canAddRow;
         ArrayList<Player> players;
 
         Server current;
         for (String Ip : serverMap.keySet()) {
             if ((current = serverMap.get(Ip)) != null) {
-                permission = true;
+                canAddRow = true;
                 ping = current.getPing();
                 players = current.getPlayerList();
                 hostname = current.getHostname();
@@ -386,42 +385,32 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 maxplayers = current.getMaxPlayers();
                 map = current.getMap();
 
-                if (hideEmptyMenuItem.getState()) {
-                    if (playerCount == 0) {
-                        permission = false;
-                    }
-                }
-                if (hideFullMenuItem.getState()) {
-                    if (playerCount == maxplayers) {
-                        permission = false;
-                    }
-                }
-                if (hideHighPingMenuItem.getState()) {
-                    if (ping > HIGH_PING) {
-                        permission = false;
-                    }
+                if ((hideEmptyMenuItem.getState() && (playerCount == 0))
+                        || (hideFullMenuItem.getState() && (playerCount == maxplayers))
+                        || (hideHighPingMenuItem.getState() && (ping > HIGH_PING))) {
+                    canAddRow = false;
                 }
 
                 String query = searchTextField.getText().toLowerCase();
                 if (!query.isEmpty()) {
                     if (hostname != null && !hostname.toLowerCase().contains(query)) {
-                        permission = false;
+                        canAddRow = false;
                     }
                     // Search for player matches; requires getstatus query
 //                    if (players != null) {
 //                        for (Player player : players) {
 //                            if (player.getName().toLowerCase().contains(query)) {
-//                                permission = true;
+//                                canAddRow = true;
 //                                break;
 //                            }
 //                        }
 //                    }
                     if (map != null && map.toLowerCase().contains(query)) {
-                        permission = true;
+                        canAddRow = true;
                     }
                 }
 
-                if (permission) {
+                if (canAddRow) {
                     model.addRow(current);
                 }
             }
@@ -589,7 +578,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
                 @Override
                 public void run() {
                     Server server = new ServerQuery().getStatus(ip);
-                    if (server.getHostname() != null) {
+                    if (server != null) {
                         serverMap.putIfAbsent(ip, server);
                     }
                     refreshTable();
