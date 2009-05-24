@@ -5,8 +5,6 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.PortUnreachableException;
-import java.net.SocketTimeoutException;
 import java.util.Random;
 //import java.util.StringTokenizer;
 
@@ -25,10 +23,10 @@ import java.util.Random;
  * @author DeadEd, dmaz
  */
 public abstract class AbstractQuery {
-    // Timeout used for the sockets
 
+    // Timeout used for the sockets
     private static final int TIMEOUT = 2000;
-    private static final int PACKET_SIZE = 14400;
+    private static final int PACKET_SIZE = 4096;
     // Using port range 25000-30000
     private static final int PORT = 25000;
     private static final int PORT_RANGE = 5000;
@@ -62,12 +60,12 @@ public abstract class AbstractQuery {
      */
     public String getInfo(String ipStr, int port,
             String request) {
-        String info = "0";
+        String info = null;
         Random r = new Random();
         int localPort = r.nextInt(PORT_RANGE) + PORT;
         byte[] buffer = new byte[PACKET_SIZE];
         DatagramPacket inPacket = new DatagramPacket(buffer, PACKET_SIZE);
-        DatagramSocket socket;
+        DatagramSocket socket = null;
 
         try {
             InetAddress address = InetAddress.getByName(ipStr);
@@ -90,22 +88,22 @@ public abstract class AbstractQuery {
             socket.receive(inPacket); // get the response
             long receiveTime = System.currentTimeMillis();
             socket.close();
-
             ping = (int) (receiveTime - sendTime);
             info = new String(inPacket.getData(), 0, inPacket.getLength(),
                     "ISO-8859-1");
             querySuccess = true;
         } catch (IOException ex) {
             querySuccess = false;
+            if (socket != null) {
+                socket.close();
+            }
         }
 
         return info;
     }
 
     /**
-     * Returns the time elapsed in the communication.
-     * This seems the best way to simulate <code>ping</code>
-     * since Java doesn't do ICMP.
+     * Returns the time elapsed in the communication with server.
      * @return Int of ping-time to server in milliseconds.
      */
     public int getPing() {

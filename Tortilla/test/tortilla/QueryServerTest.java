@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package tortilla;
 
 import org.junit.After;
@@ -45,10 +41,10 @@ public class QueryServerTest {
     @Test
     public void testQueryServer() {
         System.out.println("testQueryServer");
-        Server server = queryS.getInfo("75.126.234.42:26000");
+        Server server = queryS.getInfo("private.optimalclan.com:26001");
         System.out.println("Ping: " + server.getPing());
-        assertEquals("75.126.234.42:26000", server.getIp());
-        assertEquals(24, server.getMaxPlayers());
+        assertEquals("private.optimalclan.com:26001", server.getIp());
+        assertEquals(64, server.getMaxPlayers());
         assertEquals("Nexuiz", server.getGame());
         assertEquals("20000", server.getGameVersion());
     }
@@ -60,21 +56,10 @@ public class QueryServerTest {
     @Test
     public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        Server server =
-                queryS.getStatus("75.126.234.42:26000");
+        Server server = queryS.getStatus("74.52.14.98:26000");
         for (Player player : server.getPlayerList()) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }
-        fail("Write a proper test for this.");
+        assertEquals(server.getPlayerCount(), server.getPlayerList().size());
     }
-//    /**
-//     * Test if timed-out server is correctly handled.
-//     */
-//    @Test
-//    public void testQueryTimeoutServer()
-//    {
-//        System.out.println("testQueryTimeoutServer");
-//        Server server = queryS.getInfo("www.vt.edu", 26000);
-//        assertTrue(server.getTimeout());
-//    }
 }
