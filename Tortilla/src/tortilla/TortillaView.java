@@ -11,7 +11,6 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -69,14 +68,13 @@ public class TortillaView extends FrameView {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableScrollPane = new javax.swing.JScrollPane();
+        serverTable = new javax.swing.JTable();
         searchTextField = new javax.swing.JTextField();
-        jToolBar1 = new javax.swing.JToolBar();
-        updateButton = new javax.swing.JButton();
-        refreshButton = new javax.swing.JButton();
-        detailButton = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
+        detailButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        updateButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -91,55 +89,50 @@ public class TortillaView extends FrameView {
 
         mainPanel.setName("mainPanel"); // NOI18N
 
-        jScrollPane1.setDoubleBuffered(true);
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        tableScrollPane.setDoubleBuffered(true);
+        tableScrollPane.setName("tableScrollPane"); // NOI18N
 
-        jTable1.setAutoCreateRowSorter(true);
-        jTable1.setModel(getModel());
-        jTable1.setDoubleBuffered(true);
-        jTable1.setName("jTable1"); // NOI18N
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jTable1.addFocusListener(new java.awt.event.FocusAdapter() {
+        serverTable.setAutoCreateRowSorter(true);
+        serverTable.setModel(getModel());
+        serverTable.setDoubleBuffered(true);
+        serverTable.setName("serverTable"); // NOI18N
+        serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        serverTable.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                jTable1FocusGained(evt);
+                serverTableFocusGained(evt);
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
-                jTable1FocusLost(evt);
+                serverTableFocusLost(evt);
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableScrollPane.setViewportView(serverTable);
+        serverTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
         searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
         searchTextField.setName("searchTextField"); // NOI18N
         searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                searchTextFieldKeyTyped(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyReleased(evt);
             }
         });
-
-        jToolBar1.setBorder(null);
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
-        jToolBar1.setBorderPainted(false);
-        jToolBar1.setName("jToolBar1"); // NOI18N
-        jToolBar1.setPreferredSize(new java.awt.Dimension(214, 42));
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaView.class, this);
-        updateButton.setAction(actionMap.get("update")); // NOI18N
-        updateButton.setFocusable(false);
-        updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        updateButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        updateButton.setName("updateButton"); // NOI18N
-        updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        updateButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(updateButton);
+        connectButton.setAction(actionMap.get("connect")); // NOI18N
+        connectButton.setFocusable(false);
+        connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        connectButton.setName("connectButton"); // NOI18N
+        connectButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+
+        detailButton.setAction(actionMap.get("viewServer")); // NOI18N
+        detailButton.setFocusable(false);
+        detailButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        detailButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        detailButton.setName("detailButton"); // NOI18N
+        detailButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        detailButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         refreshButton.setAction(actionMap.get("refresh")); // NOI18N
         refreshButton.setFocusable(false);
@@ -153,34 +146,34 @@ public class TortillaView extends FrameView {
                 refreshButtonActionPerformed(evt);
             }
         });
-        jToolBar1.add(refreshButton);
 
-        detailButton.setAction(actionMap.get("viewServer")); // NOI18N
-        detailButton.setFocusable(false);
-        detailButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        detailButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        detailButton.setName("detailButton"); // NOI18N
-        detailButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        detailButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(detailButton);
-
-        connectButton.setAction(actionMap.get("connect")); // NOI18N
-        connectButton.setFocusable(false);
-        connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
-        connectButton.setName("connectButton"); // NOI18N
-        connectButton.setPreferredSize(new java.awt.Dimension(42, 42));
-        connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(connectButton);
+        updateButton.setAction(actionMap.get("update")); // NOI18N
+        updateButton.setFocusable(false);
+        updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        updateButton.setMinimumSize(new java.awt.Dimension(42, 42));
+        updateButton.setName("updateButton"); // NOI18N
+        updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
+        updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        updateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(detailButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -191,9 +184,12 @@ public class TortillaView extends FrameView {
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(detailButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -301,34 +297,34 @@ private void hideFullMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     refreshTable();
 }//GEN-LAST:event_hideFullMenuItemActionPerformed
 
-private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
-    refreshTable();
-}//GEN-LAST:event_searchTextFieldKeyTyped
-
-private void jTable1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusGained
+private void serverTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_serverTableFocusGained
     connectButton.setEnabled(true);
     detailButton.setEnabled(true);
-}//GEN-LAST:event_jTable1FocusGained
+}//GEN-LAST:event_serverTableFocusGained
 
-private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusLost
+private void serverTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_serverTableFocusLost
     connectButton.setEnabled(false);
     detailButton.setEnabled(false);
-}//GEN-LAST:event_jTable1FocusLost
+}//GEN-LAST:event_serverTableFocusLost
+
+private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
+    refreshTable();
+}//GEN-LAST:event_searchTextFieldKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton connectButton;
     private javax.swing.JButton detailButton;
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
     private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
     private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JButton refreshButton;
     private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
     private javax.swing.JTextField searchTextField;
+    private javax.swing.JTable serverTable;
+    private javax.swing.JScrollPane tableScrollPane;
     private javax.swing.JButton updateButton;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
@@ -336,11 +332,10 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     private JDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private ServerTableModel model = new ServerTableModel(COLUMN_NAMES);
+    private ServerTableModel model = new ServerTableModel();
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, Server> serverMap;
     private static final int HIGH_PING = 200;
-    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
 
     /**
      * The custom DefaultTableModel used in TortillaView.
@@ -351,13 +346,12 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     }
 
     /**
-     * Toggle availability of buttons under certain conditions.
-     * States: 0 for Update/Refresh clicked, 
-     * 1 for Update/Refresh finished,
+     * Toggle availability of update and refresh buttons so they
+     * cannot be clicked mid-action.
      * 
-     * @param state State of buttons.
+     * @param state of buttons
      */
-    protected void toggleButtons(boolean state) {
+    private void setUpdateButtonsEnabled(boolean state) {
         updateButton.setEnabled(state);
         refreshButton.setEnabled(state);
     }
@@ -365,35 +359,21 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
-    protected void refreshTable() {
-        int ping;
-        String hostname;
-        int playerCount;
-        int maxplayers;
-        String map;
+    private void refreshTable() {
         boolean canAddRow;
-        ArrayList<Player> players;
 
         Server current;
         for (String Ip : serverMap.keySet()) {
             if ((current = serverMap.get(Ip)) != null) {
                 canAddRow = true;
-                ping = current.getPing();
-                players = current.getPlayerList();
-                hostname = current.getHostname();
-                playerCount = current.getPlayerCount();
-                maxplayers = current.getMaxPlayers();
-                map = current.getMap();
 
-                if ((hideEmptyMenuItem.getState() && (playerCount == 0))
-                        || (hideFullMenuItem.getState() && (playerCount == maxplayers))
-                        || (hideHighPingMenuItem.getState() && (ping > HIGH_PING))) {
+                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) || (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) || (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING))) {
                     canAddRow = false;
                 }
 
                 String query = searchTextField.getText().toLowerCase();
                 if (!query.isEmpty()) {
-                    if (hostname != null && !hostname.toLowerCase().contains(query)) {
+                    if (current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) {
                         canAddRow = false;
                     }
                     // Search for player matches; requires getstatus query
@@ -405,131 +385,16 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 //                            }
 //                        }
 //                    }
-                    if (map != null && map.toLowerCase().contains(query)) {
+                    if (current.getMap() != null && current.getMap().toLowerCase().contains(query)) {
                         canAddRow = true;
                     }
                 }
 
                 if (canAddRow) {
                     model.addRow(current);
+                } else {
+                    model.deleteRow(current);
                 }
-            }
-        }
-    }
-
-    /**
-     * Model of the table used to display servers.
-     */
-    @SuppressWarnings("serial")
-    class ServerTableModel extends AbstractTableModel {
-
-        public static final int PING = 0;
-        public static final int SERVER = 1;
-        public static final int PLAYERS = 2;
-        public static final int MAX = 3;
-        public static final int MAP = 4;
-        protected String[] columnNames;
-        private Vector<Server> dataVector;
-
-        public ServerTableModel(String[] columnNames) {
-            this.columnNames = columnNames;
-            dataVector = new Vector<Server>();
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return columnNames[column];
-        }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-
-        @Override
-        public Class getColumnClass(int column) {
-            switch (column) {
-                case PING:
-                case PLAYERS:
-                case MAX:
-                    return Integer.class;
-                case SERVER:
-                case MAP:
-                    return String.class;
-                default:
-                    return Object.class;
-            }
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            Server server = dataVector.get(row);
-            switch (column) {
-                case PING:
-                    return server.getPing();
-                case PLAYERS:
-                    return server.getPlayerCount();
-                case MAX:
-                    return server.getMaxPlayers();
-                case SERVER:
-                    return server.getHostname();
-                case MAP:
-                    return server.getMap();
-                default:
-                    return new Object();
-            }
-        }
-
-        @Override
-        public void setValueAt(Object value, int row, int column) {
-            Server server = dataVector.get(row);
-            switch (column) {
-                case PING:
-                    server.setPing((Integer) value);
-                    break;
-                case PLAYERS:
-                    server.setPlayerCount((Integer) value);
-                    break;
-                case MAX:
-                    server.setMaxPlayers((Integer) value);
-                    break;
-                case SERVER:
-                    server.setHostname((String) value);
-                    break;
-                case MAP:
-                    server.setMap((String) value);
-                    break;
-                default:
-                    System.out.println("invalid index");
-            }
-            fireTableCellUpdated(row, column);
-        }
-
-        @Override
-        public int getRowCount() {
-            return dataVector.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        public void addRow(Server newServer) {
-            if (!dataVector.contains(newServer)) {
-                dataVector.add(newServer);
-                fireTableRowsInserted(
-                        dataVector.size() - 1,
-                        dataVector.size() - 1);
-            }
-        }
-
-        public void deleteRow(Server newServer) {
-            if (dataVector.contains(newServer)) {
-                dataVector.remove(newServer);
-                fireTableRowsDeleted(
-                        dataVector.size() - 1,
-                        dataVector.size() - 1);
             }
         }
     }
@@ -547,7 +412,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         UpdateTask(org.jdesktop.application.Application app) {
             super(app);
-            toggleButtons(false);
+            setUpdateButtonsEnabled(false);
         }
 
         @Override
@@ -559,7 +424,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
 
         @Override
         protected void succeeded(Object result) {
-            toggleButtons(true);
+            setUpdateButtonsEnabled(true);
             refreshButton.doClick();
         }
     }
@@ -569,7 +434,13 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
      */
     @Action
     public void refresh() {
-        toggleButtons(false);
+        setUpdateButtonsEnabled(false);
+        // Refresh table model
+        if (serverMap != null) {
+            for (Server server : serverMap.values()) {
+                model.deleteRow(server);
+            }
+        }
         serverMap = new ConcurrentHashMap<String, Server>();
 
         for (final String ip : serverList) {
@@ -586,7 +457,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
             }
             (new ServerQuerier()).start();
 
-            toggleButtons(true);
+            setUpdateButtonsEnabled(true);
         }
     }
 
@@ -609,7 +480,7 @@ private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_
      */
     @Action
     public void connect() {
-        int selectedRow = jTable1.getSelectedRow();
+        int selectedRow = serverTable.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = "";
 

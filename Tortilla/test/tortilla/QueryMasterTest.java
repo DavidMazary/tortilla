@@ -44,12 +44,12 @@ public class QueryMasterTest {
     }
 
     /**
-     * Test of getMaster method, of class MasterQuery.
+     * Test of getMasterAddress method, of class MasterQuery.
      */
     @Test
     public void testGetMaster() {
         System.out.println("testGetMaster");
-        String result = instance.getMaster();
+        String result = instance.getMasterAddress();
         System.out.println("Queried " + result);
         assertTrue(result.contains("ghdigital.com") ||
                 result.contains("dpmaster.deathmask.net") ||
@@ -86,7 +86,7 @@ public class QueryMasterTest {
     public void testGetValue() {
         System.out.println("testGetValue");
 //        String expResult = "75.126.234.42:26002";
-        String result = instance.getValue("//////");
+        String result = instance.getAddressFromBytes("//////");
         System.out.println(result);
 //        assertEquals(result, expResult);
     }

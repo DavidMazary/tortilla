@@ -15,7 +15,11 @@ import javax.swing.JOptionPane;
 public class MasterQuery extends AbstractQuery {
 
     private static final int DPMASTER_PORT = 27950;
+    private static final int MESSAGE_START = 22;
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
+    private static final String[] MASTER_ADDRESSES = {"ghdigital.com",
+        "dpmaster.deathmask.net", "dpmaster.tchr.no"};
+    
     /**
      * Retreives and saves the list of servers from the master server.
      * Note that servers containing the "\\" delimiter in their byte string
@@ -23,23 +27,22 @@ public class MasterQuery extends AbstractQuery {
      * @return An ArrayList of server query results
      */
     public ArrayList<String> getServerList() {
-        String queryResult = null;
         ArrayList<String> serverList = null;
-
-        queryResult = getInfo(getMaster(), DPMASTER_PORT, REQUEST);
+        String queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
 
         if (querySuccess) {
             serverList = new ArrayList<String>();
-            int index = queryResult.indexOf("\\");
-            String address;
+            int index = MESSAGE_START;
+            String byteAddress;
 
-            // Each IP address + delimiter is 7 characters
+            // 1 delimiter + 6 bytes
             while (index + 7 < queryResult.length()) {
-                address = queryResult.substring(index + 1, index + 7);
-                serverList.add(getValue(address));
+                byteAddress = queryResult.substring(index + 1, index + 7);
+                serverList.add(getAddressFromBytes(byteAddress));
                 index += 7;
             }
         } else {
+            // Notify the user since there may be a problem with their connection.
             JOptionPane.showMessageDialog(null, "Could not reach master server");
         }
         return serverList;
@@ -47,14 +50,10 @@ public class MasterQuery extends AbstractQuery {
 
     /**
      * Choose a random master server to query, for load-balancing.
-     * @return URL of master server.
+     * @return address of master server.
      */
-    protected String getMaster() {
-        String[] master = {"ghdigital.com", "dpmaster.deathmask.net",
-            "dpmaster.tchr.no"
-        };
-        Random r = new Random();
-        return master[r.nextInt(3)];
+    protected String getMasterAddress() {
+        return MASTER_ADDRESSES[new Random().nextInt(3)];
     }
 
     /**
@@ -65,24 +64,19 @@ public class MasterQuery extends AbstractQuery {
      * @param ip String containing the data.
      * @return  String with the decoded data.
      */
-    protected String getValue(String ip) {
-        String value = null;
+    protected String getAddressFromBytes(String ip) {
+        String address = null;
         
         try {
-            byte[] b = ip.getBytes("ISO-8859-1");
-            int A = 0;
-            int B = 0;
-            int C = 0;
-            int D = 0;
-            int port = 0;
-            A |= b[0] & 0xff;
-            B |= b[1] & 0xff;
-            C |= b[2] & 0xff;
-            D |= b[3] & 0xff;
-            port |= b[4] & 0xff;
+            byte[] bytes = ip.getBytes("ISO-8859-1");
+            int A = bytes[0] & 0xff;
+            int B = bytes[1] & 0xff;
+            int C = bytes[2] & 0xff;
+            int D = bytes[3] & 0xff;
+            int port = bytes[4] & 0xff;
             port <<= 8;
-            port |= b[5] & 0xff;
-            value = A + "." + B + "." + C + "." + D + ":" + port;
+            port |= bytes[5] & 0xff;
+            address = A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
@@ -91,6 +85,6 @@ public class MasterQuery extends AbstractQuery {
                     Level.SEVERE, null, ex);
             System.err.println(ip);
         }
-        return value;
+        return address;
     }
 }
