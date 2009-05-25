@@ -21,11 +21,9 @@ public class Player {
      * Translate special characters into displayable text in player names.
      * Converts the given name string to bytes,
      * which correspond to positions in the font table.
-     * The font table is taken from the Nexuiz source code.
-     * I can't thank KadaverJack enough for this, saved me so much time. :)
      *
      * @param name 
-     * @return Player's name converted to normal text
+     * @return Player's name converted to ascii text
      */
     protected String translateName(String name) {
         // Thanks to KadaverJack for showing me this lovely bit here :)
@@ -63,23 +61,15 @@ public class Player {
             'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
             'x', 'y', 'z', '{', '|', '}', '~', '<'
         };
-        String playerName = "";
+        byte nameBytes[] = name.getBytes();
+        StringBuilder sb = new StringBuilder("");
 
-        try {
-            byte nameBytes[] = name.getBytes("ISO-8859-1");
-            StringBuilder sb = new StringBuilder("");
-
-            // Character will correspond with unsigned byte.
-            for (byte b : nameBytes) {
-                sb.append(fontTable[b & 0xff]);
-            }
-
-            playerName = sb.toString();
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        // Character will correspond with unsigned byte.
+        for (byte b : nameBytes) {
+            sb.append(fontTable[b & 0xff]);
         }
 
-        return playerName;
+        return sb.toString();
     }
 
     /**
@@ -126,8 +116,8 @@ public class Player {
      * 
      * @param score
      */
-    public void setScore(int score) {
-        this.score = score;
+    public void setScore(String score) {
+        this.score = Integer.parseInt(score);
     }
 
     /**
@@ -142,7 +132,7 @@ public class Player {
      * 
      * @param ping
      */
-    public void setPing(int ping) {
-        this.ping = ping;
+    public void setPing(String ping) {
+        this.ping = Integer.parseInt(ping);
     }
 }
