@@ -35,15 +35,11 @@ public class ServerTableModel extends AbstractTableModel {
     @Override
     public Class getColumnClass(int column) {
         switch (column) {
-            case PING:
-            case PLAYERS:
-            case MAX:
-                return Integer.class;
             case SERVER:
             case MAP:
                 return String.class;
             default:
-                return Object.class;
+                return Integer.class;
         }
     }
 
@@ -102,24 +98,20 @@ public class ServerTableModel extends AbstractTableModel {
     }
 
     public void addRow(Server newServer) {
-        if (!dataVector.contains(newServer)) {
             dataVector.add(newServer);
             fireTableRowsInserted(
                     dataVector.size() - 1,
                     dataVector.size() - 1);
-        }
     }
 
     public void deleteRow(Server newServer) {
-        if (dataVector.contains(newServer)) {
             dataVector.remove(newServer);
             fireTableRowsDeleted(
                     dataVector.size() - 1,
                     dataVector.size() - 1);
-        }
     }
 
-    public void clearData() {
-        dataVector.clear();
+    protected Vector<Server> getDataVector() {
+        return dataVector;
     }
 }

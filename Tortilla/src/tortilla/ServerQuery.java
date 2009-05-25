@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,17 +27,17 @@ public class ServerQuery extends AbstractQuery {
 
         querySuccess = false;
         int queryTries = 0;
-        while (!querySuccess && (queryTries < 2)) {
+        while (!querySuccess && (queryTries < 3)) {
             queryResult = getInfo(ip[0], port,
                     "xxxxgetinfo tortilla");
             queryTries++;
         }
 
-        Server tortillaServer = null;
+        Server server = null;
         if (querySuccess) {
-            tortillaServer = processServer(queryResult, ipStr);
+            server = getServerFromResponse(queryResult, ipStr);
         }
-        return tortillaServer;
+        return server;
     }
 
     /**
@@ -50,14 +49,13 @@ public class ServerQuery extends AbstractQuery {
     public Server getStatus(String ipStr) {
         String ip[] = ipStr.split(":");
         int port = Integer.parseInt(ip[1]);
-        Server tortillaServer = null;
-        ArrayList<Player> tortillaPlayers = new ArrayList<Player>();
+        Server server = null;
+        ArrayList<Player> players = new ArrayList<Player>();
         String queryResult = null;
-
 
         querySuccess = false;
         int queryTries = 0;
-        while (!querySuccess && (queryTries < 2)) {
+        while (!querySuccess && (queryTries < 3)) {
             queryResult = getInfo(ip[0], port,
                     "xxxxgetstatus tortilla");
             queryTries++;
@@ -65,26 +63,24 @@ public class ServerQuery extends AbstractQuery {
 
         if (querySuccess) {
             queryResult = queryResult.substring(queryResult.indexOf("\\"));
-            queryResult = queryResult.replaceAll(
-                    "\\^([0-9a-wyzA-WYZ]|x[0-9a-fA-F]{6})", "");
             String input;
 
             try {
                 BufferedReader in = new BufferedReader(
                         new StringReader(queryResult));
                 if ((input = in.readLine()) != null) {
-                    tortillaServer = processServer(input, ipStr);
+                    server = getServerFromResponse(input, ipStr);
                     while ((input = in.readLine()) != null) {
-                        tortillaPlayers.add(processPlayer(input));
+                        players.add(getPlayerFromResponse(input));
                     }
-                    tortillaServer.setPlayerList(tortillaPlayers);
+                    server.setPlayerList(players);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(TortillaView.class.getName()).
                         log(Level.SEVERE, null, ex);
             }
         }
-        return tortillaServer;
+        return server;
     }
 
     /**
@@ -92,18 +88,13 @@ public class ServerQuery extends AbstractQuery {
      * @param queryResult String of the line to process.
      * @return Player which is created.
      */
-    protected Player processPlayer(String queryResult) {
-        Scanner scanner = new Scanner(queryResult);
-        int score = scanner.nextInt();
-        int ping = scanner.nextInt();
-        scanner.useDelimiter("\"");
-        scanner.next();
-        String name = scanner.next();
+    protected Player getPlayerFromResponse(String queryResult) {
+        String[] playerName = queryResult.split("\"");
+        String[] playerData = playerName[0].split(" ");
         Player player = new Player();
-        player.setScore(score);
-        // Some leading and trailing chars may be converted to whitespace.
-        player.setName(name.trim());
-        player.setPing(ping);
+        player.setScore(playerData[0]);
+        player.setPing(playerData[1]);
+        player.setName(playerName[1]);
         return player;
     }
 
@@ -114,15 +105,15 @@ public class ServerQuery extends AbstractQuery {
      * @param ipStr The address of the server.
      * @return Server which is created.
      */
-    protected Server processServer(String queryResult, String ipStr) {
+    protected Server getServerFromResponse(String queryResult, String ipStr) {
         Server server = new Server();
         String[] serverData = queryResult.split("\\\\");
 
         server.setGame(serverData[2]);
         server.setModname(serverData[4]);
         server.setGameVersion(serverData[6]);
-        server.setMaxPlayers(Integer.parseInt(serverData[8]));
-        server.setPlayerCount(Integer.parseInt(serverData[10]));
+        server.setMaxPlayers(serverData[8]);
+        server.setPlayerCount(serverData[10]);
         if (serverData[11].equals("bots")) {
             server.setBotCount(Integer.parseInt(serverData[12]));
             server.setMap(serverData[14]);

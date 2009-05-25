@@ -12,6 +12,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class TortillaView extends FrameView {
         super(app);
 
         initComponents();
-        updateButton.doClick();
+        update().execute();
 
 //        // Refreshes serverlist every 20 seconds.
 //        int delay = 90000;
@@ -332,7 +333,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private JDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private ServerTableModel model = new ServerTableModel();
+    private AtomicReference<ServerTableModel> model = 
+            new AtomicReference<ServerTableModel>(new ServerTableModel());
     private ArrayList<String> serverList;
     private ConcurrentHashMap<String, Server> serverMap;
     private static final int HIGH_PING = 200;
@@ -342,7 +344,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      * @return The DefaultTableModel used here.
      */
     public AbstractTableModel getModel() {
-        return model;
+        return model.get();
     }
 
     /**
@@ -359,7 +361,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
-    private void refreshTable() {
+    private synchronized void refreshTable() {
         boolean canAddRow;
 
         Server current;
@@ -390,10 +392,13 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     }
                 }
 
+
+                if (model.get().getDataVector().contains(current)) {
+                    model.get().deleteRow(current);
+                }
+
                 if (canAddRow) {
-                    model.addRow(current);
-                } else {
-                    model.deleteRow(current);
+                    model.get().addRow(current);
                 }
             }
         }
@@ -425,7 +430,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         @Override
         protected void succeeded(Object result) {
             setUpdateButtonsEnabled(true);
-            refreshButton.doClick();
+            refresh();
         }
     }
 
@@ -434,30 +439,34 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      */
     @Action
     public void refresh() {
-        setUpdateButtonsEnabled(false);
         // Refresh table model
         if (serverMap != null) {
             for (Server server : serverMap.values()) {
-                model.deleteRow(server);
+                model.get().deleteRow(server);
             }
         }
         serverMap = new ConcurrentHashMap<String, Server>();
 
-        for (final String ip : serverList) {
-            class ServerQuerier extends Thread {
+        class ServerQueryThread extends Thread {
 
-                @Override
-                public void run() {
-                    Server server = new ServerQuery().getStatus(ip);
-                    if (server != null) {
-                        serverMap.putIfAbsent(ip, server);
-                    }
+            String ip;
+
+            public ServerQueryThread(String address) {
+                ip = address;
+            }
+
+            @Override
+            public void run() {
+                Server server = new ServerQuery().getStatus(ip);
+                if (server != null) {
+                    serverMap.putIfAbsent(ip, server);
                     refreshTable();
                 }
             }
-            (new ServerQuerier()).start();
+        }
 
-            setUpdateButtonsEnabled(true);
+        for (final String ip : serverList) {
+            (new ServerQueryThread(ip)).start();
         }
     }
 
@@ -485,12 +494,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = "";
 
         if (selectedRow != -1) {
-            for (int i = 0; i < model.getColumnCount(); i++) {
-                if (model.getColumnName(i).contains("Server")) {
+            for (int i = 0; i < model.get().getColumnCount(); i++) {
+                if (model.get().getColumnName(i).contains("Server")) {
                     nameColumn = i;
                 }
             }
-            String selectedServer = model.getValueAt(selectedRow,
+            String selectedServer = model.get().getValueAt(selectedRow,
                     nameColumn).toString();
             Server current;
             for (String ip : serverMap.keySet()) {

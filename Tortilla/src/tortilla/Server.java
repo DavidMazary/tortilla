@@ -82,6 +82,14 @@ public class Server {
      * Update current number of players.
      * @param newPlayers New player count on server.
      */
+    public void setPlayerCount(String newPlayers) {
+        players = Integer.parseInt(newPlayers);
+    }
+
+        /**
+     * Update current number of players.
+     * @param newPlayers New player count on server.
+     */
     public void setPlayerCount(int newPlayers) {
         players = newPlayers;
     }
@@ -108,6 +116,14 @@ public class Server {
      */
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    /**
+     * Update maximum number of players.
+     * @param maxplayers New maximum player limit for server.
+     */
+    public void setMaxPlayers(String maxplayers) {
+        this.maxplayers = Integer.parseInt(maxplayers);
     }
 
     /**
