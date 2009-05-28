@@ -142,11 +142,6 @@ public class TortillaView extends FrameView {
         refreshButton.setName("refreshButton"); // NOI18N
         refreshButton.setPreferredSize(new java.awt.Dimension(42, 42));
         refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        refreshButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshButtonActionPerformed(evt);
-            }
-        });
 
         updateButton.setAction(actionMap.get("update")); // NOI18N
         updateButton.setFocusable(false);
@@ -155,11 +150,6 @@ public class TortillaView extends FrameView {
         updateButton.setName("updateButton"); // NOI18N
         updateButton.setPreferredSize(new java.awt.Dimension(42, 42));
         updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        updateButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -278,14 +268,6 @@ public class TortillaView extends FrameView {
      * Get server list from master server when clicked.
      * @param evt
      */
-    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
-        update();
-    }//GEN-LAST:event_updateButtonActionPerformed
-
-    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
-        refresh();
-    }//GEN-LAST:event_refreshButtonActionPerformed
-
 private void hideHighPingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideHighPingMenuItemActionPerformed
     refreshTable();
 }//GEN-LAST:event_hideHighPingMenuItemActionPerformed
