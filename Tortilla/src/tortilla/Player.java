@@ -135,4 +135,12 @@ public class Player {
     public void setPing(String ping) {
         this.ping = Integer.parseInt(ping);
     }
+
+    void setPing(int i) {
+        this.ping = i;
+    }
+
+    void setScore(int i) {
+        this.score = i;
+    }
 }
