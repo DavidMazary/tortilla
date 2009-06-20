@@ -4,8 +4,8 @@
 package tortilla;
 
 import java.awt.Frame;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-//import javax.swing.Timer;
+import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -35,16 +35,16 @@ public class TortillaView extends FrameView {
         initComponents();
         update().execute();
 
-//        // Refreshes serverlist every 20 seconds.
-//        int delay = 90000;
-//        ActionListener refreshTask = new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent evt) {
-//                refreshButton.doClick();
-//            }
-//        };
-//        new Timer(delay, refreshTask).start();
+        // Refreshes serverlist every 20 seconds.
+        int delay = 90000;
+        ActionListener refreshTask = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                refresh();
+            }
+        };
+        new Timer(delay, refreshTask).start();
     }
 
     /**
