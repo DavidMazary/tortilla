@@ -72,8 +72,10 @@ public class GameLauncher {
                         Level.SEVERE, null, ex);
             }
         } else {
+//            JOptionPane.showMessageDialog(new Frame(),
+//                    "Game not found.\nTortilla must be within the Nexuiz folder");
             JOptionPane.showMessageDialog(new Frame(),
-                    "Game not found.\nTortilla must be within the Nexuiz folder");
+                    game.toString());
         }
     }
 
