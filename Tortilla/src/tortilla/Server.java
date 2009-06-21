@@ -21,6 +21,7 @@ public class Server {
     private int ping;
     private int botCount;
     private ArrayList<Player> playerList;
+    private boolean favorite = false;
 
     /**
      * Hostname of this server.
@@ -206,5 +207,19 @@ public class Server {
 
     public void setModname(String modname) {
         this.modname = modname;
+    }
+
+    /**
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    /**
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 }

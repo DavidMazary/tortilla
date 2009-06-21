@@ -87,10 +87,6 @@ public class MasterQuery extends AbstractQuery {
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(MasterQuery.class.getName()).log(
                     Level.SEVERE, null, ex);
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            Logger.getLogger(MasterQuery.class.getName()).log(
-                    Level.SEVERE, null, ex);
-            System.err.println(ip);
         }
         return address;
     }
