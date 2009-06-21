@@ -72,6 +72,9 @@
             <Property name="text" type="java.lang.String" resourceKey="addressField.text"/>
             <Property name="name" type="java.lang.String" value="addressField" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="addressFieldFocusGained"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
