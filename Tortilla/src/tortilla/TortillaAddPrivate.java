@@ -178,8 +178,10 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
             while (scanner.hasNextLine()) {
                 configText.add(scanner.nextLine());
             }
+            boolean favLineFound = false;
             for (String line : configText) {
                 if (line.contains("net_slist_favorites")) {
+                    favLineFound = true;
                     if (line.contains(addressField.getText())) {
                         break;
                     } else {
@@ -188,6 +190,9 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
                         break;
                     }
                 }
+            }
+            if (!favLineFound) {
+                configText.add("net_slist_favorites \"" + addressField.getText() + "\"");
             }
             BufferedWriter writer = null;
             try {
