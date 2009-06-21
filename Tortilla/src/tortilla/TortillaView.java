@@ -380,7 +380,10 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             if ((current = serverMap.get(Ip)) != null) {
                 canAddRow = true;
 
-                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) || (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) || (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) || (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
+                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) ||
+                    (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) ||
+                    (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) ||
+                    (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
                     canAddRow = false;
                 }
 
@@ -389,7 +392,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     if (current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) {
                         canAddRow = false;
                     }
-                    // Search for player matches; requires getstatus query
+                    // TODO: Search for player matches; requires getstatus query
 //                    if (players != null) {
 //                        for (Player player : players) {
 //                            if (player.getName().toLowerCase().contains(query)) {
@@ -529,8 +532,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             Server current;
             for (String ip : serverMap.keySet()) {
                 if (((current = serverMap.get(ip)) != null) &&
-                    (current.getHostname().equals(selectedServer))) {
-                        selectedIp = ip;
+                        (current.getHostname().equals(selectedServer))) {
+                    selectedIp = ip;
                 }
             }
 
@@ -563,8 +566,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             Server current;
             for (String ip : serverMap.keySet()) {
                 if (((current = serverMap.get(ip)) != null) &&
-                    (current.getHostname().equals(selectedServer))) {
-                        selectedIp = ip;
+                        (current.getHostname().equals(selectedServer))) {
+                    selectedIp = ip;
                 }
             }
         }
@@ -593,26 +596,29 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         if (operatingSystem == null) {
             operatingSystem = System.getProperty("os.name");
         }
-        if (operatingSystem.contains("Linux")) {
-            String home = System.getProperty("user.home");
-            try {
-                Scanner scanner = new Scanner(new File(home + "/.nexuiz/data/config.cfg"));
-                String line = null;
-                while (scanner.hasNextLine()) {
-                    line = scanner.nextLine();
-                    if (line.contains("net_slist_favorites")) {
-                        scanner = new Scanner(line.replaceAll("[\"]", ""));
-                        scanner.next();
-                        favoriteServerList = new ArrayList<String>();
-                        while (scanner.hasNext()) {
-                            favoriteServerList.add(scanner.next());
-                        }
-                        break;
-                    }
-                }
 
-            } catch (FileNotFoundException ex) {
+        try {
+            Scanner scanner;
+            if (operatingSystem.contains("Linux")) {
+                scanner = new Scanner(new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg"));
+            } else {
+                scanner = new Scanner(new File(System.getProperty("user.dir") + "\\data\\config.cfg"));
             }
+            String line = null;
+            while (scanner.hasNextLine()) {
+                line = scanner.nextLine();
+                if (line.contains("net_slist_favorites")) {
+                    scanner = new Scanner(line.replaceAll("[\"]", ""));
+                    scanner.next();
+                    favoriteServerList = new ArrayList<String>();
+                    while (scanner.hasNext()) {
+                        favoriteServerList.add(scanner.next());
+                    }
+                    break;
+                }
+            }
+
+        } catch (FileNotFoundException ex) {
         }
     }
 }
