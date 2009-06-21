@@ -157,51 +157,53 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
     public void add() {
         String operatingSystem = System.getProperty("os.name");
 
-        if (operatingSystem.contains("Linux")) {
-            String home = System.getProperty("user.home");
-            Vector<String> configText = new Vector<String>();
-            try {
-                File configFile = new File(home + "/.nexuiz/data/config.cfg");
-                Scanner scanner = new Scanner(configFile);
-                while (scanner.hasNextLine()) {
-                    configText.add(scanner.nextLine());
-                }
-                for (String line : configText) {
-                    if (line.contains("net_slist_favorites")) {
-                        if (line.contains(addressField.getText())) {
-                            break;
-                        } else {
-                            configText.remove(line);
-                            configText.add(line.substring(0, line.length() - 1) + " " + addressField.getText() + "\"");
-                            break;
-                        }
-                    }
-                }
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(configFile));
-                    for (String line : configText) {
-                        writer.write(line);
-                        writer.newLine();
-                    }
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(new Frame(),
-                            "Could not write to ~/.nexuiz/data/config.cfg");
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.flush();
-                            writer.close();
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(new Frame(),
-                                    "Could not write to ~/.nexuiz/data/config.cfg");
-                        }
-                    }
-                }
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(new Frame(),
-                        "Could not find ~/.nexuiz/data/config.cfg");
+        Vector<String> configText = new Vector<String>();
+        File configFile;
+        try {
+            if (operatingSystem.contains("Linux")) {
+                configFile = new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg");
+            } else {
+                configFile = new File(System.getProperty("user.dir") + "\\data\\config.cfg");
             }
+            Scanner scanner = new Scanner(configFile);
+            while (scanner.hasNextLine()) {
+                configText.add(scanner.nextLine());
+            }
+            for (String line : configText) {
+                if (line.contains("net_slist_favorites")) {
+                    if (line.contains(addressField.getText())) {
+                        break;
+                    } else {
+                        configText.remove(line);
+                        configText.add(line.substring(0, line.length() - 1) + " " + addressField.getText() + "\"");
+                        break;
+                    }
+                }
+            }
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter(configFile));
+                for (String line : configText) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(new Frame(),
+                        "Could not write to config file");
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.flush();
+                        writer.close();
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(new Frame(),
+                                "Could not write to config file");
+                    }
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(new Frame(),
+                    "Could not find config file");
         }
         this.setVisible(false);
     }
