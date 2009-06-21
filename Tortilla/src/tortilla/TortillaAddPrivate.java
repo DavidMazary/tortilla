@@ -55,6 +55,11 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaAddPrivate.class);
         addressField.setText(resourceMap.getString("addressField.text")); // NOI18N
         addressField.setName("addressField"); // NOI18N
+        addressField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                addressFieldFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -122,6 +127,10 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addressFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_addressFieldFocusGained
+       addressField.selectAll();
+    }//GEN-LAST:event_addressFieldFocusGained
 
     /**
      * @param args the command line arguments
