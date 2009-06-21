@@ -13,7 +13,6 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,7 +39,7 @@ public class TortillaView extends FrameView {
         checkFavoriteServers();
         update().execute();
 
-        // Refreshes serverlist every 20 seconds.
+    // Refreshes serverlist every 20 seconds.
 //        int delay = 90000;
 //        ActionListener refreshTask = new ActionListener() {
 //
@@ -341,10 +340,10 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
-    private JDialog addPrivateServerBox;
+    private TortillaAddPrivate addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private AtomicReference<ServerTableModel> model = 
+    private AtomicReference<ServerTableModel> model =
             new AtomicReference<ServerTableModel>(new ServerTableModel());
     private ArrayList<String> serverList;
     private ArrayList<String> favoriteServerList;
@@ -381,10 +380,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             if ((current = serverMap.get(Ip)) != null) {
                 canAddRow = true;
 
-                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0))
-                        || (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers()))
-                        || (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING))
-                        || (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
+                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) || (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) || (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) || (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
                     canAddRow = false;
                 }
 
@@ -440,8 +436,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             serverList = queryM.getServerList();
             if (favoriteServerList != null) {
                 for (String address : favoriteServerList) {
-                    if (serverList.contains(address))
-                    {
+                    if (serverList.contains(address)) {
                         serverList.remove(address);
                     }
                 }
@@ -490,8 +485,10 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             }
         }
 
-        for (final String ip : favoriteServerList) {
-            (new ServerQueryThread(ip, true)).start();
+        if (favoriteServerList != null) {
+            for (final String ip : favoriteServerList) {
+                (new ServerQueryThread(ip, true)).start();
+            }
         }
         for (final String ip : serverList) {
             (new ServerQueryThread(ip, false)).start();
@@ -531,10 +528,9 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     nameColumn).toString();
             Server current;
             for (String ip : serverMap.keySet()) {
-                if ((current = serverMap.get(ip)) != null) {
-                    if (current.getHostname().equals(selectedServer)) {
+                if (((current = serverMap.get(ip)) != null) &&
+                    (current.getHostname().equals(selectedServer))) {
                         selectedIp = ip;
-                    }
                 }
             }
 
@@ -552,12 +548,37 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
     @Action
     public void showPrivateServerBox() {
+        int selectedRow = serverTable.getSelectedRow();
+        int nameColumn = 1;
+        String selectedIp = null;
+
+        if (selectedRow != -1) {
+            for (int i = 0; i < model.get().getColumnCount(); i++) {
+                if (model.get().getColumnName(i).contains("Server")) {
+                    nameColumn = i;
+                }
+            }
+            String selectedServer = model.get().getValueAt(selectedRow,
+                    nameColumn).toString();
+            Server current;
+            for (String ip : serverMap.keySet()) {
+                if (((current = serverMap.get(ip)) != null) &&
+                    (current.getHostname().equals(selectedServer))) {
+                        selectedIp = ip;
+                }
+            }
+        }
         if (addPrivateServerBox == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
             addPrivateServerBox = new TortillaAddPrivate(mainFrame, false);
             addPrivateServerBox.setLocationRelativeTo(mainFrame);
+            addPrivateServerBox.setTitle("Favorite");
+        }
+        if (selectedIp != null) {
+            addPrivateServerBox.setAddressField(selectedIp);
         }
         TortillaApp.getApplication().show(addPrivateServerBox);
+        refresh();
     }
 
     @Action
@@ -580,17 +601,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 while (scanner.hasNextLine()) {
                     line = scanner.nextLine();
                     if (line.contains("net_slist_favorites")) {
+                        scanner = new Scanner(line.replaceAll("[\"]", ""));
+                        scanner.next();
+                        favoriteServerList = new ArrayList<String>();
+                        while (scanner.hasNext()) {
+                            favoriteServerList.add(scanner.next());
+                        }
                         break;
                     }
                 }
-                if (line != null) {
-                    scanner = new Scanner(line.replaceAll("[\"]", ""));
-                    scanner.next();
-                    favoriteServerList = new ArrayList<String>();
-                    while (scanner.hasNext()) {
-                        favoriteServerList.add(scanner.next());
-                    }
-                }
+
             } catch (FileNotFoundException ex) {
             }
         }
