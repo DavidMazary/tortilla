@@ -134,11 +134,11 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addressFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_addressFieldFocusGained
-       addressField.selectAll();
+        addressField.selectAll();
     }//GEN-LAST:event_addressFieldFocusGained
 
     private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
-       add();
+        add();
     }//GEN-LAST:event_addressFieldActionPerformed
 
     /**
@@ -192,6 +192,11 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
                 if (line.contains("net_slist_favorites")) {
                     favLineFound = true;
                     if (line.contains(addressField.getText())) {
+                        int choice = JOptionPane.showConfirmDialog(null, "Remove server from favorites?");
+                        if (choice == JOptionPane.YES_OPTION) {
+                            configText.remove(line);
+                            configText.add(line.replaceAll(addressField.getText(), ""));
+                        }
                         break;
                     } else {
                         configText.remove(line);
@@ -211,7 +216,7 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
                     writer.newLine();
                 }
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(new Frame(),
+                JOptionPane.showMessageDialog(null,
                         "Could not write to config file");
             } finally {
                 if (writer != null) {
@@ -219,7 +224,7 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
                         writer.flush();
                         writer.close();
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(new Frame(),
+                        JOptionPane.showMessageDialog(null,
                                 "Could not write to config file");
                     }
                 }
