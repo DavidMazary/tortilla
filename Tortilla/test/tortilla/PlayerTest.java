@@ -81,4 +81,22 @@ public class PlayerTest {
         assertEquals(expResult, result);
     }
 
+    /**
+     * Tests ^0-^9 color codes for conversion.
+     */
+    @Test
+    public void basicColoredName() {
+        String expResult = "<font color=\"white\">[</font><font color=\"red\">Dave</font><font color=\"white\">]</font><font color=\"yellow\">D</font><font color=\"DimGray\">ave";
+        instance.setName("^7[^1Dave^7]^3D^8ave");
+        assertEquals("[Dave]Dave", instance.getName());
+        assertEquals(expResult, instance.getColoredName());
+    }
+
+    /**
+     * Tests ^xXXX  color codes for conversion.
+     */
+    @Test
+    public void hexColoredName() {
+        fail("Implement");
+    }
 }

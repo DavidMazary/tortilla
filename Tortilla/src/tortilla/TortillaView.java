@@ -391,7 +391,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     if (current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) {
                         canAddRow = false;
                     }
-                    // Search for player matches; requires getstatus query
+                    // Search for player matches (requires getstatus query)
                     if (current.getPlayerList() != null) {
                         for (Player player : current.getPlayerList()) {
                             if (player.getName().toLowerCase().contains(query)) {
@@ -567,7 +567,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         if (addPrivateServerBox == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
             addPrivateServerBox = new TortillaAddPrivate(mainFrame, false);
-            addPrivateServerBox.setLocationRelativeTo(mainFrame);
+            addPrivateServerBox.setLocationRelativeTo(this.getFrame());
             addPrivateServerBox.setTitle("Favorite");
         }
         if (selectedIp != null) {

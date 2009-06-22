@@ -173,65 +173,67 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
      */
     @Action
     public void add() {
-        String operatingSystem = System.getProperty("os.name");
+        if (addressField.getText().equals("")) {
+            String operatingSystem = System.getProperty("os.name");
 
-        Vector<String> configText = new Vector<String>();
-        File configFile;
-        try {
-            if (operatingSystem.contains("Linux")) {
-                configFile = new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg");
-            } else {
-                configFile = new File(System.getProperty("user.dir") + "\\data\\config.cfg");
-            }
-            Scanner scanner = new Scanner(configFile);
-            while (scanner.hasNextLine()) {
-                configText.add(scanner.nextLine());
-            }
-            boolean favLineFound = false;
-            for (String line : configText) {
-                if (line.contains("net_slist_favorites")) {
-                    favLineFound = true;
-                    if (line.contains(addressField.getText())) {
-                        int choice = JOptionPane.showConfirmDialog(null, "Remove server from favorites?");
-                        if (choice == JOptionPane.YES_OPTION) {
-                            configText.remove(line);
-                            configText.add(line.replaceAll(addressField.getText(), ""));
-                        }
-                        break;
-                    } else {
-                        configText.remove(line);
-                        configText.add(line.substring(0, line.length() - 1) + " " + addressField.getText() + "\"");
-                        break;
-                    }
-                }
-            }
-            if (!favLineFound) {
-                configText.add("net_slist_favorites \"" + addressField.getText() + "\"");
-            }
-            BufferedWriter writer = null;
+            Vector<String> configText = new Vector<String>();
+            File configFile;
             try {
-                writer = new BufferedWriter(new FileWriter(configFile));
-                for (String line : configText) {
-                    writer.write(line);
-                    writer.newLine();
+                if (operatingSystem.contains("Linux")) {
+                    configFile = new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg");
+                } else {
+                    configFile = new File(System.getProperty("user.dir") + "\\data\\config.cfg");
                 }
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null,
-                        "Could not write to config file");
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.flush();
-                        writer.close();
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null,
-                                "Could not write to config file");
+                Scanner scanner = new Scanner(configFile);
+                while (scanner.hasNextLine()) {
+                    configText.add(scanner.nextLine());
+                }
+                boolean favLineFound = false;
+                for (String line : configText) {
+                    if (line.contains("net_slist_favorites")) {
+                        favLineFound = true;
+                        if (line.contains(addressField.getText())) {
+                            int choice = JOptionPane.showConfirmDialog(null, "Remove server from favorites?");
+                            if (choice == JOptionPane.YES_OPTION) {
+                                configText.remove(line);
+                                configText.add(line.replaceAll(addressField.getText(), ""));
+                            }
+                            break;
+                        } else {
+                            configText.remove(line);
+                            configText.add(line.substring(0, line.length() - 1) + " " + addressField.getText() + "\"");
+                            break;
+                        }
                     }
                 }
+                if (!favLineFound) {
+                    configText.add("net_slist_favorites \"" + addressField.getText() + "\"");
+                }
+                BufferedWriter writer = null;
+                try {
+                    writer = new BufferedWriter(new FileWriter(configFile));
+                    for (String line : configText) {
+                        writer.write(line);
+                        writer.newLine();
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Could not write to config file");
+                } finally {
+                    if (writer != null) {
+                        try {
+                            writer.flush();
+                            writer.close();
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Could not write to config file");
+                        }
+                    }
+                }
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(new Frame(),
+                        "Could not find config file");
             }
-        } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Could not find config file");
         }
         this.setVisible(false);
     }

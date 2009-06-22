@@ -3,6 +3,7 @@ package tortilla;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * A Nexuiz player object.
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 public class Player {
 
     private String name;
+    private String coloredName;
     private int score;
     private int ping;
 
@@ -108,6 +110,7 @@ public class Player {
      */
     public void setName(String newName) {
         this.name = translateName(newName);
+        this.setColoredName(colorName(newName));
     }
 
     /**
@@ -148,5 +151,83 @@ public class Player {
 
     void setScore(int i) {
         this.score = i;
+    }
+
+    private String colorName(String newName) {
+        String htmlName = newName;
+        boolean firstTag = true;
+        for (int i = 0; i < htmlName.length(); i++) {
+            if ((htmlName.charAt(i)) == '^' && (i != htmlName.length())) {
+                char nextChar = htmlName.charAt(i + 1);
+                String color;
+                if (Character.isDigit(nextChar)) {
+                    switch (nextChar) {
+                        case '0':
+                            color = "black";
+                            break;
+                        case '1':
+                            color = "red";
+                            break;
+                        case '2':
+                            color = "lime";
+                            break;
+                        case '3':
+                            color = "yellow";
+                            break;
+                        case '4':
+                            color = "blue";
+                            break;
+                        case '5':
+                            color = "cyan";
+                            break;
+                        case '6':
+                            color = "magenta";
+                            break;
+                        case '7':
+                            color = "white";
+                            break;
+                        case '8':
+                            color = "DimGray";
+                            break;
+                        default:
+                            color = "gray";
+                    }
+                    String tag;
+                    if (firstTag) {
+                        tag = "<font color=\"" + color  + "\">";
+                        firstTag = false;
+                    } else {
+                        tag = "</font><font color=\"" + color  + "\">";
+                    }
+                    // TODO: Insert HTML font tag into name
+                    // remove old code, insert tag
+                    i++;
+                } else if (nextChar == 'x') {
+                    // TODO: Use pattern matching to check if next 3 chars are hex
+                    String colorCode = htmlName.substring(i + 2, i + 4);
+                    if (Pattern.matches("\\p{XDigit}", colorCode)) {
+
+                    }
+                }
+            }
+        }
+        if (!firstTag) {
+            htmlName += "</font>";
+        }
+        return htmlName;
+    }
+
+    /**
+     * @return the coloredName
+     */
+    public String getColoredName() {
+        return coloredName;
+    }
+
+    /**
+     * @param coloredName the coloredName to set
+     */
+    public void setColoredName(String coloredName) {
+        this.coloredName = coloredName;
     }
 }
