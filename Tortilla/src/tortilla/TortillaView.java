@@ -391,15 +391,15 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     if (current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) {
                         canAddRow = false;
                     }
-                    // TODO: Search for player matches; requires getstatus query
-//                    if (players != null) {
-//                        for (Player player : players) {
-//                            if (player.getName().toLowerCase().contains(query)) {
-//                                canAddRow = true;
-//                                break;
-//                            }
-//                        }
-//                    }
+                    // Search for player matches; requires getstatus query
+                    if (current.getPlayerList() != null) {
+                        for (Player player : current.getPlayerList()) {
+                            if (player.getName().toLowerCase().contains(query)) {
+                                canAddRow = true;
+                                break;
+                            }
+                        }
+                    }
                     if (current.getMap() != null && current.getMap().toLowerCase().contains(query)) {
                         canAddRow = true;
                     }
