@@ -69,7 +69,7 @@ public class PlayerTest {
     }
 
     /**
-     * Test of translateName method, of class Player.
+     * Test of sanitizeName method, of class Player.
      */
     @Test
     public void testTranslateName()
@@ -86,7 +86,7 @@ public class PlayerTest {
      */
     @Test
     public void basicColoredName() {
-        String expResult = "<font color=\"white\">[</font><font color=\"red\">Dave</font><font color=\"white\">]</font><font color=\"yellow\">D</font><font color=\"DimGray\">ave";
+        String expResult = "<font color=\"white\">[</font><font color=\"red\">Dave</font><font color=\"white\">]</font><font color=\"yellow\">D</font><font color=\"DimGray\">ave</font>";
         instance.setName("^7[^1Dave^7]^3D^8ave");
         assertEquals("[Dave]Dave", instance.getName());
         assertEquals(expResult, instance.getColoredName());
@@ -97,6 +97,8 @@ public class PlayerTest {
      */
     @Test
     public void hexColoredName() {
-        fail("Implement");
+        instance.setName("^x089D^x078a^x05Dv^xB1Fe^x39F");
+        assertEquals("Dave", instance.getName());
+        assertEquals("<font color=\"#008899\">D</font><font color=\"#007788\">a</font><font color=\"#0055DD\">v</font><font color=\"#BB11FF\">e</font><font color=\"#3399FF\"></font>", instance.getColoredName());
     }
 }

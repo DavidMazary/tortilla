@@ -1,8 +1,6 @@
 package tortilla;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -27,7 +25,7 @@ public class Player {
      * @param name 
      * @return Player's name converted to ascii text
      */
-    protected String translateName(String name) {
+    protected String sanitizeName(String name) {
         String asciiName;
         try {
             byte nameBytes[] = name.getBytes("ISO-8859-1");
@@ -109,8 +107,13 @@ public class Player {
      * @param newName
      */
     public void setName(String newName) {
-        this.name = translateName(newName);
-        this.setColoredName(colorName(newName));
+        String plainName = sanitizeName(decolorName(newName));
+        if (plainName.equals(newName)) {
+            this.setColoredName(newName);
+        } else {
+            this.setColoredName(nexuizColorsToHtml(newName));
+        }
+        this.name = plainName;
     }
 
     /**
@@ -153,7 +156,12 @@ public class Player {
         this.score = i;
     }
 
-    private String colorName(String newName) {
+    /**
+     * Converts Nexuiz color codes to HTML font color tags.
+     * @param newName Nexuiz-encoded player name.
+     * @return HTML-encoded player name.
+     */
+    private String nexuizColorsToHtml(String newName) {
         String htmlName = newName;
         boolean firstTag = true;
         for (int i = 0; i < htmlName.length(); i++) {
@@ -194,19 +202,26 @@ public class Player {
                     }
                     String tag;
                     if (firstTag) {
-                        tag = "<font color=\"" + color  + "\">";
+                        tag = "<font color=\"" + color + "\">";
                         firstTag = false;
                     } else {
-                        tag = "</font><font color=\"" + color  + "\">";
+                        tag = "</font><font color=\"" + color + "\">";
                     }
-                    // TODO: Insert HTML font tag into name
-                    // remove old code, insert tag
+                    htmlName = htmlName.replaceFirst("\\^\\p{Digit}", tag);
                     i++;
                 } else if (nextChar == 'x') {
-                    // TODO: Use pattern matching to check if next 3 chars are hex
-                    String colorCode = htmlName.substring(i + 2, i + 4);
-                    if (Pattern.matches("\\p{XDigit}", colorCode)) {
-
+                    String colorCode = htmlName.substring(i + 2, i + 5);
+                    if (Pattern.matches("\\p{XDigit}{3}", colorCode)) {
+                        String tag;
+                        color = "#" + colorCode.charAt(0) + colorCode.charAt(0) + colorCode.charAt(1) + colorCode.charAt(1) + colorCode.charAt(2) + colorCode.charAt(2);
+                        if (firstTag) {
+                            tag = "<font color=\"" + color + "\">";
+                            firstTag = false;
+                        } else {
+                            tag = "</font><font color=\"" + color + "\">";
+                        }
+                        htmlName = htmlName.replaceFirst("\\^x\\p{XDigit}{3}", tag);
+                        i += 4;
                     }
                 }
             }
@@ -229,5 +244,10 @@ public class Player {
      */
     public void setColoredName(String coloredName) {
         this.coloredName = coloredName;
+    }
+
+    private String decolorName(String newName) {
+        String cleanName = newName.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
+        return cleanName;
     }
 }
