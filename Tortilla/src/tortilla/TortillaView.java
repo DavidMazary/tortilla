@@ -36,7 +36,6 @@ public class TortillaView extends FrameView {
         super(app);
 
         initComponents();
-        checkFavoriteServers();
         update().execute();
 
     // Refreshes serverlist every 20 seconds.
@@ -436,6 +435,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
         @Override
         protected Object doInBackground() {
+            checkFavoriteServers();
             serverList = queryM.getServerList();
             if (favoriteServerList != null) {
                 for (String address : favoriteServerList) {
@@ -496,13 +496,6 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         for (final String ip : serverList) {
             (new ServerQueryThread(ip, false)).start();
         }
-    }
-
-    /**
-     * Stub.
-     */
-    @Action
-    public void addFavorite() {
     }
 
     /**
@@ -581,7 +574,6 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             addPrivateServerBox.setAddressField(selectedIp);
         }
         TortillaApp.getApplication().show(addPrivateServerBox);
-        refresh();
     }
 
     @Action
