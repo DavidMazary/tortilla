@@ -4,7 +4,9 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * Model of Nexuiz server data.
+ * TODO: Execute connect on double click.
+ * TODO: Show basic server info on mouse hover.
  * @author dmaz
  */
 public class ServerTableModel extends AbstractTableModel {
