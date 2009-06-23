@@ -29,7 +29,6 @@ public class TortillaView extends FrameView {
 
     /**
      * Create a new TortillaView using given SingleFrameApplication.
-     * TODO Smooth refreshes (overwrite new values, don't delete data first).
      * @param app Application calling TortillaView
      */
     public TortillaView(SingleFrameApplication app) {
@@ -82,9 +81,6 @@ public class TortillaView extends FrameView {
         addPrivateServerButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         hideHighPingMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -137,34 +133,30 @@ public class TortillaView extends FrameView {
         connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
         connectButton.setName("connectButton"); // NOI18N
-        connectButton.setPreferredSize(new java.awt.Dimension(44, 44));
         connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         updateButton.setAction(actionMap.get("update")); // NOI18N
         updateButton.setFocusable(false);
         updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        updateButton.setMinimumSize(new java.awt.Dimension(44, 44));
         updateButton.setName("updateButton"); // NOI18N
-        updateButton.setPreferredSize(new java.awt.Dimension(44, 44));
         updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         addPrivateServerButton.setAction(actionMap.get("showPrivateServerBox")); // NOI18N
         addPrivateServerButton.setName("addPrivateServerButton"); // NOI18N
-        addPrivateServerButton.setPreferredSize(new java.awt.Dimension(44, 44));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(addPrivateServerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addPrivateServerButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
                 .addComponent(favoriteServersToggleButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                 .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -185,16 +177,16 @@ public class TortillaView extends FrameView {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(12, 12, 12))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE))
+                .addGap(2, 2, 2)
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -203,17 +195,6 @@ public class TortillaView extends FrameView {
         fileMenu.setMnemonic('F');
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
-
-        jMenuItem1.setText("jMenuItem1");
-        jMenuItem1.setName("jMenuItem1"); // NOI18N
-        fileMenu.add(jMenuItem1);
-
-        jMenuItem2.setText("jMenuItem2");
-        jMenuItem2.setName("jMenuItem2"); // NOI18N
-        fileMenu.add(jMenuItem2);
-
-        jSeparator1.setName("jSeparator1"); // NOI18N
-        fileMenu.add(jSeparator1);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -324,10 +305,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
     private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
     private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
@@ -339,7 +317,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
-    private TortillaAddPrivate addPrivateServerBox;
+    private FavoriteServerDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
     private AtomicReference<ServerTableModel> model =
@@ -566,7 +544,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         }
         if (addPrivateServerBox == null) {
             JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
-            addPrivateServerBox = new TortillaAddPrivate(mainFrame, false);
+            addPrivateServerBox = new FavoriteServerDialog(mainFrame, false);
             addPrivateServerBox.setLocationRelativeTo(this.getFrame());
             addPrivateServerBox.setTitle("Favorite");
         }
