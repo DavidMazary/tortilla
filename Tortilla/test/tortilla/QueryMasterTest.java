@@ -59,11 +59,11 @@ public class QueryMasterTest {
     /**
      * Test of getServers method.
      */
-    @Test
-    public void testGetServers() {
+//    @Test
+//    public void testGetServers() {
 //        BufferedReader input = null;
 //        try {
-            System.out.println("testGetServers");
+//            System.out.println("testGetServers");
 //            input = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/servercache"));
 //            instance.saveServerList();
 //            System.out.println(input.toString());
@@ -76,18 +76,18 @@ public class QueryMasterTest {
 //                Logger.getLogger(QueryMasterTest.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-    }
+//    }
     
     /**
      * Test of getServers method.
      * This is an unreliable and useless test atm.
      */
-    @Test
-    public void testGetValue() {
-        System.out.println("testGetValue");
+//    @Test
+//    public void testGetValue() {
+//        System.out.println("testGetValue");
 //        String expResult = "75.126.234.42:26002";
-        String result = instance.getAddressFromBytes("//////");
-        System.out.println(result);
+//        String result = instance.getAddressFromBytes("//////");
+//        System.out.println(result);
 //        assertEquals(result, expResult);
-    }
+//    }
 }

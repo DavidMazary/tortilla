@@ -78,7 +78,7 @@ public class TortillaView extends FrameView {
         favoriteServersToggleButton = new javax.swing.JToggleButton();
         connectButton = new javax.swing.JButton();
         updateButton = new javax.swing.JButton();
-        addPrivateServerButton = new javax.swing.JButton();
+        addButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -129,64 +129,66 @@ public class TortillaView extends FrameView {
         favoriteServersToggleButton.setName("favoriteServersToggleButton"); // NOI18N
 
         connectButton.setAction(actionMap.get("connect")); // NOI18N
-        connectButton.setFocusable(false);
-        connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectButton.setMinimumSize(new java.awt.Dimension(42, 42));
         connectButton.setName("connectButton"); // NOI18N
         connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         updateButton.setAction(actionMap.get("update")); // NOI18N
-        updateButton.setFocusable(false);
-        updateButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         updateButton.setName("updateButton"); // NOI18N
         updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        addPrivateServerButton.setAction(actionMap.get("showPrivateServerBox")); // NOI18N
-        addPrivateServerButton.setName("addPrivateServerButton"); // NOI18N
+        addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
+        addButton.setName("addButton"); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(addPrivateServerButton)
+                .addComponent(addButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addComponent(updateButton)
+                .addGap(18, 18, 18)
                 .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                .addGap(136, 136, 136)
                 .addComponent(favoriteServersToggleButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addComponent(addPrivateServerButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(updateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(updateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+            .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE))
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -299,7 +301,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_searchTextFieldKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addPrivateServerButton;
+    private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
     private javax.swing.JToggleButton favoriteServersToggleButton;
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
@@ -332,7 +334,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      * The custom DefaultTableModel used in TortillaView.
      * @return The DefaultTableModel used here.
      */
-    public AbstractTableModel getModel() {
+    public synchronized AbstractTableModel getModel() {
         return model.get();
     }
 
@@ -365,12 +367,13 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 }
 
                 String query = searchTextField.getText().toLowerCase();
-                if (!query.isEmpty()) {
-                    if (current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) {
+                if (canAddRow && !query.isEmpty()) {
+                    if ((current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) ||
+                        (current.getMap() != null && !current.getMap().toLowerCase().contains(query))) {
                         canAddRow = false;
                     }
                     // Search for player matches (requires getstatus query)
-                    if (current.getPlayerList() != null) {
+                    if (canAddRow && (current.getPlayerList() != null)) {
                         for (Player player : current.getPlayerList()) {
                             if (player.getName().toLowerCase().contains(query)) {
                                 canAddRow = true;
@@ -378,11 +381,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                             }
                         }
                     }
-                    if (current.getMap() != null && current.getMap().toLowerCase().contains(query)) {
-                        canAddRow = true;
-                    }
                 }
-
 
                 if (model.get().getDataVector().contains(current)) {
                     model.get().deleteRow(current);
@@ -413,7 +412,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
         @Override
         protected Object doInBackground() {
-            checkFavoriteServers();
+            loadFavoriteServers();
             serverList = queryM.getServerList();
             if (favoriteServerList != null) {
                 for (String address : favoriteServerList) {
@@ -521,7 +520,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     }
 
     @Action
-    public void showPrivateServerBox() {
+    public void launchFavoriteServerDialog() {
         int selectedRow = serverTable.getSelectedRow();
         int nameColumn = 1;
         String selectedIp = null;
@@ -562,7 +561,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     /**
      * Reads in config.cfg for favorite servers.
      */
-    private void checkFavoriteServers() {
+    private void loadFavoriteServers() {
         if (operatingSystem == null) {
             operatingSystem = System.getProperty("os.name");
         }
