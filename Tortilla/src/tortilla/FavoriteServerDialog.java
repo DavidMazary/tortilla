@@ -1,5 +1,5 @@
 /*
- * TortillaAddPrivate.java
+ * FavoriteServerDialog.java
  *
  * Created on May 26, 2008, 6:03 PM
  */
@@ -20,15 +20,15 @@ import org.jdesktop.application.Action;
  *
  * @author  david
  */
-public class TortillaAddPrivate extends javax.swing.JDialog {
+public class FavoriteServerDialog extends javax.swing.JDialog {
 
     private static final long serialVersionUID = 5877677525126224471L;
 
-    /** Creates new form TortillaAddPrivate
+    /** Creates new form FavoriteServerDialog
      * @param parent
      * @param modal
      */
-    public TortillaAddPrivate(java.awt.Frame parent, boolean modal) {
+    public FavoriteServerDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -43,16 +43,15 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         addressField = new javax.swing.JTextField();
-        jPanel2 = new javax.swing.JPanel();
-        addButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        addButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
         jPanel1.setName("jPanel1"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaAddPrivate.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(FavoriteServerDialog.class);
         addressField.setText(resourceMap.getString("addressField.text")); // NOI18N
         addressField.setName("addressField"); // NOI18N
         addressField.addActionListener(new java.awt.event.ActionListener() {
@@ -72,7 +71,7 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(addressField, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                .addComponent(addressField, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -83,51 +82,34 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        jPanel2.setName("jPanel2"); // NOI18N
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaAddPrivate.class, this);
-        addButton.setAction(actionMap.get("cancel")); // NOI18N
-        addButton.setName("addButton"); // NOI18N
-
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(FavoriteServerDialog.class, this);
         cancelButton.setAction(actionMap.get("add")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cancelButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addButton)
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addButton)
-                    .addComponent(cancelButton))
-                .addContainerGap())
-        );
+        addButton.setAction(actionMap.get("cancel")); // NOI18N
+        addButton.setName("addButton"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(245, Short.MAX_VALUE)
+                .addComponent(addButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cancelButton)
+                .addGap(2, 2, 2))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(addButton))
+                .addGap(2, 2, 2))
         );
 
         pack();
@@ -149,7 +131,7 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
 
             @Override
             public void run() {
-                TortillaAddPrivate dialog = new TortillaAddPrivate(new javax.swing.JFrame(), true);
+                FavoriteServerDialog dialog = new FavoriteServerDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     @Override
@@ -243,7 +225,6 @@ public class TortillaAddPrivate extends javax.swing.JDialog {
     private javax.swing.JTextField addressField;
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 
     /**

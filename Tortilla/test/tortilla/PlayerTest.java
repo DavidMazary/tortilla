@@ -49,9 +49,9 @@ public class PlayerTest {
     public void isBot()
     {        
         System.out.println("isBot");
-        instance.setPing(64);
+        instance.setPing("64");
         assertFalse(instance.isBot());
-        instance.setPing(0);
+        instance.setPing("0");
         assertTrue(instance.isBot());
     }
 
@@ -62,9 +62,9 @@ public class PlayerTest {
     public void isSpec()
     {
         System.out.println("isSpec");
-        instance.setScore(64);
+        instance.setScore("64");
         assertFalse(instance.isSpec());
-        instance.setScore(-666);
+        instance.setScore("-666");
         assertTrue(instance.isSpec());
     }
 

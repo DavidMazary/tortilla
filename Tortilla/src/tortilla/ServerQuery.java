@@ -94,13 +94,17 @@ public class ServerQuery extends AbstractQuery {
         Player player = new Player();
         player.setScore(playerData[0]);
         player.setPing(playerData[1]);
+        if (playerData.length == 3) {
+            player.setTeam(playerData[2]);
+        }
         player.setName(playerName[1]);
         return player;
     }
 
     /**
      * Take the server info from the queryResult and build a Server.
-     * Response will look like this: <code>\gamename\Nexuiz\modname\data\gameversion\20000\sv_maxclients\18\clients\6\bots\0\mapname\ctctf6\hostname\Galt's Gulch - CTF - 2.4 - TX, USA\protocol\3\challenge\tortilla</code>
+     * Response will look like this: <code>\gamename\Nexuiz\modname\data\gameversion\20000\sv_maxclients\24\clients\4\bots\2\mapname\dance\hostname\[o8] Nexican v2.5.1\protocol\3\qcstatus\ctf:2.5.1::score!!:score!!,caps!:5:22,1:14:73,3\challenge\tortilla</code>
+     * TODO: Handle qcstatus info
      * @param queryResult String of the server info.
      * @param ipStr The address of the server.
      * @return Server which is created.
