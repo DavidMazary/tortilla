@@ -6,6 +6,7 @@ package tortilla;
 import java.awt.Frame;
 //import java.awt.event.ActionEvent;
 //import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import org.jdesktop.application.Action;
@@ -72,8 +73,39 @@ public class TortillaView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         tableScrollPane = new javax.swing.JScrollPane();
-        serverTable = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
+        serverTable = new javax.swing.JTable() {
+
+            public String getToolTipText(MouseEvent e) {
+                int nameColumn = 1;
+                int selectedRow = rowAtPoint(e.getPoint());
+                StringBuilder playerList = new StringBuilder("");
+                if (!model.get().getColumnName(nameColumn).equals("Server")) {
+                    for (int i = 0; i < model.get().getColumnCount(); i++) {
+                        if (model.get().getColumnName(i).equals("Server")) {
+                            nameColumn = i;
+                            break;
+                        }
+                    }
+                }
+                String selectedServer = model.get().getValueAt(selectedRow, nameColumn).toString();
+                Server server;
+                for (String ip : serverMap.keySet()) {
+                    if (serverMap.get(ip).getHostname().equals(selectedServer)) {
+                        server = serverMap.get(ip);
+                        if (server.getPlayerCount() > 0) {
+                            playerList.append("<html>" + selectedRow + ": "+ server.getHostname() + "<br/>");
+                            for (Player player : server.getPlayerList()) {
+                                playerList.append(player.getName() + "<br/>");
+                            }
+                            playerList.append("</html>");
+                        }
+                        break;
+                    }
+                }
+                return playerList.toString();
+            }
+        };
+        controlsPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
         favoriteServersToggleButton = new javax.swing.JToggleButton();
         connectButton = new javax.swing.JButton();
@@ -112,7 +144,7 @@ public class TortillaView extends FrameView {
         tableScrollPane.setViewportView(serverTable);
         serverTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        jPanel1.setName("jPanel1"); // NOI18N
+        controlsPanel.setName("controlsPanel"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
         searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
@@ -140,11 +172,11 @@ public class TortillaView extends FrameView {
         addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
         addButton.setName("addButton"); // NOI18N
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout controlsPanelLayout = new javax.swing.GroupLayout(controlsPanel);
+        controlsPanel.setLayout(controlsPanelLayout);
+        controlsPanelLayout.setHorizontalGroup(
+            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addComponent(addButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(updateButton)
@@ -156,20 +188,20 @@ public class TortillaView extends FrameView {
                 .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        controlsPanelLayout.setVerticalGroup(
+            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+            .addGroup(controlsPanelLayout.createSequentialGroup()
+                .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(updateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addComponent(connectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -180,13 +212,13 @@ public class TortillaView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(controlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(controlsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE))
         );
@@ -303,11 +335,11 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
+    private javax.swing.JPanel controlsPanel;
     private javax.swing.JToggleButton favoriteServersToggleButton;
     private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
     private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
     private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
@@ -360,16 +392,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 canAddRow = true;
 
                 if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) ||
-                    (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) ||
-                    (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) ||
-                    (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
+                        (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) ||
+                        (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) ||
+                        (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
                     canAddRow = false;
                 }
 
                 String query = searchTextField.getText().toLowerCase();
                 if (canAddRow && !query.isEmpty()) {
                     if ((current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) ||
-                        (current.getMap() != null && !current.getMap().toLowerCase().contains(query))) {
+                            (current.getMap() != null && !current.getMap().toLowerCase().contains(query))) {
                         canAddRow = false;
                     }
                     // Search for player matches (requires getstatus query)
@@ -492,9 +524,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = "";
 
         if (selectedRow != -1) {
-            for (int i = 0; i < model.get().getColumnCount(); i++) {
-                if (model.get().getColumnName(i).contains("Server")) {
-                    nameColumn = i;
+            if (!model.get().getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < model.get().getColumnCount(); i++) {
+                    if (model.get().getColumnName(i).contains("Server")) {
+                        nameColumn = i;
+                        break;
+                    }
                 }
             }
             String selectedServer = model.get().getValueAt(selectedRow,
@@ -504,6 +539,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 if (((current = serverMap.get(ip)) != null) &&
                         (current.getHostname().equals(selectedServer))) {
                     selectedIp = ip;
+                    break;
                 }
             }
 
@@ -526,9 +562,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = null;
 
         if (selectedRow != -1) {
-            for (int i = 0; i < model.get().getColumnCount(); i++) {
-                if (model.get().getColumnName(i).contains("Server")) {
-                    nameColumn = i;
+            if (!model.get().getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < model.get().getColumnCount(); i++) {
+                    if (model.get().getColumnName(i).equals("Server")) {
+                        nameColumn = i;
+                        break;
+                    }
                 }
             }
             String selectedServer = model.get().getValueAt(selectedRow,
@@ -538,6 +577,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 if (((current = serverMap.get(ip)) != null) &&
                         (current.getHostname().equals(selectedServer))) {
                     selectedIp = ip;
+                    break;
                 }
             }
         }
