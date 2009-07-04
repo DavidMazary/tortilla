@@ -54,10 +54,6 @@
                   <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="serverTableFocusGained"/>
-                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="serverTableFocusLost"/>
-              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;&#xa;    public String getToolTipText(MouseEvent e) {&#xa;        int nameColumn = 1;&#xa;        int selectedRow = rowAtPoint(e.getPoint());&#xa;        StringBuilder playerList = new StringBuilder(&quot;&quot;);&#xa;        if (!getModel().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; model.getColumnCount(); i++) {&#xa;                if (model.getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();&#xa;        for (Server server : model.getDataVector()) {&#xa;            if (server.getHostname().equals(selectedServer)) {&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&lt;b&gt;Players&lt;/b&gt;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;}"/>
               </AuxValues>
@@ -76,12 +72,12 @@
                       <Component id="addButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="updateButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="connectButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="136" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="108" max="-2" attributes="0"/>
                       <Component id="favoriteServersToggleButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="searchTextField" pref="186" max="32767" attributes="0"/>
+                      <Component id="searchTextField" pref="220" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -100,11 +96,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="connectButton" max="32767" attributes="1"/>
+                      <Component id="favoriteServersToggleButton" max="32767" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="favoriteServersToggleButton" max="32767" attributes="1"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -129,18 +125,6 @@
                 <Property name="name" type="java.lang.String" value="favoriteServersToggleButton" noResource="true"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="connectButton">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="tortilla.TortillaView" id="connect" methodName="connect"/>
-                </Property>
-                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[42, 42]"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="connectButton" noResource="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="updateButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -156,6 +140,14 @@
                   <action class="tortilla.TortillaView" id="launchFavoriteServerDialog" methodName="launchFavoriteServerDialog"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButton1">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="tortilla.TortillaView" id="connect" methodName="connect"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
               </Properties>
             </Component>
           </SubComponents>
