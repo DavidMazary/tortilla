@@ -77,7 +77,7 @@ public class TortillaView extends FrameView {
                 for (Server server : model.getDataVector()) {
                     if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
-                            playerList.append("<html>" + selectedRow + ": "+ server.getHostname() + "<br/>");
+                            playerList.append("<html><b>Players</b><br/>");
                             for (Player player : server.getPlayerList()) {
                                 playerList.append(player.getName() + "<br/>");
                             }
