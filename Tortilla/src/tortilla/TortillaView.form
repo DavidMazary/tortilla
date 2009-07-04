@@ -12,7 +12,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="2" pref="2" max="2" attributes="0"/>
-                  <Component id="jPanel1" max="32767" attributes="0"/>
+                  <Component id="controlsPanel" max="32767" attributes="0"/>
               </Group>
               <Component id="tableScrollPane" alignment="0" pref="554" max="32767" attributes="0"/>
           </Group>
@@ -20,7 +20,7 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="jPanel1" min="-2" pref="46" max="-2" attributes="0"/>
+                  <Component id="controlsPanel" min="-2" pref="46" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                   <Component id="tableScrollPane" pref="261" max="32767" attributes="0"/>
               </Group>
@@ -58,12 +58,15 @@
                 <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="serverTableFocusGained"/>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="serverTableFocusLost"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;&#xa;    public String getToolTipText(MouseEvent e) {&#xa;        int nameColumn = 1;&#xa;        int selectedRow = rowAtPoint(e.getPoint());&#xa;        StringBuilder playerList = new StringBuilder(&quot;&quot;);&#xa;        if (!model.get().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; model.get().getColumnCount(); i++) {&#xa;                if (model.get().getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        String selectedServer = model.get().getValueAt(selectedRow, nameColumn).toString();&#xa;        Server server;&#xa;        for (String ip : serverMap.keySet()) {&#xa;            if (serverMap.get(ip).getHostname().equals(selectedServer)) {&#xa;                server = serverMap.get(ip);&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&quot; + selectedRow + &quot;: &quot;+ server.getHostname() + &quot;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;}"/>
+              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel1">
+        <Container class="javax.swing.JPanel" name="controlsPanel">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="controlsPanel" noResource="true"/>
           </Properties>
 
           <Layout>
