@@ -4,8 +4,6 @@
 package tortilla;
 
 import java.awt.Frame;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +14,6 @@ import org.jdesktop.application.Task;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -37,17 +34,6 @@ public class TortillaView extends FrameView {
 
         initComponents();
         update().execute();
-
-    // Refreshes serverlist every 20 seconds.
-//        int delay = 90000;
-//        ActionListener refreshTask = new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent evt) {
-//                refresh();
-//            }
-//        };
-//        new Timer(delay, refreshTask).start();
     }
 
     /**
@@ -79,19 +65,17 @@ public class TortillaView extends FrameView {
                 int nameColumn = 1;
                 int selectedRow = rowAtPoint(e.getPoint());
                 StringBuilder playerList = new StringBuilder("");
-                if (!model.get().getColumnName(nameColumn).equals("Server")) {
-                    for (int i = 0; i < model.get().getColumnCount(); i++) {
-                        if (model.get().getColumnName(i).equals("Server")) {
+                if (!getModel().getColumnName(nameColumn).equals("Server")) {
+                    for (int i = 0; i < model.getColumnCount(); i++) {
+                        if (model.getColumnName(i).equals("Server")) {
                             nameColumn = i;
                             break;
                         }
                     }
                 }
-                String selectedServer = model.get().getValueAt(selectedRow, nameColumn).toString();
-                Server server;
-                for (String ip : serverMap.keySet()) {
-                    if (serverMap.get(ip).getHostname().equals(selectedServer)) {
-                        server = serverMap.get(ip);
+                String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
+                for (Server server : model.getDataVector()) {
+                    if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
                             playerList.append("<html>" + selectedRow + ": "+ server.getHostname() + "<br/>");
                             for (Player player : server.getPlayerList()) {
@@ -354,8 +338,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private FavoriteServerDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private AtomicReference<ServerTableModel> model =
-            new AtomicReference<ServerTableModel>(new ServerTableModel());
+    private ServerTableModel model = new ServerTableModel();
     private ArrayList<String> serverList;
     private ArrayList<String> favoriteServerList;
     private ConcurrentHashMap<String, Server> serverMap;
@@ -367,7 +350,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      * @return The DefaultTableModel used here.
      */
     public synchronized AbstractTableModel getModel() {
-        return model.get();
+        return model;
     }
 
     /**
@@ -415,12 +398,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     }
                 }
 
-                if (model.get().getDataVector().contains(current)) {
-                    model.get().deleteRow(current);
+                if (model.getDataVector().contains(current)) {
+                    model.deleteRow(current);
                 }
 
                 if (canAddRow) {
-                    model.get().addRow(current);
+                    model.addRow(current);
                 }
             }
         }
@@ -471,7 +454,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         // Refresh table model
         if (serverMap != null) {
             for (Server server : serverMap.values()) {
-                model.get().deleteRow(server);
+                model.deleteRow(server);
             }
         }
         serverMap = new ConcurrentHashMap<String, Server>();
@@ -524,16 +507,15 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = "";
 
         if (selectedRow != -1) {
-            if (!model.get().getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < model.get().getColumnCount(); i++) {
-                    if (model.get().getColumnName(i).contains("Server")) {
+            if (!model.getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < model.getColumnCount(); i++) {
+                    if (model.getColumnName(i).contains("Server")) {
                         nameColumn = i;
                         break;
                     }
                 }
             }
-            String selectedServer = model.get().getValueAt(selectedRow,
-                    nameColumn).toString();
+            String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
             Server current;
             for (String ip : serverMap.keySet()) {
                 if (((current = serverMap.get(ip)) != null) &&
@@ -562,16 +544,15 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = null;
 
         if (selectedRow != -1) {
-            if (!model.get().getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < model.get().getColumnCount(); i++) {
-                    if (model.get().getColumnName(i).equals("Server")) {
+            if (!model.getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < model.getColumnCount(); i++) {
+                    if (model.getColumnName(i).equals("Server")) {
                         nameColumn = i;
                         break;
                     }
                 }
             }
-            String selectedServer = model.get().getValueAt(selectedRow,
-                    nameColumn).toString();
+            String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
             Server current;
             for (String ip : serverMap.keySet()) {
                 if (((current = serverMap.get(ip)) != null) &&
