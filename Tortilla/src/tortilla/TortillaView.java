@@ -159,7 +159,7 @@ public class TortillaView extends FrameView {
                 .addGap(108, 108, 108)
                 .addComponent(favoriteServersToggleButton)
                 .addGap(18, 18, 18)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                 .addContainerGap())
         );
         controlsPanelLayout.setVerticalGroup(
@@ -187,14 +187,14 @@ public class TortillaView extends FrameView {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(2, 2, 2)
                 .addComponent(controlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addComponent(controlsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE))
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -355,22 +355,19 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         for (String Ip : serverMap.keySet()) {
             if ((current = serverMap.get(Ip)) != null) {
                 canAddRow = true;
+                String query = searchTextField.getText().toLowerCase();
 
                 if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) ||
                         (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) ||
                         (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) ||
                         (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
                     canAddRow = false;
-                }
-
-                String query = searchTextField.getText().toLowerCase();
-                if (canAddRow && !query.isEmpty()) {
-                    if ((current.getHostname() != null && !current.getHostname().toLowerCase().contains(query)) ||
-                            (current.getMap() != null && !current.getMap().toLowerCase().contains(query))) {
-                        canAddRow = false;
-                    }
-                    // Search for player matches (requires getstatus query)
-                    if (canAddRow && (current.getPlayerList() != null)) {
+                } else if (!query.isEmpty()) {
+                    canAddRow = false;
+                    if (current.getHostname().toLowerCase().contains(query) ||
+                            current.getMap().toLowerCase().contains(query)) {
+                        canAddRow = true;
+                    } else if (current.getPlayerList() != null) {
                         for (Player player : current.getPlayerList()) {
                             if (player.getName().toLowerCase().contains(query)) {
                                 canAddRow = true;
