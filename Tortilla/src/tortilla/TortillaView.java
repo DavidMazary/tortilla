@@ -13,10 +13,13 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Task;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -32,6 +35,7 @@ public class TortillaView extends FrameView {
         super(app);
 
         initComponents();
+        sortOrder.add(new SortKey(0, SortOrder.ASCENDING));
         update().execute();
     }
 
@@ -326,6 +330,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private ConcurrentHashMap<String, Server> serverMap;
     private static final int HIGH_PING = 200;
     private String operatingSystem = null;
+    private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
 
     /**
      * The custom DefaultTableModel used in TortillaView.
@@ -387,6 +392,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         if (rowsDeleted > 0) {
             model.fireTableRowsDeleted(model.getDataVector().size() - rowsDeleted, model.getDataVector().size() - 1);
         }
+        serverTable.getRowSorter().setSortKeys(sortOrder);
     }
 
     /**
