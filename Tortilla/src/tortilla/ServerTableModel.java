@@ -46,20 +46,24 @@ public class ServerTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Server server = dataVector.get(row);
-        switch (column) {
-            case PING:
-                return server.getPing();
-            case PLAYERS:
-                return server.getPlayerCount();
-            case MAX:
-                return server.getMaxPlayers();
-            case SERVER:
-                return server.getHostname();
-            case MAP:
-                return server.getMap();
-            default:
-                return new Object();
+        try {
+            Server server = dataVector.get(row);
+            switch (column) {
+                case PING:
+                    return server.getPing();
+                case PLAYERS:
+                    return server.getPlayerCount();
+                case MAX:
+                    return server.getMaxPlayers();
+                case SERVER:
+                    return server.getHostname();
+                case MAP:
+                    return server.getMap();
+                default:
+                    return new Object();
+            }
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
         }
     }
 
