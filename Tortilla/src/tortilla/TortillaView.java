@@ -353,36 +353,34 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             tableModel.getDataVector().clear();
         }
         for (Server server : serverMap.values()) {
-            if (server != null) {
-                canAddRow = true;
-                String query = searchTextField.getText().toLowerCase();
+            canAddRow = true;
+            String query = searchTextField.getText().toLowerCase();
 
-                // Filter by the preferences
-                if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
-                        (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
-                        (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
-                        (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
-                    canAddRow = false;
-                // Filter by the search term
-                } else if (!query.isEmpty()) {
-                    canAddRow = false;
-                    if (server.getHostname().toLowerCase().contains(query) ||
-                            server.getMap().toLowerCase().contains(query)) {
-                        canAddRow = true;
-                    } else if (server.getPlayerList() != null) {
-                        for (Player player : server.getPlayerList()) {
-                            if (player.getName().toLowerCase().contains(query)) {
-                                canAddRow = true;
-                                break;
-                            }
+            // Filter by the preferences
+            if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
+                    (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
+                    (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
+                    (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
+                canAddRow = false;
+            // Filter by the search term
+            } else if (!query.isEmpty()) {
+                canAddRow = false;
+                if (server.getHostname().toLowerCase().contains(query) ||
+                        server.getMap().toLowerCase().contains(query)) {
+                    canAddRow = true;
+                } else if (server.getPlayerList() != null) {
+                    for (Player player : server.getPlayerList()) {
+                        if (player.getName().toLowerCase().contains(query)) {
+                            canAddRow = true;
+                            break;
                         }
                     }
                 }
+            }
 
-                if (canAddRow) {
-                    tableModel.getDataVector().add(server);
-                    rowsInserted++;
-                }
+            if (canAddRow) {
+                tableModel.getDataVector().add(server);
+                rowsInserted++;
             }
         }
         if (rowsDeleted > 0) {
