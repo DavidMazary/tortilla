@@ -6,7 +6,6 @@ import javax.swing.table.AbstractTableModel;
 /**
  * Model of Nexuiz server data.
  * TODO: Execute connect on double click.
- * TODO: Show basic server info on mouse hover.
  * @author dmaz
  */
 public class ServerTableModel extends AbstractTableModel {
@@ -18,7 +17,7 @@ public class ServerTableModel extends AbstractTableModel {
     public static final int MAP = 4;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
     private static final long serialVersionUID = 2187967572701857442L;
-    private Vector<Server> dataVector;
+    private Vector<Server> dataVector = null;
 
     public ServerTableModel() {
         dataVector = new Vector<Server>();
@@ -99,21 +98,13 @@ public class ServerTableModel extends AbstractTableModel {
         return COLUMN_NAMES.length;
     }
 
-    public void addRow(Server newServer) {
-            dataVector.add(newServer);
-            fireTableRowsInserted(
-                    dataVector.size() - 1,
-                    dataVector.size() - 1);
-    }
-
-    public void deleteRow(Server newServer) {
-            dataVector.remove(newServer);
-            fireTableRowsDeleted(
-                    dataVector.size() - 1,
-                    dataVector.size() - 1);
-    }
-
     protected Vector<Server> getDataVector() {
         return dataVector;
+    }
+
+    void clearDataVector() {
+        int dataSize = dataVector.size();
+        dataVector.clear();
+        fireTableRowsDeleted(0, dataSize - 1);
     }
 }

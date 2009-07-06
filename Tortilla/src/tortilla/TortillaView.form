@@ -74,33 +74,29 @@
                       <Component id="updateButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="connectButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="134" max="32767" attributes="0"/>
+                      <EmptySpace pref="119" max="32767" attributes="0"/>
                       <Component id="favoriteServersToggleButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                      <Component id="searchTextField" pref="137" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="searchTextField" min="-2" pref="164" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="searchTextField" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="updateButton" alignment="0" max="32767" attributes="1"/>
-                          <Component id="addButton" alignment="0" max="32767" attributes="1"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="updateButton" alignment="0" max="32767" attributes="1"/>
+                              <Component id="addButton" alignment="0" max="32767" attributes="1"/>
+                          </Group>
+                          <Component id="favoriteServersToggleButton" alignment="0" max="32767" attributes="1"/>
+                          <Component id="connectButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="searchTextField" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="favoriteServersToggleButton" max="32767" attributes="1"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="connectButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -122,6 +118,7 @@
                   <action class="tortilla.TortillaView" id="filterFavorites" methodName="filterFavorites"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="favoriteServersToggleButton.text"/>
+                <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="favoriteServersToggleButton" noResource="true"/>
               </Properties>
             </Component>
@@ -130,6 +127,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="tortilla.TortillaView" id="update" methodName="update"/>
                 </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="updateButton" noResource="true"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
@@ -139,6 +137,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="tortilla.TortillaView" id="launchFavoriteServerDialog" methodName="launchFavoriteServerDialog"/>
                 </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
               </Properties>
             </Component>
@@ -147,6 +146,7 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="tortilla.TortillaView" id="connect" methodName="connect"/>
                 </Property>
+                <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="connectButton" noResource="true"/>
               </Properties>
             </Component>

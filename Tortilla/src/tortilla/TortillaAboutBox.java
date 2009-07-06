@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
+    private static final long serialVersionUID = -2068487999261265325L;
 
     /**
      * Creates new About Box.
