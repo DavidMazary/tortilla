@@ -15,7 +15,7 @@ import org.jdesktop.application.Action;
 
 /**
  *
- * @author david
+ * @author dmaz
  */
 public class ServerInfoFrame extends javax.swing.JFrame {
     private static final long serialVersionUID = 488162827956042970L;

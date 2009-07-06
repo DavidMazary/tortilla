@@ -18,7 +18,7 @@ import org.jdesktop.application.Action;
 
 /**
  *
- * @author  david
+ * @author  dmaz
  */
 public class FavoriteServerDialog extends javax.swing.JDialog {
 

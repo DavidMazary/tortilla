@@ -69,15 +69,15 @@ public class TortillaView extends FrameView {
                 int selectedRow = rowAtPoint(e.getPoint());
                 StringBuilder playerList = new StringBuilder("");
                 if (!getModel().getColumnName(nameColumn).equals("Server")) {
-                    for (int i = 0; i < model.getColumnCount(); i++) {
-                        if (model.getColumnName(i).equals("Server")) {
+                    for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                        if (tableModel.getColumnName(i).equals("Server")) {
                             nameColumn = i;
                             break;
                         }
                     }
                 }
                 String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
-                for (Server server : model.getDataVector()) {
+                for (Server server : tableModel.getDataVector()) {
                     if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
                             playerList.append("<html><b>Players</b><br/>");
@@ -324,7 +324,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private FavoriteServerDialog addPrivateServerBox;
     private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
-    private ServerTableModel model = new ServerTableModel();
+    private ServerTableModel tableModel = new ServerTableModel();
     private ArrayList<String> serverList;
     private ArrayList<String> favoriteServerList;
     private ConcurrentHashMap<String, Server> serverMap;
@@ -336,8 +336,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      * The custom DefaultTableModel used in TortillaView.
      * @return The DefaultTableModel used here.
      */
-    public synchronized AbstractTableModel getModel() {
-        return model;
+    public AbstractTableModel getModel() {
+        return tableModel;
     }
 
     /**
@@ -348,6 +348,10 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         int rowsDeleted = 0;
         int rowsInserted = 0;
 
+        if (!tableModel.getDataVector().isEmpty()) {
+            rowsDeleted = tableModel.getDataVector().size();
+            tableModel.getDataVector().clear();
+        }
         for (Server server : serverMap.values()) {
             if (server != null) {
                 canAddRow = true;
@@ -375,23 +379,19 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     }
                 }
 
-                if (model.getDataVector().contains(server)) {
-                    model.getDataVector().remove(server);
-                    rowsDeleted++;
-                }
-
                 if (canAddRow) {
-                    model.getDataVector().add(server);
+                    tableModel.getDataVector().add(server);
                     rowsInserted++;
                 }
             }
         }
-        if (rowsInserted > 0) {
-            model.fireTableRowsInserted(model.getDataVector().size() - rowsInserted, model.getDataVector().size() - 1);
-        }
         if (rowsDeleted > 0) {
-            model.fireTableRowsDeleted(model.getDataVector().size() - rowsDeleted, model.getDataVector().size() - 1);
+            tableModel.fireTableRowsDeleted(0, rowsDeleted - 1);
         }
+        if (rowsInserted > 0) {
+            tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - rowsInserted, tableModel.getDataVector().size() - 1);
+        }
+
         serverTable.getRowSorter().setSortKeys(sortOrder);
     }
 
@@ -437,9 +437,11 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      */
     @Action
     public void refresh() {
-        // Refresh table model
-        if (!model.getDataVector().isEmpty()) {
-            model.clearDataVector();
+        // Refresh table tableModel
+        if (!tableModel.getDataVector().isEmpty()) {
+            int dataSize = tableModel.getDataVector().size();
+            tableModel.getDataVector().clear();
+            tableModel.fireTableRowsDeleted(0, dataSize - 1);
         }
         serverMap = new ConcurrentHashMap<String, Server>();
 
@@ -491,16 +493,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = "";
 
         if (selectedRow != -1) {
-            if (!model.getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < model.getColumnCount(); i++) {
-                    if (model.getColumnName(i).equals("Server")) {
+            if (!tableModel.getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    if (tableModel.getColumnName(i).equals("Server")) {
                         nameColumn = i;
                         break;
                     }
                 }
             }
-            String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
-            for (Server server : model.getDataVector()) {
+            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
+            for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
@@ -526,16 +528,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = null;
 
         if (selectedRow != -1) {
-            if (!model.getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < model.getColumnCount(); i++) {
-                    if (model.getColumnName(i).equals("Server")) {
+            if (!tableModel.getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    if (tableModel.getColumnName(i).equals("Server")) {
                         nameColumn = i;
                         break;
                     }
                 }
             }
-            String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
-            for (Server server : model.getDataVector()) {
+            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
+            for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
