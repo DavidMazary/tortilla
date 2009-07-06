@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-//import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -134,16 +133,20 @@ public class TortillaView extends FrameView {
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaView.class, this);
         favoriteServersToggleButton.setAction(actionMap.get("filterFavorites")); // NOI18N
         favoriteServersToggleButton.setText(resourceMap.getString("favoriteServersToggleButton.text")); // NOI18N
+        favoriteServersToggleButton.setBorderPainted(false);
         favoriteServersToggleButton.setName("favoriteServersToggleButton"); // NOI18N
 
         updateButton.setAction(actionMap.get("update")); // NOI18N
+        updateButton.setBorderPainted(false);
         updateButton.setName("updateButton"); // NOI18N
         updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
+        addButton.setBorderPainted(false);
         addButton.setName("addButton"); // NOI18N
 
         connectButton.setAction(actionMap.get("connect")); // NOI18N
+        connectButton.setBorderPainted(false);
         connectButton.setName("connectButton"); // NOI18N
 
         javax.swing.GroupLayout controlsPanelLayout = new javax.swing.GroupLayout(controlsPanel);
@@ -156,27 +159,24 @@ public class TortillaView extends FrameView {
                 .addComponent(updateButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(connectButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
                 .addComponent(favoriteServersToggleButton)
-                .addGap(18, 18, 18)
-                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         controlsPanelLayout.setVerticalGroup(
             controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(updateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addComponent(connectButton)
+                .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(updateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(connectButton)
+                    .addGroup(controlsPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -336,41 +336,32 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     }
 
     /**
-     * Toggle availability of update and refresh buttons so they
-     * cannot be clicked mid-action.
-     * 
-     * @param state of buttons
-     */
-    private void setUpdateButtonsEnabled(boolean state) {
-        updateButton.setEnabled(state);
-    }
-
-    /**
      * Refreshes the Table of server data using the stored serverMap.
      */
     private synchronized void refreshTable() {
         boolean canAddRow;
+        int rowsDeleted = 0;
+        int rowsInserted = 0;
 
-        Server current;
-        for (String Ip : serverMap.keySet()) {
-            if ((current = serverMap.get(Ip)) != null) {
+        for (Server server : serverMap.values()) {
+            if (server != null) {
                 canAddRow = true;
                 String query = searchTextField.getText().toLowerCase();
 
                 // Filter by the preferences
-                if ((hideEmptyMenuItem.getState() && (current.getPlayerCount() == 0)) ||
-                        (hideFullMenuItem.getState() && (current.getPlayerCount() == current.getMaxPlayers())) ||
-                        (hideHighPingMenuItem.getState() && (current.getPing() > HIGH_PING)) ||
-                        (favoriteServersToggleButton.isSelected() && !current.isFavorite())) {
+                if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
+                        (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
+                        (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
+                        (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
                     canAddRow = false;
                 // Filter by the search term
                 } else if (!query.isEmpty()) {
                     canAddRow = false;
-                    if (current.getHostname().toLowerCase().contains(query) ||
-                            current.getMap().toLowerCase().contains(query)) {
+                    if (server.getHostname().toLowerCase().contains(query) ||
+                            server.getMap().toLowerCase().contains(query)) {
                         canAddRow = true;
-                    } else if (current.getPlayerList() != null) {
-                        for (Player player : current.getPlayerList()) {
+                    } else if (server.getPlayerList() != null) {
+                        for (Player player : server.getPlayerList()) {
                             if (player.getName().toLowerCase().contains(query)) {
                                 canAddRow = true;
                                 break;
@@ -379,14 +370,22 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     }
                 }
 
-                if (model.getDataVector().contains(current)) {
-                    model.deleteRow(current);
+                if (model.getDataVector().contains(server)) {
+                    model.getDataVector().remove(server);
+                    rowsDeleted++;
                 }
 
                 if (canAddRow) {
-                    model.addRow(current);
+                    model.getDataVector().add(server);
+                    rowsInserted++;
                 }
             }
+        }
+        if (rowsInserted > 0) {
+            model.fireTableRowsInserted(model.getDataVector().size() - rowsInserted, model.getDataVector().size() - 1);
+        }
+        if (rowsDeleted > 0) {
+            model.fireTableRowsDeleted(model.getDataVector().size() - rowsDeleted, model.getDataVector().size() - 1);
         }
     }
 
@@ -403,7 +402,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
         UpdateTask(org.jdesktop.application.Application app) {
             super(app);
-            setUpdateButtonsEnabled(false);
+            updateButton.setEnabled(false);
         }
 
         @Override
@@ -422,7 +421,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
         @Override
         protected void succeeded(Object result) {
-            setUpdateButtonsEnabled(true);
+            updateButton.setEnabled(true);
             refresh();
         }
     }
@@ -433,10 +432,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     @Action
     public void refresh() {
         // Refresh table model
-        if (serverMap != null) {
-            for (Server server : serverMap.values()) {
-                model.deleteRow(server);
-            }
+        if (!model.getDataVector().isEmpty()) {
+            model.clearDataVector();
         }
         serverMap = new ConcurrentHashMap<String, Server>();
 
@@ -490,18 +487,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         if (selectedRow != -1) {
             if (!model.getColumnName(nameColumn).equals("Server")) {
                 for (int i = 0; i < model.getColumnCount(); i++) {
-                    if (model.getColumnName(i).contains("Server")) {
+                    if (model.getColumnName(i).equals("Server")) {
                         nameColumn = i;
                         break;
                     }
                 }
             }
             String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
-            Server current;
-            for (String ip : serverMap.keySet()) {
-                if (((current = serverMap.get(ip)) != null) &&
-                        (current.getHostname().equals(selectedServer))) {
-                    selectedIp = ip;
+            for (Server server : model.getDataVector()) {
+                if (server.getHostname().equals(selectedServer)) {
+                    selectedIp = server.getIp();
                     break;
                 }
             }
@@ -534,11 +529,9 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 }
             }
             String selectedServer = model.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
-            Server current;
-            for (String ip : serverMap.keySet()) {
-                if (((current = serverMap.get(ip)) != null) &&
-                        (current.getHostname().equals(selectedServer))) {
-                    selectedIp = ip;
+            for (Server server : model.getDataVector()) {
+                if (server.getHostname().equals(selectedServer)) {
+                    selectedIp = server.getIp();
                     break;
                 }
             }

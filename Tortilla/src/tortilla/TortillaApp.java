@@ -4,7 +4,6 @@
  */
 package tortilla;
 
-//import javax.swing.ImageIcon;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -29,22 +28,13 @@ public class TortillaApp extends SingleFrameApplication {
      */
     @Override
     protected void configureWindow(java.awt.Window root) {
-//        java.net.URL imgURL = TortillaApp.class.getResource("nexuiz_16x16.png");
-//        if (imgURL != null) {
-//            root.setIconImage(new ImageIcon(imgURL).getImage());
-//        }
     }
 
     /**
      * A convenient static getter for the application instance.
      * @return the instance of TortillaApp
      */
-    public static TortillaApp getApplication(
-
-  
-
-
-) {
+    public static TortillaApp getApplication() {
         return Application.getInstance(TortillaApp.class);
     }
 
@@ -52,12 +42,7 @@ public class TortillaApp extends SingleFrameApplication {
      * Main method launching the application.
      * @param args 
      */
-    public static void
-
-  
-
-
-main(String[] args) {
+    public static void main(String[] args) {
         launch(TortillaApp.class, args);
     }
 }
