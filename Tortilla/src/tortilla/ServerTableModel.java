@@ -46,24 +46,20 @@ public class ServerTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        try {
-            Server server = dataVector.get(row);
-            switch (column) {
-                case PING:
-                    return server.getPing();
-                case PLAYERS:
-                    return server.getPlayerCount();
-                case MAX:
-                    return server.getMaxPlayers();
-                case SERVER:
-                    return server.getHostname();
-                case MAP:
-                    return server.getMap();
-                default:
-                    return new Object();
-            }
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            return null;
+        Server server = dataVector.get(row);
+        switch (column) {
+            case PING:
+                return server.getPing();
+            case PLAYERS:
+                return server.getPlayerCount();
+            case MAX:
+                return server.getMaxPlayers();
+            case SERVER:
+                return server.getHostname();
+            case MAP:
+                return server.getMap();
+            default:
+                return new Object();
         }
     }
 
@@ -87,7 +83,7 @@ public class ServerTableModel extends AbstractTableModel {
                 server.setMap((String) value);
                 break;
             default:
-                System.err.println("invalid index");
+                System.err.println("Tried to set value of column " + column);
         }
         fireTableCellUpdated(row, column);
     }
@@ -104,11 +100,5 @@ public class ServerTableModel extends AbstractTableModel {
 
     protected Vector<Server> getDataVector() {
         return dataVector;
-    }
-
-    void clearDataVector() {
-        int dataSize = dataVector.size();
-        dataVector.clear();
-        fireTableRowsDeleted(0, dataSize - 1);
     }
 }
