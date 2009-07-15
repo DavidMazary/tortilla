@@ -67,8 +67,7 @@ public class GameLauncher {
             try {
                 Runtime runtime = Runtime.getRuntime();
                 runtime.exec(cmd);
-                Thread.sleep(5000);
-                runtime.exit(0);
+                runtime.gc();
             } catch (Exception ex) {
                 Logger.getLogger(GameLauncher.class.getName()).log(
                         Level.SEVERE, null, ex);
