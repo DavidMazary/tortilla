@@ -106,14 +106,4 @@ public class ServerTableModel extends AbstractTableModel {
     protected Vector<Server> getDataVector() {
         return dataVector;
     }
-
-    void insertRow(Server server) {
-        dataVector.add(server);
-        fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
-    }
-
-    void deleteRow(Server server) {
-        dataVector.remove(server);
-        fireTableRowsDeleted(dataVector.size() - 1, dataVector.size() - 1);
-    }
 }

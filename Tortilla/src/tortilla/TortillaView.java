@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.text.TableView.TableRow;
 
 /**
  * The application's main frame.
@@ -328,51 +329,53 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private ArrayList<String> favoriteServerList;
     private ConcurrentHashMap<String, Server> serverMap;
     private static final int HIGH_PING = 200;
+    private static final int QUERY_THREADS = 200;
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
-
 
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
-    private synchronized void refreshTable() {
-        boolean canAddRow;
-
-        for (Server server : serverMap.values()) {
-            canAddRow = true;
+    private synchronized void addRowToModel(Server server) {
+        boolean canAddRow = true;
+        // Filter by the preferences
+        if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
+                (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
+                (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
+                (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
+            canAddRow = false;
+        } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
             String query = searchTextField.getText().toLowerCase();
-
-            // Filter by the preferences
-            if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
-                    (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
-                    (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
-                    (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
-                canAddRow = false;
-                // Filter by the search term
-            } else if (!query.isEmpty()) {
-                canAddRow = false;
-                if (server.getHostname().toLowerCase().contains(query) ||
-                        server.getMap().toLowerCase().contains(query)) {
-                    canAddRow = true;
-                } else if (server.getPlayerList() != null) {
-                    for (Player player : server.getPlayerList()) {
-                        if (player.getName().toLowerCase().contains(query)) {
-                            canAddRow = true;
-                            break;
-                        }
+            canAddRow = false;
+            if (server.getHostname().toLowerCase().contains(query) ||
+                    server.getMap().toLowerCase().contains(query)) {
+                canAddRow = true;
+            } else if (server.getPlayerList() != null) {
+                for (Player player : server.getPlayerList()) {
+                    if (player.getName().toLowerCase().contains(query)) {
+                        canAddRow = true;
+                        break;
                     }
                 }
             }
-
-            if (tableModel.getDataVector().contains(server)) {
-                tableModel.deleteRow(server);
-            }
-            if (canAddRow) {
-                tableModel.insertRow(server);
-            }
         }
-
+        // Add row to preferences
+        if (canAddRow) {
+            tableModel.getDataVector().add(server);
+            tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - 1, tableModel.getDataVector().size() - 1);
+        }
         serverTable.getRowSorter().setSortKeys(sortOrder);
+    }
+
+    /**
+     * Deletes data from server table's model and updates rows.
+     */
+    private void clearTable() {
+        if (!tableModel.getDataVector().isEmpty()) {
+            int dataSize = tableModel.getDataVector().size();
+            tableModel.getDataVector().clear();
+            tableModel.fireTableRowsDeleted(0, dataSize - 1);
+        }
     }
 
     /**
@@ -409,8 +412,6 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         protected void succeeded(Object result) {
             updateButton.setEnabled(true);
             refresh();
-            serverList.clear();
-            favoriteServerList.clear();
         }
     }
 
@@ -419,12 +420,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      */
     @Action
     public void refresh() {
-        // Refresh table tableModel
-        if (!tableModel.getDataVector().isEmpty()) {
-            int dataSize = tableModel.getDataVector().size();
-            tableModel.getDataVector().clear();
-            tableModel.fireTableRowsDeleted(0, dataSize - 1);
-        }
+        clearTable();
         serverMap = new ConcurrentHashMap<String, Server>();
 
         class ServerQueryThread implements Runnable {
@@ -443,12 +439,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 if (server != null) {
                     server.setFavorite(favorite);
                     serverMap.putIfAbsent(ip, server);
-                    refreshTable();
+                    addRowToModel(server);
                 }
             }
         }
 
-        ExecutorService pool = Executors.newFixedThreadPool(200);
+        ExecutorService pool = Executors.newFixedThreadPool(QUERY_THREADS);
         if (favoriteServerList != null) {
             for (final String ip : favoriteServerList) {
                 pool.execute(new ServerQueryThread(ip, true));
@@ -458,6 +454,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             pool.execute(new ServerQueryThread(ip, false));
         }
         pool.shutdown();
+    }
+
+    /**
+     * Clears table, then re-evaluates which rows may be added.
+     */
+    private void refreshTable() {
+        clearTable();
+        for (Server server : serverMap.values()) {
+            addRowToModel(server);
+        }
     }
 
     /**
@@ -473,10 +479,9 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     @Action
     public void connect() {
         int selectedRow = serverTable.getSelectedRow();
-        int nameColumn = 1;
-        String selectedIp = "";
 
         if (selectedRow != -1) {
+            int nameColumn = 1;
             if (!tableModel.getColumnName(nameColumn).equals("Server")) {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                     if (tableModel.getColumnName(i).equals("Server")) {
@@ -486,6 +491,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 }
             }
             String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
+            String selectedIp = null;
             for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
@@ -508,10 +514,10 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     @Action
     public void launchFavoriteServerDialog() {
         int selectedRow = serverTable.getSelectedRow();
-        int nameColumn = 1;
         String selectedIp = null;
 
         if (selectedRow != -1) {
+            int nameColumn = 1;
             if (!tableModel.getColumnName(nameColumn).equals("Server")) {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                     if (tableModel.getColumnName(i).equals("Server")) {
