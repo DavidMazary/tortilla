@@ -68,7 +68,7 @@
                   <Group type="102" attributes="0">
                       <Component id="addButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="updateButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="refreshButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="connectButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="119" max="32767" attributes="0"/>
@@ -84,7 +84,7 @@
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="updateButton" alignment="0" max="32767" attributes="1"/>
+                              <Component id="refreshButton" alignment="0" max="32767" attributes="1"/>
                               <Component id="addButton" alignment="0" max="32767" attributes="1"/>
                           </Group>
                           <Component id="favoriteServersToggleButton" alignment="0" max="32767" attributes="1"/>
@@ -119,13 +119,14 @@
                 <Property name="name" type="java.lang.String" value="favoriteServersToggleButton" noResource="true"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="updateButton">
+            <Component class="javax.swing.JButton" name="refreshButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="tortilla.TortillaView" id="update" methodName="update"/>
+                  <action class="tortilla.TortillaView" id="refresh" methodName="refresh"/>
                 </Property>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="refreshButton.toolTipText"/>
                 <Property name="borderPainted" type="boolean" value="false"/>
-                <Property name="name" type="java.lang.String" value="updateButton" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="refreshButton" noResource="true"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>

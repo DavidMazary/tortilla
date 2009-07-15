@@ -22,7 +22,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
-import javax.swing.text.TableView.TableRow;
 
 /**
  * The application's main frame.
@@ -38,7 +37,7 @@ public class TortillaView extends FrameView {
 
         initComponents();
         sortOrder.add(new SortKey(0, SortOrder.ASCENDING));
-        update().execute();
+        refresh().execute();
     }
 
     /**
@@ -97,7 +96,7 @@ public class TortillaView extends FrameView {
         controlsPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
         favoriteServersToggleButton = new javax.swing.JToggleButton();
-        updateButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
@@ -141,10 +140,11 @@ public class TortillaView extends FrameView {
         favoriteServersToggleButton.setBorderPainted(false);
         favoriteServersToggleButton.setName("favoriteServersToggleButton"); // NOI18N
 
-        updateButton.setAction(actionMap.get("update")); // NOI18N
-        updateButton.setBorderPainted(false);
-        updateButton.setName("updateButton"); // NOI18N
-        updateButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        refreshButton.setAction(actionMap.get("refresh")); // NOI18N
+        refreshButton.setToolTipText(resourceMap.getString("refreshButton.toolTipText")); // NOI18N
+        refreshButton.setBorderPainted(false);
+        refreshButton.setName("refreshButton"); // NOI18N
+        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
         addButton.setBorderPainted(false);
@@ -161,7 +161,7 @@ public class TortillaView extends FrameView {
             .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addComponent(addButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(updateButton)
+                .addComponent(refreshButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(connectButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
@@ -175,7 +175,7 @@ public class TortillaView extends FrameView {
             .addGroup(controlsPanelLayout.createSequentialGroup()
                 .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(updateButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(refreshButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(connectButton)
@@ -313,11 +313,11 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
+    private javax.swing.JButton refreshButton;
     private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JTable serverTable;
     private javax.swing.JScrollPane tableScrollPane;
-    private javax.swing.JButton updateButton;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
@@ -379,19 +379,20 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     }
 
     /**
-     * Use MasterQuery to download new serverlist.
+     * Gets list of servers from master server.
+     * Queries servers and adds them to table.
      * @return
      */
     @Action
-    public Task update() {
-        return new UpdateTask(getApplication());
+    public Task refresh() {
+        return new RefreshTask(getApplication());
     }
 
-    private class UpdateTask extends org.jdesktop.application.Task<Object, Void> {
+    private class RefreshTask extends org.jdesktop.application.Task<Object, Void> {
 
-        UpdateTask(org.jdesktop.application.Application app) {
+        RefreshTask(org.jdesktop.application.Application app) {
             super(app);
-            updateButton.setEnabled(false);
+            refreshButton.setEnabled(false);
         }
 
         @Override
@@ -410,50 +411,42 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
 
         @Override
         protected void succeeded(Object result) {
-            updateButton.setEnabled(true);
-            refresh();
-        }
-    }
+            clearTable();
+            serverMap = new ConcurrentHashMap<String, Server>();
 
-    /**
-     * Gets details of each server in serverlist, and puts those in servermap.
-     */
-    @Action
-    public void refresh() {
-        clearTable();
-        serverMap = new ConcurrentHashMap<String, Server>();
+            class ServerQueryThread implements Runnable {
 
-        class ServerQueryThread implements Runnable {
+                String ip;
+                boolean favorite;
 
-            String ip;
-            boolean favorite;
+                public ServerQueryThread(String address, boolean fav) {
+                    ip = address;
+                    favorite = fav;
+                }
 
-            public ServerQueryThread(String address, boolean fav) {
-                ip = address;
-                favorite = fav;
-            }
-
-            @Override
-            public void run() {
-                Server server = new ServerQuery().getStatus(ip);
-                if (server != null) {
-                    server.setFavorite(favorite);
-                    serverMap.putIfAbsent(ip, server);
-                    addRowToModel(server);
+                @Override
+                public void run() {
+                    Server server = new ServerQuery().getStatus(ip);
+                    if (server != null) {
+                        server.setFavorite(favorite);
+                        serverMap.putIfAbsent(ip, server);
+                        addRowToModel(server);
+                    }
                 }
             }
-        }
 
-        ExecutorService pool = Executors.newFixedThreadPool(QUERY_THREADS);
-        if (favoriteServerList != null) {
-            for (final String ip : favoriteServerList) {
-                pool.execute(new ServerQueryThread(ip, true));
+            ExecutorService pool = Executors.newFixedThreadPool(QUERY_THREADS);
+            if (favoriteServerList != null) {
+                for (final String ip : favoriteServerList) {
+                    pool.execute(new ServerQueryThread(ip, true));
+                }
             }
+            for (final String ip : serverList) {
+                pool.execute(new ServerQueryThread(ip, false));
+            }
+            pool.shutdown();
+            refreshButton.setEnabled(true);
         }
-        for (final String ip : serverList) {
-            pool.execute(new ServerQueryThread(ip, false));
-        }
-        pool.shutdown();
     }
 
     /**
