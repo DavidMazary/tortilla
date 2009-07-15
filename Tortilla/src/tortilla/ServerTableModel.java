@@ -1,5 +1,6 @@
 package tortilla;
 
+import java.util.ConcurrentModificationException;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
@@ -59,7 +60,7 @@ public class ServerTableModel extends AbstractTableModel {
             case MAP:
                 return server.getMap();
             default:
-                return new Object();
+                throw new IndexOutOfBoundsException();
         }
     }
 
@@ -83,7 +84,7 @@ public class ServerTableModel extends AbstractTableModel {
                 server.setMap((String) value);
                 break;
             default:
-                System.err.println("Tried to set value of column " + column);
+                throw new IndexOutOfBoundsException();
         }
         fireTableCellUpdated(row, column);
     }
@@ -98,7 +99,21 @@ public class ServerTableModel extends AbstractTableModel {
         return COLUMN_NAMES.length;
     }
 
+    /**
+     * Accessor for ServerTableModel's underlying data.
+     * @return Vector of servers in model
+     */
     protected Vector<Server> getDataVector() {
         return dataVector;
+    }
+
+    void insertRow(Server server) {
+        dataVector.add(server);
+        fireTableRowsInserted(dataVector.size() - 1, dataVector.size() - 1);
+    }
+
+    void deleteRow(Server server) {
+        dataVector.remove(server);
+        fireTableRowsDeleted(dataVector.size() - 1, dataVector.size() - 1);
     }
 }

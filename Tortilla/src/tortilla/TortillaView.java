@@ -15,12 +15,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
-import javax.swing.table.AbstractTableModel;
 
 /**
  * The application's main frame.
@@ -62,7 +63,7 @@ public class TortillaView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         tableScrollPane = new javax.swing.JScrollPane();
-        serverTable = new javax.swing.JTable() {
+        serverTable = new javax.swing.JTable(tableModel) {
 
             public String getToolTipText(MouseEvent e) {
                 int nameColumn = 1;
@@ -116,7 +117,6 @@ public class TortillaView extends FrameView {
         tableScrollPane.setName("tableScrollPane"); // NOI18N
 
         serverTable.setAutoCreateRowSorter(true);
-        serverTable.setModel(getModel());
         serverTable.setDoubleBuffered(true);
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -301,7 +301,6 @@ private void hideFullMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
 private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
     refreshTable();
 }//GEN-LAST:event_searchTextFieldKeyReleased
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
@@ -332,26 +331,13 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
 
-    /**
-     * The custom DefaultTableModel used in TortillaView.
-     * @return The DefaultTableModel used here.
-     */
-    public AbstractTableModel getModel() {
-        return tableModel;
-    }
 
     /**
      * Refreshes the Table of server data using the stored serverMap.
      */
     private synchronized void refreshTable() {
         boolean canAddRow;
-        int rowsDeleted = 0;
-        int rowsInserted = 0;
 
-        if (!tableModel.getDataVector().isEmpty()) {
-            rowsDeleted = tableModel.getDataVector().size();
-            tableModel.getDataVector().clear();
-        }
         for (Server server : serverMap.values()) {
             canAddRow = true;
             String query = searchTextField.getText().toLowerCase();
@@ -362,7 +348,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
                     (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
                 canAddRow = false;
-            // Filter by the search term
+                // Filter by the search term
             } else if (!query.isEmpty()) {
                 canAddRow = false;
                 if (server.getHostname().toLowerCase().contains(query) ||
@@ -378,16 +364,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 }
             }
 
-            if (canAddRow) {
-                tableModel.getDataVector().add(server);
-                rowsInserted++;
+            if (tableModel.getDataVector().contains(server)) {
+                tableModel.deleteRow(server);
             }
-        }
-        if (rowsDeleted > 0) {
-            tableModel.fireTableRowsDeleted(0, rowsDeleted - 1);
-        }
-        if (rowsInserted > 0) {
-            tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - rowsInserted, tableModel.getDataVector().size() - 1);
+            if (canAddRow) {
+                tableModel.insertRow(server);
+            }
         }
 
         serverTable.getRowSorter().setSortKeys(sortOrder);
@@ -427,6 +409,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         protected void succeeded(Object result) {
             updateButton.setEnabled(true);
             refresh();
+            serverList.clear();
+            favoriteServerList.clear();
         }
     }
 
@@ -443,7 +427,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         }
         serverMap = new ConcurrentHashMap<String, Server>();
 
-        class ServerQueryThread extends Thread {
+        class ServerQueryThread implements Runnable {
 
             String ip;
             boolean favorite;
@@ -464,14 +448,16 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             }
         }
 
+        ExecutorService pool = Executors.newFixedThreadPool(200);
         if (favoriteServerList != null) {
             for (final String ip : favoriteServerList) {
-                (new ServerQueryThread(ip, true)).start();
+                pool.execute(new ServerQueryThread(ip, true));
             }
         }
         for (final String ip : serverList) {
-            (new ServerQueryThread(ip, false)).start();
+            pool.execute(new ServerQueryThread(ip, false));
         }
+        pool.shutdown();
     }
 
     /**
