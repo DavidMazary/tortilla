@@ -4,13 +4,10 @@
 package tortilla;
 
 import java.awt.Frame;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.FrameView;
-import org.jdesktop.application.Task;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
@@ -22,6 +19,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.FrameView;
+import org.jdesktop.application.Task;
 
 /**
  * The application's main frame.
@@ -116,7 +117,15 @@ public class TortillaView extends FrameView {
         tableScrollPane.setDoubleBuffered(true);
         tableScrollPane.setName("tableScrollPane"); // NOI18N
 
+        serverTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    connect();
+                }
+            }
+        });
         serverTable.setAutoCreateRowSorter(true);
+        serverTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         serverTable.setDoubleBuffered(true);
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -334,7 +343,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
 
     /**
-     * Refreshes the Table of server data using the stored serverMap.
+     * Adds a row to the table if the application state allows it.
      */
     private synchronized void addRowToModel(Server server) {
         boolean canAddRow = true;
@@ -364,6 +373,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             tableModel.getDataVector().add(server);
             tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - 1, tableModel.getDataVector().size() - 1);
         }
+        // TODO: Save and restore sortkeys
         serverTable.getRowSorter().setSortKeys(sortOrder);
     }
 
@@ -377,6 +387,19 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             tableModel.fireTableRowsDeleted(0, dataSize - 1);
         }
     }
+
+    /**
+     * Clears table, then re-evaluates which rows may be added.
+     */
+    private void refreshTable() {
+        // TODO: Save and restore selected row
+        clearTable();
+        for (Server server : serverMap.values()) {
+            addRowToModel(server);
+        }
+    }
+
+    /* ------- Actions ------- */
 
     /**
      * Gets list of servers from master server.
@@ -414,12 +437,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             clearTable();
             serverMap = new ConcurrentHashMap<String, Server>();
 
-            class ServerQueryThread implements Runnable {
+            class ServerQueryRunner implements Runnable {
 
                 String ip;
                 boolean favorite;
 
-                public ServerQueryThread(String address, boolean fav) {
+                public ServerQueryRunner(String address, boolean fav) {
                     ip = address;
                     favorite = fav;
                 }
@@ -438,24 +461,14 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             ExecutorService pool = Executors.newFixedThreadPool(QUERY_THREADS);
             if (favoriteServerList != null) {
                 for (final String ip : favoriteServerList) {
-                    pool.execute(new ServerQueryThread(ip, true));
+                    pool.execute(new ServerQueryRunner(ip, true));
                 }
             }
             for (final String ip : serverList) {
-                pool.execute(new ServerQueryThread(ip, false));
+                pool.execute(new ServerQueryRunner(ip, false));
             }
             pool.shutdown();
             refreshButton.setEnabled(true);
-        }
-    }
-
-    /**
-     * Clears table, then re-evaluates which rows may be added.
-     */
-    private void refreshTable() {
-        clearTable();
-        for (Server server : serverMap.values()) {
-            addRowToModel(server);
         }
     }
 
