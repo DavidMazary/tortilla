@@ -11,11 +11,11 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ServerTableModel extends AbstractTableModel {
 
-    public static final int PING = 0;
-    public static final int SERVER = 1;
-    public static final int PLAYERS = 2;
-    public static final int MAX = 3;
-    public static final int MAP = 4;
+    private static final int PING = 0;
+    private static final int SERVER = 1;
+    private static final int PLAYERS = 2;
+    private static final int MAX = 3;
+    private static final int MAP = 4;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
     private static final long serialVersionUID = 2187967572701857442L;
     private Vector<Server> dataVector = null;
