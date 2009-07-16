@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JDialog;
@@ -83,11 +82,13 @@ public class TortillaView extends FrameView {
                 for (Server server : tableModel.dataVector) {
                     if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
-                            playerList.append("<html><b>Players</b><br/>");
+                            playerList.append("<html><b>" + server.getHostname() + "</b><br/>");
                             for (Player player : server.getPlayerList()) {
-                                playerList.append(player.getName() + "<br/>");
+                                playerList.append(player.getColoredName() + "<br/>");
                             }
                             playerList.append("</html>");
+                        } else {
+                            return null;
                         }
                         break;
                     }
@@ -337,12 +338,12 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private ServerTableModel tableModel = new ServerTableModel();
     private ArrayList<String> serverList;
     private ArrayList<String> favoriteServerList;
-    private ConcurrentHashMap<String, Server> serverMap;
+    private Vector<Server> serverVector;
     private static final int HIGH_PING = 200;
-    private static final int QUERY_THREADS = 200;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
+    private int serverCount;
 
     /**
      * Model of Nexuiz server data.
@@ -490,7 +491,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private void refreshTable() {
         // TODO: Save and restore selected row
         clearTable();
-        for (Server server : serverMap.values()) {
+        for (Server server : serverVector) {
             addRowToModel(server);
         }
     }
@@ -524,36 +525,37 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                     }
                 }
             }
+            serverCount = serverList.size() + favoriteServerList.size();
             return null;
         }
 
         @Override
         protected void succeeded(Object result) {
             clearTable();
-            serverMap = new ConcurrentHashMap<String, Server>();
+            serverVector = new Vector<Server>(serverCount);
 
             class ServerQueryRunner implements Runnable {
 
-                String ip;
+                String address;
                 boolean favorite;
 
-                public ServerQueryRunner(String address, boolean fav) {
-                    ip = address;
+                public ServerQueryRunner(String ip, boolean fav) {
+                    address = ip;
                     favorite = fav;
                 }
 
                 @Override
                 public void run() {
-                    Server server = new ServerQuery().getStatus(ip);
+                    Server server = new ServerQuery().getStatus(address);
                     if (server != null) {
                         server.setFavorite(favorite);
-                        serverMap.putIfAbsent(ip, server);
+                        serverVector.add(server);
                         addRowToModel(server);
                     }
                 }
             }
 
-            ExecutorService pool = Executors.newFixedThreadPool(QUERY_THREADS);
+            ExecutorService pool = Executors.newFixedThreadPool(serverCount);
             if (favoriteServerList != null) {
                 for (final String ip : favoriteServerList) {
                     pool.execute(new ServerQueryRunner(ip, true));
@@ -603,7 +605,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             launcher.setSdl(sdlCheckBoxMenuItem.getState());
             launcher.setIp(selectedIp);
             launcher.playGame();
-        } else if (serverMap == null) {
+        } else if (serverVector == null) {
             JOptionPane.showMessageDialog(new Frame(),
                     "Please update the server list");
         } else {

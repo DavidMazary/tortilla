@@ -112,7 +112,7 @@ public class Player {
         if (plainName.equals(newName)) {
             this.setColoredName(newName);
         } else {
-            this.setColoredName(nexuizColorsToHtml(newName));
+            this.setColoredName(nexuizColorsToHtml(sanitizeName(newName)));
         }
         this.name = plainName;
     }
