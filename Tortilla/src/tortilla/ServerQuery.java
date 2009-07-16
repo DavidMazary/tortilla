@@ -24,17 +24,14 @@ public class ServerQuery extends AbstractQuery {
         String ip[] = ipStr.split(":");
         int port = Integer.parseInt(ip[1]);
         String queryResult = null;
-
-        querySuccess = false;
         int queryTries = 0;
-        while (!querySuccess && (queryTries < 3)) {
-            queryResult = getInfo(ip[0], port,
-                    "xxxxgetinfo tortilla");
+        while ((queryResult == null) && (queryTries < 3)) {
+            queryResult = getInfo(ip[0], port, "xxxxgetinfo tortilla");
             queryTries++;
         }
 
         Server server = null;
-        if (querySuccess) {
+        if (queryResult != null) {
             server = getServerFromResponse(queryResult, ipStr);
         }
         return server;
@@ -52,16 +49,13 @@ public class ServerQuery extends AbstractQuery {
         Server server = null;
         ArrayList<Player> players = new ArrayList<Player>();
         String queryResult = null;
-
-        querySuccess = false;
         int queryTries = 0;
-        while (!querySuccess && (queryTries < 3)) {
-            queryResult = getInfo(ip[0], port,
-                    "xxxxgetstatus tortilla");
+        while ((queryResult == null) && (queryTries < 3)) {
+            queryResult = getInfo(ip[0], port, "xxxxgetstatus tortilla");
             queryTries++;
         }
 
-        if (querySuccess) {
+        if (queryResult != null) {
             queryResult = queryResult.substring(queryResult.indexOf("\\"));
             String input;
 
@@ -127,7 +121,7 @@ public class ServerQuery extends AbstractQuery {
             server.setMap(serverData[12]);
             server.setHostname(serverData[14]);
         }
-        server.setPing(getPing());
+        server.setPing(ping);
         server.setIp(ipStr);
         return server;
     }

@@ -30,14 +30,13 @@ public class MasterQuery extends AbstractQuery {
         ArrayList<String> serverList = null;
         String queryResult = null;
         
-        querySuccess = false;
         int queryTries = 0;
-        while (!querySuccess && (queryTries < 3)) {
+        while ((queryResult == null) && (queryTries < 3)) {
             queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
             queryTries++;
         }
 
-        if (querySuccess) {
+        if (queryResult != null) {
             serverList = new ArrayList<String>();
             int index = MESSAGE_START;
             String byteAddress;
