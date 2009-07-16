@@ -76,6 +76,7 @@ public class ServerQuery extends AbstractQuery {
 
     /**
      * From a line in the queryResult, retreive player info.
+     * TODO: Make this less wasteful.
      * @param queryResult String of the line to process.
      * @return Player which is created.
      */

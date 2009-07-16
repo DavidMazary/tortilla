@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.table.AbstractTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -67,7 +68,7 @@ public class TortillaView extends FrameView {
         serverTable = new javax.swing.JTable(tableModel) {
 
             public String getToolTipText(MouseEvent e) {
-                int nameColumn = 1;
+                int nameColumn = ServerTableModel.HOSTNAME;
                 int selectedRow = rowAtPoint(e.getPoint());
                 StringBuilder playerList = new StringBuilder("");
                 if (!getModel().getColumnName(nameColumn).equals("Server")) {
@@ -79,7 +80,7 @@ public class TortillaView extends FrameView {
                     }
                 }
                 String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
-                for (Server server : tableModel.getDataVector()) {
+                for (Server server : tableModel.dataVector) {
                     if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
                             playerList.append("<html><b>Players</b><br/>");
@@ -339,8 +340,103 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private ConcurrentHashMap<String, Server> serverMap;
     private static final int HIGH_PING = 200;
     private static final int QUERY_THREADS = 200;
+    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
+
+    /**
+     * Model of Nexuiz server data.
+     * @author dmaz
+     */
+    class ServerTableModel extends AbstractTableModel {
+
+        public static final int PING = 0;
+        public static final int HOSTNAME = 1;
+        public static final int PLAYERS = 2;
+        public static final int MAX = 3;
+        public static final int MAP = 4;
+        private static final long serialVersionUID = 2187967572701857442L;
+        protected Vector<Server> dataVector = null;
+
+        public ServerTableModel() {
+            dataVector = new Vector<Server>();
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return COLUMN_NAMES[column];
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        @Override
+        public Class getColumnClass(int column) {
+            switch (column) {
+                case HOSTNAME:
+                case MAP:
+                    return String.class;
+                default:
+                    return Integer.class;
+            }
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            Server server = dataVector.get(row);
+            switch (column) {
+                case PING:
+                    return server.getPing();
+                case PLAYERS:
+                    return server.getPlayerCount();
+                case MAX:
+                    return server.getMaxPlayers();
+                case HOSTNAME:
+                    return server.getHostname();
+                case MAP:
+                    return server.getMap();
+                default:
+                    throw new IndexOutOfBoundsException();
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int row, int column) {
+            Server server = dataVector.get(row);
+            switch (column) {
+                case PING:
+                    server.setPing((Integer) value);
+                    break;
+                case PLAYERS:
+                    server.setPlayerCount((Integer) value);
+                    break;
+                case MAX:
+                    server.setMaxPlayers((Integer) value);
+                    break;
+                case HOSTNAME:
+                    server.setHostname((String) value);
+                    break;
+                case MAP:
+                    server.setMap((String) value);
+                    break;
+                default:
+                    throw new IndexOutOfBoundsException();
+            }
+            fireTableCellUpdated(row, column);
+        }
+
+        @Override
+        public int getRowCount() {
+            return dataVector.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return COLUMN_NAMES.length;
+        }
+    }
 
     /**
      * Adds a row to the table if the application state allows it.
@@ -370,8 +466,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         }
         // Add row to preferences
         if (canAddRow) {
-            tableModel.getDataVector().add(server);
-            tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - 1, tableModel.getDataVector().size() - 1);
+            tableModel.dataVector.add(server);
+            tableModel.fireTableRowsInserted(tableModel.dataVector.size() - 1, tableModel.dataVector.size() - 1);
         }
         // TODO: Save and restore sortkeys
         serverTable.getRowSorter().setSortKeys(sortOrder);
@@ -381,9 +477,9 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
      * Deletes data from server table's model and updates rows.
      */
     private void clearTable() {
-        if (!tableModel.getDataVector().isEmpty()) {
-            int dataSize = tableModel.getDataVector().size();
-            tableModel.getDataVector().clear();
+        if (!tableModel.dataVector.isEmpty()) {
+            int dataSize = tableModel.dataVector.size();
+            tableModel.dataVector.clear();
             tableModel.fireTableRowsDeleted(0, dataSize - 1);
         }
     }
@@ -400,7 +496,6 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     }
 
     /* ------- Actions ------- */
-
     /**
      * Gets list of servers from master server.
      * Queries servers and adds them to table.
@@ -487,7 +582,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         int selectedRow = serverTable.getSelectedRow();
 
         if (selectedRow != -1) {
-            int nameColumn = 1;
+            int nameColumn = ServerTableModel.HOSTNAME;
             if (!tableModel.getColumnName(nameColumn).equals("Server")) {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                     if (tableModel.getColumnName(i).equals("Server")) {
@@ -498,7 +593,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
             }
             String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
             String selectedIp = null;
-            for (Server server : tableModel.getDataVector()) {
+            for (Server server : tableModel.dataVector) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
@@ -523,7 +618,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
         String selectedIp = null;
 
         if (selectedRow != -1) {
-            int nameColumn = 1;
+            int nameColumn = ServerTableModel.HOSTNAME;
             if (!tableModel.getColumnName(nameColumn).equals("Server")) {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                     if (tableModel.getColumnName(i).equals("Server")) {
@@ -533,7 +628,7 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                 }
             }
             String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
-            for (Server server : tableModel.getDataVector()) {
+            for (Server server : tableModel.dataVector) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
