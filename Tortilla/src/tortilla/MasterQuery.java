@@ -31,7 +31,7 @@ public class MasterQuery extends AbstractQuery {
         String queryResult = null;
         
         int queryTries = 0;
-        while ((queryResult == null) && (queryTries < 3)) {
+        while ((queryResult == null) && (queryTries < RETRIES)) {
             queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
             queryTries++;
         }

@@ -21,6 +21,7 @@ public abstract class AbstractQuery {
     private static final int PACKET_SIZE = 2048;      // Receive packet size
     private static final int TYPE_OF_SERVICE = 0x10;  // Type of Service octet
     private static final String CHARSET = "ISO-8859-1";
+    protected static final int RETRIES = 2;
     protected int ping;
 
     /**
@@ -34,7 +35,7 @@ public abstract class AbstractQuery {
         String queryInfo;
         long sendTime, receiveTime;
         byte[] requestBytes = request.getBytes();
-        requestBytes[0] |= 0xff;
+        requestBytes[0] |= 0xff;  // Change first 4 chars to 0xff
         requestBytes[1] |= 0xff;
         requestBytes[2] |= 0xff;
         requestBytes[3] |= 0xff;
