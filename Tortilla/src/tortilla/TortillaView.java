@@ -524,47 +524,53 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
                         serverList.remove(address);
                     }
                 }
+                serverCount = serverList.size() + favoriteServerList.size();
+            } else if (serverList != null) {
+                serverCount = serverList.size();
+            } else {
+                serverCount = 0;
             }
-            serverCount = serverList.size() + favoriteServerList.size();
             return null;
         }
 
         @Override
         protected void succeeded(Object result) {
-            clearTable();
-            serverVector = new Vector<Server>(serverCount);
+            if (serverCount > 0) {
+                clearTable();
+                serverVector = new Vector<Server>(serverCount);
 
-            class ServerQueryRunner implements Runnable {
+                class ServerQueryRunner implements Runnable {
 
-                String address;
-                boolean favorite;
+                    String address;
+                    boolean favorite;
 
-                public ServerQueryRunner(String ip, boolean fav) {
-                    address = ip;
-                    favorite = fav;
-                }
+                    public ServerQueryRunner(String ip, boolean fav) {
+                        address = ip;
+                        favorite = fav;
+                    }
 
-                @Override
-                public void run() {
-                    Server server = new ServerQuery().getStatus(address);
-                    if (server != null) {
-                        server.setFavorite(favorite);
-                        serverVector.add(server);
-                        addRowToModel(server);
+                    @Override
+                    public void run() {
+                        Server server = new ServerQuery().getStatus(address);
+                        if (server != null) {
+                            server.setFavorite(favorite);
+                            serverVector.add(server);
+                            addRowToModel(server);
+                        }
                     }
                 }
-            }
 
-            ExecutorService pool = Executors.newFixedThreadPool(serverCount);
-            if (favoriteServerList != null) {
-                for (final String ip : favoriteServerList) {
-                    pool.execute(new ServerQueryRunner(ip, true));
+                ExecutorService pool = Executors.newFixedThreadPool(serverCount);
+                if (favoriteServerList != null) {
+                    for (final String ip : favoriteServerList) {
+                        pool.execute(new ServerQueryRunner(ip, true));
+                    }
                 }
+                for (final String ip : serverList) {
+                    pool.execute(new ServerQueryRunner(ip, false));
+                }
+                pool.shutdown();
             }
-            for (final String ip : serverList) {
-                pool.execute(new ServerQueryRunner(ip, false));
-            }
-            pool.shutdown();
             refreshButton.setEnabled(true);
         }
     }
