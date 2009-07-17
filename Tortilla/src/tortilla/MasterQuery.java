@@ -19,7 +19,7 @@ public class MasterQuery extends AbstractQuery {
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
     private static final String[] MASTER_ADDRESSES = {"ghdigital.com",
         "dpmaster.deathmask.net", "dpmaster.tchr.no"};
-    
+
     /**
      * Retreives and saves the list of servers from the master server.
      * Note that servers containing the "\\" delimiter in their byte string
@@ -29,7 +29,8 @@ public class MasterQuery extends AbstractQuery {
     public ArrayList<String> getServerList() {
         ArrayList<String> serverList = null;
         String queryResult = null;
-        
+
+        long queryStartTime = System.currentTimeMillis();
         int queryTries = 0;
         while ((queryResult == null) && (queryTries < RETRIES)) {
             queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
@@ -49,7 +50,12 @@ public class MasterQuery extends AbstractQuery {
             }
         } else {
             // Notify the user since there may be a problem with their connection.
-            JOptionPane.showMessageDialog(null, "Could not reach master server");
+            long queryTime = (System.currentTimeMillis() - queryStartTime);
+            if (queryTime < 2000) {
+                JOptionPane.showMessageDialog(null, "Could not reach master server");
+            } else {
+                JOptionPane.showMessageDialog(null, "No reply from master server");
+            }
         }
         return serverList;
     }
@@ -72,7 +78,7 @@ public class MasterQuery extends AbstractQuery {
      */
     protected String getAddressFromBytes(String ip) {
         String address = null;
-        
+
         try {
             byte[] bytes = ip.getBytes("ISO-8859-1");
             int A = bytes[0] & 0xff;
