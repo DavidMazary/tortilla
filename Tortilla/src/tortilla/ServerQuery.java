@@ -16,7 +16,7 @@ public class ServerQuery extends AbstractQuery {
     /**
      * Creates a Server containing all of the server info,
      * excluding player names, scores, and pings.
-     * 
+     *
      * @param ipStr     String of IP address of this server
      * @return  Server containing the info of this server.
      */
