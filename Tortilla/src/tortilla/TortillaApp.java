@@ -4,6 +4,9 @@
  */
 package tortilla;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -12,22 +15,30 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class TortillaApp extends SingleFrameApplication {
 
+    TortillaView tortillaView;
+    private static final String SESSION_FILE = "session.xml";
+
     /**
      * At startup create and show the main frame of the application.
      */
     @Override
     protected void startup() {
-        show(new TortillaView(this));
+        tortillaView = new TortillaView(this);
+        try {
+            getContext().getSessionStorage().restore(tortillaView.getFrame(), SESSION_FILE);
+        } catch (IOException ex) {
+            Logger.getLogger(TortillaApp.class.getName()).log(Level.WARNING, "Couldn't restore session", ex);
+        }
+        show(tortillaView);
     }
 
-    /**
-     * This method is to initialize the specified window by injecting resources.
-     * Windows shown in our application come fully initialized from the GUI
-     * builder, so this additional configuration is not needed.
-     * @param root 
-     */
     @Override
-    protected void configureWindow(java.awt.Window root) {
+    protected void shutdown() {
+        try {
+            getContext().getSessionStorage().save(tortillaView.getFrame(), SESSION_FILE);
+        } catch (IOException ex) {
+            Logger.getLogger(TortillaApp.class.getName()).log(Level.WARNING, "Couldn't save session", ex);
+        }
     }
 
     /**
