@@ -3,6 +3,7 @@
  */
 package tortilla;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,15 +14,18 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JToggleButton;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
+import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.Task;
 
 /**
@@ -96,21 +100,24 @@ public class TortillaView extends FrameView {
                 return playerList.toString();
             }
         };
-        controlsPanel = new javax.swing.JPanel();
+        filterPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
-        favoriteServersToggleButton = new javax.swing.JToggleButton();
-        refreshButton = new javax.swing.JButton();
+        favoriteServersToggleButton = new StoredJToggleButton();
+        showHighPingToggle = new StoredJToggleButton();
+        showFullToggle = new StoredJToggleButton();
+        showEmptyToggle = new StoredJToggleButton();
+        toolBar = new javax.swing.JToolBar();
         addButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        separator = new javax.swing.JToolBar.Separator();
         connectButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
-        hideHighPingMenuItem = new javax.swing.JCheckBoxMenuItem();
-        hideEmptyMenuItem = new javax.swing.JCheckBoxMenuItem();
-        hideFullMenuItem = new javax.swing.JCheckBoxMenuItem();
+        filterBarCheckBox = new javax.swing.JCheckBoxMenuItem();
         optionsMenu = new javax.swing.JMenu();
-        sdlCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        sdlCheckBoxMenuItem = new StoredJCheckBoxMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -127,14 +134,13 @@ public class TortillaView extends FrameView {
             }
         });
         serverTable.setAutoCreateRowSorter(true);
-        serverTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         serverTable.setDoubleBuffered(true);
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableScrollPane.setViewportView(serverTable);
         serverTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        controlsPanel.setName("controlsPanel"); // NOI18N
+        filterPanel.setName("filterPanel"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
         searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
@@ -146,71 +152,112 @@ public class TortillaView extends FrameView {
         });
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaView.class, this);
-        favoriteServersToggleButton.setAction(actionMap.get("filterFavorites")); // NOI18N
+        favoriteServersToggleButton.setAction(actionMap.get("filter")); // NOI18N
+        favoriteServersToggleButton.setIcon(resourceMap.getIcon("favoriteServersToggleButton.icon")); // NOI18N
         favoriteServersToggleButton.setText(resourceMap.getString("favoriteServersToggleButton.text")); // NOI18N
+        favoriteServersToggleButton.setToolTipText(resourceMap.getString("favoriteServersToggleButton.toolTipText")); // NOI18N
         favoriteServersToggleButton.setBorderPainted(false);
+        favoriteServersToggleButton.setMaximumSize(new java.awt.Dimension(24, 24));
+        favoriteServersToggleButton.setMinimumSize(new java.awt.Dimension(24, 24));
         favoriteServersToggleButton.setName("favoriteServersToggleButton"); // NOI18N
+        favoriteServersToggleButton.setPreferredSize(new java.awt.Dimension(24, 24));
 
-        refreshButton.setAction(actionMap.get("refresh")); // NOI18N
-        refreshButton.setToolTipText(resourceMap.getString("refreshButton.toolTipText")); // NOI18N
-        refreshButton.setBorderPainted(false);
-        refreshButton.setName("refreshButton"); // NOI18N
-        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        showHighPingToggle.setAction(actionMap.get("filter")); // NOI18N
+        showHighPingToggle.setText(resourceMap.getString("showHighPingToggle.text")); // NOI18N
+        showHighPingToggle.setToolTipText(resourceMap.getString("showHighPingToggle.toolTipText")); // NOI18N
+        showHighPingToggle.setBorderPainted(false);
+        showHighPingToggle.setName("showHighPingToggle"); // NOI18N
+
+        showFullToggle.setAction(actionMap.get("filter")); // NOI18N
+        showFullToggle.setText(resourceMap.getString("showFullToggle.text")); // NOI18N
+        showFullToggle.setToolTipText(resourceMap.getString("showFullToggle.toolTipText")); // NOI18N
+        showFullToggle.setBorderPainted(false);
+        showFullToggle.setName("showFullToggle"); // NOI18N
+
+        showEmptyToggle.setAction(actionMap.get("filter")); // NOI18N
+        showEmptyToggle.setText(resourceMap.getString("showEmptyToggle.text")); // NOI18N
+        showEmptyToggle.setToolTipText(resourceMap.getString("showEmptyToggle.toolTipText")); // NOI18N
+        showEmptyToggle.setBorderPainted(false);
+        showEmptyToggle.setName("showEmptyToggle"); // NOI18N
+
+        javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
+        filterPanel.setLayout(filterPanelLayout);
+        filterPanelLayout.setHorizontalGroup(
+            filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(filterPanelLayout.createSequentialGroup()
+                .addComponent(showEmptyToggle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showFullToggle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showHighPingToggle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 188, Short.MAX_VALUE)
+                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        filterPanelLayout.setVerticalGroup(
+            filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(showEmptyToggle)
+                .addComponent(showFullToggle)
+                .addComponent(showHighPingToggle))
+            .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        toolBar.setFloatable(false);
+        toolBar.setBorderPainted(false);
+        toolBar.setName("toolBar"); // NOI18N
 
         addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
         addButton.setBorderPainted(false);
+        addButton.setFocusable(false);
+        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addButton.setName("addButton"); // NOI18N
+        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(addButton);
+
+        refreshButton.setAction(actionMap.get("refresh")); // NOI18N
+        refreshButton.setBorderPainted(false);
+        refreshButton.setFocusable(false);
+        refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        refreshButton.setName("refreshButton"); // NOI18N
+        refreshButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(refreshButton);
+
+        separator.setName("separator"); // NOI18N
+        toolBar.add(separator);
 
         connectButton.setAction(actionMap.get("connect")); // NOI18N
         connectButton.setBorderPainted(false);
+        connectButton.setFocusable(false);
+        connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectButton.setName("connectButton"); // NOI18N
-
-        javax.swing.GroupLayout controlsPanelLayout = new javax.swing.GroupLayout(controlsPanel);
-        controlsPanel.setLayout(controlsPanelLayout);
-        controlsPanelLayout.setHorizontalGroup(
-            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addComponent(addButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(refreshButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(connectButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
-                .addComponent(favoriteServersToggleButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        controlsPanelLayout.setVerticalGroup(
-            controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(controlsPanelLayout.createSequentialGroup()
-                .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(controlsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(refreshButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(addButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(connectButton)
-                    .addGroup(controlsPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
+        connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(connectButton);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addComponent(controlsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(toolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(filterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, 0))))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(controlsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(toolBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+                .addComponent(filterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -230,40 +277,15 @@ public class TortillaView extends FrameView {
         viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
         viewMenu.setName("viewMenu"); // NOI18N
 
-        hideHighPingMenuItem.setMnemonic('p');
-        hideHighPingMenuItem.setSelected(true);
-        hideHighPingMenuItem.setText(resourceMap.getString("hideHighPingMenuItem.text")); // NOI18N
-        hideHighPingMenuItem.setToolTipText(resourceMap.getString("hideHighPingMenuItem.toolTipText")); // NOI18N
-        hideHighPingMenuItem.setName("hideHighPingMenuItem"); // NOI18N
-        hideHighPingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        filterBarCheckBox.setSelected(true);
+        filterBarCheckBox.setText(resourceMap.getString("filterBarCheckBox.text")); // NOI18N
+        filterBarCheckBox.setName("filterBarCheckBox"); // NOI18N
+        filterBarCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hideHighPingMenuItemActionPerformed(evt);
+                filterBarCheckBoxActionPerformed(evt);
             }
         });
-        viewMenu.add(hideHighPingMenuItem);
-
-        hideEmptyMenuItem.setMnemonic('e');
-        hideEmptyMenuItem.setSelected(true);
-        hideEmptyMenuItem.setText(resourceMap.getString("hideEmptyMenuItem.text")); // NOI18N
-        hideEmptyMenuItem.setToolTipText(resourceMap.getString("hideEmptyMenuItem.toolTipText")); // NOI18N
-        hideEmptyMenuItem.setName("hideEmptyMenuItem"); // NOI18N
-        hideEmptyMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hideEmptyMenuItemActionPerformed(evt);
-            }
-        });
-        viewMenu.add(hideEmptyMenuItem);
-
-        hideFullMenuItem.setMnemonic('f');
-        hideFullMenuItem.setText(resourceMap.getString("hideFullMenuItem.text")); // NOI18N
-        hideFullMenuItem.setToolTipText(resourceMap.getString("hideFullMenuItem.toolTipText")); // NOI18N
-        hideFullMenuItem.setName("hideFullMenuItem"); // NOI18N
-        hideFullMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hideFullMenuItemActionPerformed(evt);
-            }
-        });
-        viewMenu.add(hideFullMenuItem);
+        viewMenu.add(filterBarCheckBox);
 
         menuBar.add(viewMenu);
 
@@ -294,41 +316,33 @@ public class TortillaView extends FrameView {
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * Get server list from master server when clicked.
-     * @param evt
-     */
-private void hideHighPingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideHighPingMenuItemActionPerformed
-    refreshTable();
-}//GEN-LAST:event_hideHighPingMenuItemActionPerformed
-
-private void hideEmptyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideEmptyMenuItemActionPerformed
-    refreshTable();
-}//GEN-LAST:event_hideEmptyMenuItemActionPerformed
-
-private void hideFullMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideFullMenuItemActionPerformed
-    refreshTable();
-}//GEN-LAST:event_hideFullMenuItemActionPerformed
-
 private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
     refreshTable();
 }//GEN-LAST:event_searchTextFieldKeyReleased
+
+private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterBarCheckBoxActionPerformed
+    filterPanel.setVisible(filterBarCheckBox.getState());
+}//GEN-LAST:event_filterBarCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
-    private javax.swing.JPanel controlsPanel;
     private javax.swing.JToggleButton favoriteServersToggleButton;
-    private javax.swing.JCheckBoxMenuItem hideEmptyMenuItem;
-    private javax.swing.JCheckBoxMenuItem hideFullMenuItem;
-    private javax.swing.JCheckBoxMenuItem hideHighPingMenuItem;
+    private javax.swing.JCheckBoxMenuItem filterBarCheckBox;
+    private javax.swing.JPanel filterPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JButton refreshButton;
     private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
     private javax.swing.JTextField searchTextField;
+    private javax.swing.JToolBar.Separator separator;
     private javax.swing.JTable serverTable;
+    private javax.swing.JToggleButton showEmptyToggle;
+    private javax.swing.JToggleButton showFullToggle;
+    private javax.swing.JToggleButton showHighPingToggle;
     private javax.swing.JScrollPane tableScrollPane;
+    private javax.swing.JToolBar toolBar;
     private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
@@ -344,6 +358,41 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
     private int serverCount;
+
+    /**
+     * JCheckBoxMenuItem which is able to have its state saved automatically.
+     * TODO: This does not happen yet.
+     */
+    @SuppressWarnings("serial")
+    class StoredJCheckBoxMenuItem extends JCheckBoxMenuItem implements SessionStorage.Property {
+
+        @Override
+        public Object getSessionState(Component c) {
+            return getState();
+        }
+
+        @Override
+        public void setSessionState(Component c, Object state) {
+            this.setState((Boolean) state);
+        }
+    }
+
+    /**
+     * JToggleButton which is able to have its state saved automatically.
+     */
+    @SuppressWarnings("serial")
+    class StoredJToggleButton extends JToggleButton implements SessionStorage.Property {
+
+        @Override
+        public Object getSessionState(Component c) {
+            return isSelected();
+        }
+
+        @Override
+        public void setSessionState(Component c, Object state) {
+            this.setSelected((Boolean) state);
+        }
+    }
 
     /**
      * Model of Nexuiz server data.
@@ -445,9 +494,9 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     private synchronized void addRowToModel(Server server) {
         boolean canAddRow = true;
         // Filter by the preferences
-        if ((hideEmptyMenuItem.getState() && (server.getPlayerCount() == 0)) ||
-                (hideFullMenuItem.getState() && (server.getPlayerCount() == server.getMaxPlayers())) ||
-                (hideHighPingMenuItem.getState() && (server.getPing() > HIGH_PING)) ||
+        if ((!showEmptyToggle.isSelected() && (server.getPlayerCount() == 0)) ||
+                (!showFullToggle.isSelected() && (server.getPlayerCount() == server.getMaxPlayers())) ||
+                (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING)) ||
                 (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
             canAddRow = false;
         } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
@@ -656,7 +705,8 @@ private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRS
     }
 
     @Action
-    public void filterFavorites() {
+    public void filter() {
+        
         refreshTable();
     }
 
