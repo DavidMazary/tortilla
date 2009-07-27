@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
+
     private static final long serialVersionUID = -2068487999261265325L;
 
     /**
@@ -155,9 +156,8 @@ public class TortillaAboutBox extends javax.swing.JDialog {
      * @param evt Mouse event which will trigger this action.
      */
 private void appHomepageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appHomepageLabelMouseClicked
-    Desktop desktop = null;
     if (Desktop.isDesktopSupported()) {
-        desktop = Desktop.getDesktop();
+        Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             URI uri = null;
             try {

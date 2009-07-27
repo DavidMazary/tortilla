@@ -100,7 +100,6 @@ public class ServerQuery extends AbstractQuery {
     /**
      * Take the server info from the queryResult and build a Server.
      * Response will look like this: <code>\gamename\Nexuiz\modname\data\gameversion\20000\sv_maxclients\24\clients\4\bots\2\mapname\dance\hostname\[o8] Nexican v2.5.1\protocol\3\qcstatus\ctf:2.5.1::score!!:score!!,caps!:5:22,1:14:73,3\challenge\tortilla</code>
-     * TODO: Handle qcstatus info
      * @param queryResult String of the server info.
      * @param ipStr The address of the server.
      * @return Server which is created.
