@@ -4,16 +4,24 @@
 package tortilla;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -106,19 +114,19 @@ public class TortillaView extends FrameView {
         showEmptyToggle = new StoredJToggleButton();
         gameTypeComboBox = new StoredJComboBox();
         toolBar = new javax.swing.JToolBar();
-        addButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
         separator = new javax.swing.JToolBar.Separator();
+        addButton = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
-        menuBar = new javax.swing.JMenuBar();
-        javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
-        viewMenu = new javax.swing.JMenu();
-        filterBarCheckBox = new javax.swing.JCheckBoxMenuItem();
-        optionsMenu = new javax.swing.JMenu();
-        sdlCheckBoxMenuItem = new StoredJCheckBoxMenuItem();
-        javax.swing.JMenu helpMenu = new javax.swing.JMenu();
-        javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
+        controlButton = new javax.swing.JButton();
+        controlMenu = new javax.swing.JPopupMenu();
+        filterBarCheckBox = new StoredJCheckBoxMenuItem();
+        sdlCheckBox = new StoredJCheckBoxMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        aboutMenuItem = new javax.swing.JMenuItem();
+        helpMenuItem = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JSeparator();
+        exitMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -133,7 +141,6 @@ public class TortillaView extends FrameView {
             }
         });
         serverTable.setAutoCreateRowSorter(true);
-        serverTable.setDoubleBuffered(true);
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableScrollPane.setViewportView(serverTable);
@@ -225,17 +232,9 @@ public class TortillaView extends FrameView {
         toolBar.setFloatable(false);
         toolBar.setBorderPainted(false);
         toolBar.setName("toolBar"); // NOI18N
-
-        addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
-        addButton.setBorderPainted(false);
-        addButton.setFocusable(false);
-        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        addButton.setName("addButton"); // NOI18N
-        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBar.add(addButton);
+        toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
 
         refreshButton.setAction(actionMap.get("refresh")); // NOI18N
-        refreshButton.setBorderPainted(false);
         refreshButton.setFocusable(false);
         refreshButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         refreshButton.setName("refreshButton"); // NOI18N
@@ -245,13 +244,29 @@ public class TortillaView extends FrameView {
         separator.setName("separator"); // NOI18N
         toolBar.add(separator);
 
+        addButton.setAction(actionMap.get("launchFavoriteServerDialog")); // NOI18N
+        addButton.setFocusable(false);
+        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addButton.setName("addButton"); // NOI18N
+        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(addButton);
+
         connectButton.setAction(actionMap.get("connect")); // NOI18N
-        connectButton.setBorderPainted(false);
         connectButton.setFocusable(false);
         connectButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         connectButton.setName("connectButton"); // NOI18N
         connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(connectButton);
+
+        controlButton.setAction(actionMap.get("showControlPopup")); // NOI18N
+        controlButton.setText(resourceMap.getString("controlButton.text")); // NOI18N
+        controlButton.setToolTipText(resourceMap.getString("controlButton.toolTipText")); // NOI18N
+        controlButton.setFocusable(false);
+        controlButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        controlButton.setName("controlButton"); // NOI18N
+        controlButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(controlButton);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -273,72 +288,51 @@ public class TortillaView extends FrameView {
                 .addGap(2, 2, 2)
                 .addComponent(filterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
-                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
+                .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
         );
 
-        menuBar.setName("menuBar"); // NOI18N
-        menuBar.setPreferredSize(new java.awt.Dimension(214, 23));
+        controlMenu.setName("controlMenu"); // NOI18N
 
-        fileMenu.setMnemonic('F');
-        fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
-        fileMenu.setName("fileMenu"); // NOI18N
-
-        exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
-        exitMenuItem.setName("exitMenuItem"); // NOI18N
-        fileMenu.add(exitMenuItem);
-
-        menuBar.add(fileMenu);
-
-        viewMenu.setMnemonic('V');
-        viewMenu.setText(resourceMap.getString("viewMenu.text")); // NOI18N
-        viewMenu.setName("viewMenu"); // NOI18N
-
+        filterBarCheckBox.setAction(actionMap.get("showFilterPanel")); // NOI18N
+        filterBarCheckBox.setMnemonic('/');
         filterBarCheckBox.setSelected(true);
         filterBarCheckBox.setText(resourceMap.getString("filterBarCheckBox.text")); // NOI18N
         filterBarCheckBox.setName("filterBarCheckBox"); // NOI18N
-        filterBarCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filterBarCheckBoxActionPerformed(evt);
-            }
-        });
-        viewMenu.add(filterBarCheckBox);
+        controlMenu.add(filterBarCheckBox);
 
-        menuBar.add(viewMenu);
+        sdlCheckBox.setSelected(true);
+        sdlCheckBox.setText(resourceMap.getString("sdlCheckBox.text")); // NOI18N
+        sdlCheckBox.setName("sdlCheckBox"); // NOI18N
+        controlMenu.add(sdlCheckBox);
 
-        optionsMenu.setMnemonic('G');
-        optionsMenu.setText(resourceMap.getString("optionsMenu.text")); // NOI18N
-        optionsMenu.setName("optionsMenu"); // NOI18N
-
-        sdlCheckBoxMenuItem.setMnemonic('S');
-        sdlCheckBoxMenuItem.setSelected(true);
-        sdlCheckBoxMenuItem.setText(resourceMap.getString("sdlCheckBoxMenuItem.text")); // NOI18N
-        sdlCheckBoxMenuItem.setToolTipText(resourceMap.getString("sdlCheckBoxMenuItem.toolTipText")); // NOI18N
-        sdlCheckBoxMenuItem.setName("sdlCheckBoxMenuItem"); // NOI18N
-        optionsMenu.add(sdlCheckBoxMenuItem);
-
-        menuBar.add(optionsMenu);
-
-        helpMenu.setMnemonic('H');
-        helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
-        helpMenu.setName("helpMenu"); // NOI18N
+        jSeparator1.setName("jSeparator1"); // NOI18N
+        controlMenu.add(jSeparator1);
 
         aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
+        aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
-        helpMenu.add(aboutMenuItem);
+        controlMenu.add(aboutMenuItem);
 
-        menuBar.add(helpMenu);
+        helpMenuItem.setAction(actionMap.get("launchHelpPage")); // NOI18N
+        helpMenuItem.setText(resourceMap.getString("helpMenuItem.text")); // NOI18N
+        helpMenuItem.setToolTipText(null);
+        helpMenuItem.setName("helpMenuItem"); // NOI18N
+        controlMenu.add(helpMenuItem);
+
+        jSeparator2.setName("jSeparator2"); // NOI18N
+        controlMenu.add(jSeparator2);
+
+        exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
+        exitMenuItem.setText(resourceMap.getString("exitMenuItem.text")); // NOI18N
+        exitMenuItem.setName("exitMenuItem"); // NOI18N
+        controlMenu.add(exitMenuItem);
 
         setComponent(mainPanel);
-        setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
 
 private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
     refreshTable();
 }//GEN-LAST:event_searchTextFieldKeyReleased
-
-private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterBarCheckBoxActionPerformed
-    filterPanel.setVisible(filterBarCheckBox.getState());
-}//GEN-LAST:event_filterBarCheckBoxActionPerformed
 
 private void gameTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gameTypeComboBoxActionPerformed
     // Session restore sets combo box selection before data initialization.
@@ -347,10 +341,10 @@ private void gameTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//
     }
 }//GEN-LAST:event_gameTypeComboBoxActionPerformed
 
-/**
- * Scrolls through the selected item in the combo box.
- * @param evt
- */
+    /**
+     * Scrolls through the selected item in the combo box.
+     * @param evt
+     */
 private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_gameTypeComboBoxMouseWheelMoved
     if (evt.getWheelRotation() < 0) {
         if (gameTypeComboBox.getSelectedIndex() > 0) {
@@ -360,18 +354,24 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
         gameTypeComboBox.setSelectedIndex(gameTypeComboBox.getSelectedIndex() + 1);
     }
 }//GEN-LAST:event_gameTypeComboBoxMouseWheelMoved
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
+    private javax.swing.JButton controlButton;
+    private javax.swing.JPopupMenu controlMenu;
+    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JToggleButton favoriteServersToggleButton;
     private javax.swing.JCheckBoxMenuItem filterBarCheckBox;
     private javax.swing.JPanel filterPanel;
     private javax.swing.JComboBox gameTypeComboBox;
+    private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenu optionsMenu;
     private javax.swing.JButton refreshButton;
-    private javax.swing.JCheckBoxMenuItem sdlCheckBoxMenuItem;
+    private javax.swing.JCheckBoxMenuItem sdlCheckBox;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JToolBar.Separator separator;
     private javax.swing.JTable serverTable;
@@ -380,7 +380,6 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
     private javax.swing.JToggleButton showHighPingToggle;
     private javax.swing.JScrollPane tableScrollPane;
     private javax.swing.JToolBar toolBar;
-    private javax.swing.JMenu viewMenu;
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
     private FavoriteServerDialog addPrivateServerBox;
@@ -395,10 +394,13 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(COLUMN_NAMES.length);
     private int serverCount;
+    
+    protected javax.swing.JPopupMenu getPopupMenu() {
+        return controlMenu;
+    }
 
     /**
      * JCheckBoxMenuItem which is able to have its state saved automatically.
-     * TODO: This does not happen yet.
      */
     @SuppressWarnings("serial")
     class StoredJCheckBoxMenuItem extends javax.swing.JCheckBoxMenuItem implements SessionStorage.Property {
@@ -411,9 +413,13 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
         @Override
         public void setSessionState(Component c, Object state) {
             this.setState((Boolean) state);
+            filterPanel.setVisible(filterBarCheckBox.getState());
         }
     }
 
+    /**
+     * JComboBox which is able to have its state saved automatically.
+     */
     @SuppressWarnings("serial")
     class StoredJComboBox extends javax.swing.JComboBox implements SessionStorage.Property {
 
@@ -557,7 +563,7 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
                 (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING)) ||
                 (favoriteServersToggleButton.isSelected() && !server.isFavorite()) ||
                 ((gameTypeComboBox.getSelectedIndex() != 0) &&
-                    !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
+                !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
             canAddRow = false;
         } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
             String query = searchTextField.getText().toLowerCase();
@@ -718,7 +724,7 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
                 }
             }
 
-            launcher.setSdl(sdlCheckBoxMenuItem.getState());
+            launcher.setSdl(sdlCheckBox.getState());
             launcher.setIp(selectedIp);
             launcher.playGame();
         } else if (serverVector == null) {
@@ -802,5 +808,43 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
 
         } catch (FileNotFoundException ex) {
         }
+    }
+
+    @Action
+    public void showControlPopup() {
+        if (controlMenu.getWidth() == 0) {
+            controlMenu.setVisible(false);
+            controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
+            controlMenu.show(controlButton, 0, 0);
+            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+            controlMenu.setVisible(true);
+        } else {
+            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+        }
+    }
+
+    @Action
+    public void launchHelpPage() {
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                URI uri = null;
+                try {
+                    uri = new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla");
+                    desktop.browse(uri);
+                } catch (IOException ex) {
+                    Logger.getLogger(TortillaAboutBox.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                } catch (URISyntaxException ex) {
+                    Logger.getLogger(TortillaAboutBox.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    @Action
+    public void showFilterPanel() {
+        filterPanel.setVisible(filterBarCheckBox.getState());
     }
 }

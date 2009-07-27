@@ -26,6 +26,7 @@ public class TortillaApp extends SingleFrameApplication {
         tortillaView = new TortillaView(this);
         try {
             getContext().getSessionStorage().restore(tortillaView.getComponent(), SESSION_FILE);
+            getContext().getSessionStorage().restore(tortillaView.getPopupMenu(), "menu." + SESSION_FILE);
         } catch (IOException ex) {
             Logger.getLogger(TortillaApp.class.getName()).log(Level.WARNING, "Couldn't restore session", ex);
         }
@@ -36,6 +37,7 @@ public class TortillaApp extends SingleFrameApplication {
     protected void shutdown() {
         try {
             getContext().getSessionStorage().save(tortillaView.getComponent(), SESSION_FILE);
+            getContext().getSessionStorage().save(tortillaView.getPopupMenu(), "menu." + SESSION_FILE);
         } catch (IOException ex) {
             Logger.getLogger(TortillaApp.class.getName()).log(Level.WARNING, "Couldn't save session", ex);
         }
