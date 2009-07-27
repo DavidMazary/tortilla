@@ -89,7 +89,11 @@ public class ServerQuery extends AbstractQuery {
         if (playerData.length == 3) {
             player.setTeam(playerData[2]);
         }
-        player.setName(playerName[1]);
+        try {
+            player.setName(playerName[1]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            player.setName("Player");
+        }
         return player;
     }
 
