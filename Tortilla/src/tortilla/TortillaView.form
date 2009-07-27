@@ -12,12 +12,12 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Component id="tableScrollPane" alignment="0" pref="560" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="toolBar" alignment="0" pref="560" max="32767" attributes="0"/>
+                      <Component id="toolBar" alignment="0" pref="558" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="filterPanel" max="32767" attributes="0"/>
-                          <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -75,12 +75,14 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
+                      <Component id="gameTypeComboBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="showEmptyToggle" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="showFullToggle" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="showHighPingToggle" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="188" max="32767" attributes="0"/>
+                      <EmptySpace pref="98" max="32767" attributes="0"/>
                       <Component id="favoriteServersToggleButton" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="searchTextField" min="-2" pref="164" max="-2" attributes="0"/>
@@ -90,6 +92,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="gameTypeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="showEmptyToggle" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="showFullToggle" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="showHighPingToggle" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -175,6 +178,37 @@
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new StoredJToggleButton()"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="gameTypeComboBox">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="14">
+                    <StringItem index="0" value="Types:"/>
+                    <StringItem index="1" value="dm"/>
+                    <StringItem index="2" value="tdm"/>
+                    <StringItem index="3" value="dom"/>
+                    <StringItem index="4" value="ctf"/>
+                    <StringItem index="5" value="rune"/>
+                    <StringItem index="6" value="lms"/>
+                    <StringItem index="7" value="arena"/>
+                    <StringItem index="8" value="kh"/>
+                    <StringItem index="9" value="ons"/>
+                    <StringItem index="10" value="as"/>
+                    <StringItem index="11" value="rc"/>
+                    <StringItem index="12" value="nexball"/>
+                    <StringItem index="13" value="cts"/>
+                  </StringArray>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="gameTypeComboBox.toolTipText"/>
+                <Property name="name" type="java.lang.String" value="gameTypeComboBox" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="gameTypeComboBoxMouseWheelMoved"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gameTypeComboBoxActionPerformed"/>
+              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new StoredJComboBox()"/>
               </AuxValues>
             </Component>
           </SubComponents>

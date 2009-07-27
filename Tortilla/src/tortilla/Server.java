@@ -16,6 +16,7 @@ public class Server {
     private String game;
     private String gameVersion;
     private String modname;
+    private String gameType;
     private int maxplayers;
     private int players;
     private int ping;
@@ -221,5 +222,26 @@ public class Server {
      */
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    /**
+     * Handles info from qcstatus string.
+     * TODO: Handle more than gametype.
+     * @param string of qcstatus reply
+     */
+    void setQcstatus(String string) {
+        String[] qcstatus = string.split(":");
+        this.gameType = qcstatus[0];
+        if (gameType.equals("tortilla")) {
+            gameType = "dm";
+        }
+    }
+
+    public String getType() {
+        return this.gameType;
+    }
+
+    public void setType(String type) {
+        this.gameType = type;
     }
 }

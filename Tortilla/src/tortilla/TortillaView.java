@@ -14,11 +14,9 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JToggleButton;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
@@ -106,6 +104,7 @@ public class TortillaView extends FrameView {
         showHighPingToggle = new StoredJToggleButton();
         showFullToggle = new StoredJToggleButton();
         showEmptyToggle = new StoredJToggleButton();
+        gameTypeComboBox = new StoredJComboBox();
         toolBar = new javax.swing.JToolBar();
         addButton = new javax.swing.JButton();
         refreshButton = new javax.swing.JButton();
@@ -180,17 +179,33 @@ public class TortillaView extends FrameView {
         showEmptyToggle.setBorderPainted(false);
         showEmptyToggle.setName("showEmptyToggle"); // NOI18N
 
+        gameTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Types:", "dm", "tdm", "dom", "ctf", "rune", "lms", "arena", "kh", "ons", "as", "rc", "nexball", "cts" }));
+        gameTypeComboBox.setToolTipText(resourceMap.getString("gameTypeComboBox.toolTipText")); // NOI18N
+        gameTypeComboBox.setName("gameTypeComboBox"); // NOI18N
+        gameTypeComboBox.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                gameTypeComboBoxMouseWheelMoved(evt);
+            }
+        });
+        gameTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gameTypeComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout filterPanelLayout = new javax.swing.GroupLayout(filterPanel);
         filterPanel.setLayout(filterPanelLayout);
         filterPanelLayout.setHorizontalGroup(
             filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(filterPanelLayout.createSequentialGroup()
+                .addComponent(gameTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showEmptyToggle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showFullToggle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showHighPingToggle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 188, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
                 .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -198,6 +213,7 @@ public class TortillaView extends FrameView {
         filterPanelLayout.setVerticalGroup(
             filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(gameTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(showEmptyToggle)
                 .addComponent(showFullToggle)
                 .addComponent(showHighPingToggle))
@@ -243,12 +259,12 @@ public class TortillaView extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(tableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
+                .addGap(2, 2, 2)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(toolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
+                    .addComponent(toolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addComponent(filterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(0, 0, 0))))
+                        .addGap(2, 2, 2))))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -324,12 +340,33 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
     filterPanel.setVisible(filterBarCheckBox.getState());
 }//GEN-LAST:event_filterBarCheckBoxActionPerformed
 
+private void gameTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gameTypeComboBoxActionPerformed
+    // Session restore sets combo box selection before data initialization.
+    if (serverVector != null) {
+        refreshTable();
+    }
+}//GEN-LAST:event_gameTypeComboBoxActionPerformed
+
+/**
+ * Scrolls through the selected item in the combo box.
+ * @param evt
+ */
+private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_gameTypeComboBoxMouseWheelMoved
+    if (evt.getWheelRotation() < 0) {
+        if (gameTypeComboBox.getSelectedIndex() > 0) {
+            gameTypeComboBox.setSelectedIndex(gameTypeComboBox.getSelectedIndex() - 1);
+        }
+    } else if (gameTypeComboBox.getSelectedIndex() < gameTypeComboBox.getItemCount() - 1) {
+        gameTypeComboBox.setSelectedIndex(gameTypeComboBox.getSelectedIndex() + 1);
+    }
+}//GEN-LAST:event_gameTypeComboBoxMouseWheelMoved
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
     private javax.swing.JToggleButton favoriteServersToggleButton;
     private javax.swing.JCheckBoxMenuItem filterBarCheckBox;
     private javax.swing.JPanel filterPanel;
+    private javax.swing.JComboBox gameTypeComboBox;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu optionsMenu;
@@ -354,9 +391,9 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
     private ArrayList<String> favoriteServerList;
     private Vector<Server> serverVector;
     private static final int HIGH_PING = 200;
-    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map"};
+    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map", "Type"};
     private String operatingSystem = null;
-    private Vector<SortKey> sortOrder = new Vector<SortKey>(5);
+    private Vector<SortKey> sortOrder = new Vector<SortKey>(COLUMN_NAMES.length);
     private int serverCount;
 
     /**
@@ -364,7 +401,7 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
      * TODO: This does not happen yet.
      */
     @SuppressWarnings("serial")
-    class StoredJCheckBoxMenuItem extends JCheckBoxMenuItem implements SessionStorage.Property {
+    class StoredJCheckBoxMenuItem extends javax.swing.JCheckBoxMenuItem implements SessionStorage.Property {
 
         @Override
         public Object getSessionState(Component c) {
@@ -377,11 +414,25 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
         }
     }
 
+    @SuppressWarnings("serial")
+    class StoredJComboBox extends javax.swing.JComboBox implements SessionStorage.Property {
+
+        @Override
+        public Object getSessionState(Component c) {
+            return getSelectedIndex();
+        }
+
+        @Override
+        public void setSessionState(Component c, Object state) {
+            this.setSelectedIndex((Integer) state);
+        }
+    }
+
     /**
      * JToggleButton which is able to have its state saved automatically.
      */
     @SuppressWarnings("serial")
-    class StoredJToggleButton extends JToggleButton implements SessionStorage.Property {
+    class StoredJToggleButton extends javax.swing.JToggleButton implements SessionStorage.Property {
 
         @Override
         public Object getSessionState(Component c) {
@@ -405,6 +456,7 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
         public static final int PLAYERS = 2;
         public static final int MAX = 3;
         public static final int MAP = 4;
+        public static final int TYPE = 5;
         private static final long serialVersionUID = 2187967572701857442L;
         protected Vector<Server> dataVector = null;
 
@@ -425,11 +477,12 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
         @Override
         public Class getColumnClass(int column) {
             switch (column) {
-                case HOSTNAME:
-                case MAP:
-                    return String.class;
-                default:
+                case PING:
+                case PLAYERS:
+                case MAX:
                     return Integer.class;
+                default:
+                    return String.class;
             }
         }
 
@@ -447,6 +500,8 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
                     return server.getHostname();
                 case MAP:
                     return server.getMap();
+                case TYPE:
+                    return server.getType();
                 default:
                     throw new IndexOutOfBoundsException();
             }
@@ -470,6 +525,9 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
                     break;
                 case MAP:
                     server.setMap((String) value);
+                    break;
+                case TYPE:
+                    server.setType((String) value);
                     break;
                 default:
                     throw new IndexOutOfBoundsException();
@@ -497,13 +555,16 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
         if ((!showEmptyToggle.isSelected() && (server.getPlayerCount() == 0)) ||
                 (!showFullToggle.isSelected() && (server.getPlayerCount() == server.getMaxPlayers())) ||
                 (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING)) ||
-                (favoriteServersToggleButton.isSelected() && !server.isFavorite())) {
+                (favoriteServersToggleButton.isSelected() && !server.isFavorite()) ||
+                ((gameTypeComboBox.getSelectedIndex() != 0) &&
+                    !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
             canAddRow = false;
         } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
             String query = searchTextField.getText().toLowerCase();
             canAddRow = false;
             if (server.getHostname().toLowerCase().contains(query) ||
-                    server.getMap().toLowerCase().contains(query)) {
+                    server.getMap().toLowerCase().contains(query) ||
+                    server.getType().contains(query)) {
                 canAddRow = true;
             } else if (server.getPlayerList() != null) {
                 for (Player player : server.getPlayerList()) {
@@ -706,7 +767,7 @@ private void filterBarCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {/
 
     @Action
     public void filter() {
-        
+
         refreshTable();
     }
 
