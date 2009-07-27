@@ -113,6 +113,7 @@ public class ServerQuery extends AbstractQuery {
             server.setBotCount(Integer.parseInt(serverData[12]));
             server.setMap(serverData[14]);
             server.setHostname(serverData[16]);
+            server.setQcstatus(serverData[20]);
         } else {
             // queryResult does not contain bot count
             server.setMap(serverData[12]);
