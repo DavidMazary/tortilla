@@ -277,13 +277,18 @@ public class TortillaView extends FrameView {
         connectButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(connectButton);
 
-        controlButton.setAction(actionMap.get("showControlPopup")); // NOI18N
+        controlButton.setIcon(resourceMap.getIcon("controlButton.icon")); // NOI18N
         controlButton.setToolTipText(resourceMap.getString("controlButton.toolTipText")); // NOI18N
         controlButton.setFocusable(false);
         controlButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         controlButton.setName("controlButton"); // NOI18N
         controlButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(Box.createHorizontalGlue());
+        controlButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                controlButtonMousePressed(evt);
+            }
+        });
         toolBar.add(controlButton);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -389,6 +394,18 @@ private void controlMenuPopupMenuCanceled(javax.swing.event.PopupMenuEvent evt) 
 private void controlMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_controlMenuPopupMenuWillBecomeInvisible
     controlButton.setSelected(false);
 }//GEN-LAST:event_controlMenuPopupMenuWillBecomeInvisible
+
+private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_controlButtonMousePressed
+    if (controlMenu.getWidth() == 0) {
+            controlMenu.setVisible(false);
+            controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
+            controlMenu.show(controlButton, 0, 0);
+            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+            controlMenu.setVisible(true);
+        } else {
+            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+        }
+}//GEN-LAST:event_controlButtonMousePressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -846,27 +863,12 @@ private void controlMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenu
     }
 
     @Action
-    public void showControlPopup() {
-        if (controlMenu.getWidth() == 0) {
-            controlMenu.setVisible(false);
-            controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
-            controlMenu.show(controlButton, 0, 0);
-            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
-            controlMenu.setVisible(true);
-        } else {
-            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
-        }
-    }
-
-    @Action
     public void launchHelpPage() {
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
             if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                URI uri = null;
                 try {
-                    uri = new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla");
-                    desktop.browse(uri);
+                    desktop.browse(new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla"));
                 } catch (IOException ex) {
                     Logger.getLogger(TortillaAboutBox.class.getName()).
                             log(Level.SEVERE, null, ex);
