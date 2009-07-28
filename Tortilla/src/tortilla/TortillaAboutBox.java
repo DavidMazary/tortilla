@@ -159,10 +159,8 @@ private void appHomepageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-
     if (Desktop.isDesktopSupported()) {
         Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
-            URI uri = null;
             try {
-                uri = new URI("http://code.google.com/p/tortilla/");
-                desktop.browse(uri);
+                desktop.browse(new URI("http://code.google.com/p/tortilla/"));
             } catch (IOException ex) {
                 Logger.getLogger(TortillaAboutBox.class.getName()).
                         log(Level.SEVERE, null, ex);
