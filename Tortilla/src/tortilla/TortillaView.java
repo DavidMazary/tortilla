@@ -76,7 +76,7 @@ public class TortillaView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         tableScrollPane = new javax.swing.JScrollPane();
-        serverTable = new javax.swing.JTable(tableModel) {
+        serverTable = new javax.swing.JTable() {
 
             public String getToolTipText(MouseEvent e) {
                 int nameColumn = ServerTableModel.HOSTNAME;
@@ -165,11 +165,13 @@ public class TortillaView extends FrameView {
             }
         });
         serverTable.setAutoCreateRowSorter(true);
+        serverTable.setModel(tableModel);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
         serverTable.setGridColor(resourceMap.getColor("serverTable.gridColor")); // NOI18N
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         serverTable.setShowHorizontalLines(false);
+        serverTable.getTableHeader().setReorderingAllowed(false);
         tableScrollPane.setViewportView(serverTable);
         serverTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -765,16 +767,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         int selectedRow = serverTable.getSelectedRow();
 
         if (selectedRow != -1) {
-            int nameColumn = ServerTableModel.HOSTNAME;
-            if (!tableModel.getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < tableModel.getColumnCount(); i++) {
-                    if (tableModel.getColumnName(i).equals("Server")) {
-                        nameColumn = i;
-                        break;
-                    }
-                }
-            }
-            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
+            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
             String selectedIp = null;
             for (Server server : tableModel.dataVector) {
                 if (server.getHostname().equals(selectedServer)) {
@@ -801,16 +794,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         String selectedIp = null;
 
         if (selectedRow != -1) {
-            int nameColumn = ServerTableModel.HOSTNAME;
-            if (!tableModel.getColumnName(nameColumn).equals("Server")) {
-                for (int i = 0; i < tableModel.getColumnCount(); i++) {
-                    if (tableModel.getColumnName(i).equals("Server")) {
-                        nameColumn = i;
-                        break;
-                    }
-                }
-            }
-            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), nameColumn).toString();
+            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
             for (Server server : tableModel.dataVector) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
