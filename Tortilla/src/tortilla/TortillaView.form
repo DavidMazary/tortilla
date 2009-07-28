@@ -59,7 +59,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(tableModel) {&#xa;&#xa;    public String getToolTipText(MouseEvent e) {&#xa;        int nameColumn = ServerTableModel.HOSTNAME;&#xa;        int selectedRow = rowAtPoint(e.getPoint());&#xa;        StringBuilder playerList = new StringBuilder(&quot;&quot;);&#xa;        if (!getModel().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; tableModel.getColumnCount(); i++) {&#xa;                if (tableModel.getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();&#xa;        for (Server server : tableModel.dataVector) {&#xa;            if (server.getHostname().equals(selectedServer)) {&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&lt;b&gt;&quot; + server.getHostname() + &quot;&lt;/b&gt;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getColoredName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                } else {&#xa;                    return null;&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;}"/>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(tableModel) {&#xa;&#xa;    public String getToolTipText(MouseEvent e) {&#xa;        int nameColumn = ServerTableModel.HOSTNAME;&#xa;        int selectedRow = rowAtPoint(e.getPoint());&#xa;        StringBuilder playerList = new StringBuilder(&quot;&quot;);&#xa;        if (!getModel().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; tableModel.getColumnCount(); i++) {&#xa;                if (tableModel.getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();&#xa;        for (Server server : tableModel.dataVector) {&#xa;            if (server.getHostname().equals(selectedServer)) {&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&lt;b&gt;&quot; + server.getHostname() + &quot;&lt;/b&gt;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getColoredName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                } else {&#xa;                    return null;&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {&#xa;        Component component = super.prepareRenderer(renderer, row, column);&#xa;        if (!component.getBackground().equals(getSelectionBackground())) {&#xa;            int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);&#xa;            if (playerCount &gt; 0) {&#xa;                if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {&#xa;                    component.setForeground(new Color(164,0,0));&#xa;                } else {&#xa;                    component.setForeground(Color.black);&#xa;                }&#xa;            } else {&#xa;                component.setForeground(Color.gray);&#xa;            }&#xa;        }&#xa;        return component;&#xa;    }&#xa;}"/>
                 <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="serverTable.addMouseListener(new MouseAdapter() {&#xa;    public void mouseClicked(MouseEvent e) {&#xa;        if (e.getClickCount() == 2) {&#xa;            connect();&#xa;        }&#xa;    }&#xa;});"/>
               </AuxValues>
             </Component>
@@ -183,7 +183,7 @@
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="14">
-                    <StringItem index="0" value="Types:"/>
+                    <StringItem index="0" value="All"/>
                     <StringItem index="1" value="dm"/>
                     <StringItem index="2" value="tdm"/>
                     <StringItem index="3" value="dom"/>
@@ -262,12 +262,11 @@
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="controlButton">
+            <Component class="javax.swing.JToggleButton" name="controlButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="tortilla.TortillaView" id="showControlPopup" methodName="showControlPopup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="controlButton.text"/>
                 <Property name="toolTipText" type="java.lang.String" resourceKey="controlButton.toolTipText"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -286,6 +285,10 @@
       <Properties>
         <Property name="name" type="java.lang.String" value="controlMenu" noResource="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="controlMenuPopupMenuWillBecomeInvisible"/>
+        <EventHandler event="popupMenuCanceled" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="controlMenuPopupMenuCanceled"/>
+      </Events>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
         <Property name="useNullLayout" type="boolean" value="true"/>
@@ -296,7 +299,6 @@
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="tortilla.TortillaView" id="showFilterPanel" methodName="showFilterPanel"/>
             </Property>
-            <Property name="mnemonic" type="int" value="47"/>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" resourceKey="filterBarCheckBox.text"/>
             <Property name="name" type="java.lang.String" value="filterBarCheckBox" noResource="true"/>

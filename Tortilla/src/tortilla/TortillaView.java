@@ -3,6 +3,7 @@
  */
 package tortilla;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Frame;
@@ -28,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -105,6 +107,23 @@ public class TortillaView extends FrameView {
                 }
                 return playerList.toString();
             }
+
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component component = super.prepareRenderer(renderer, row, column);
+                if (!component.getBackground().equals(getSelectionBackground())) {
+                    int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);
+                    if (playerCount > 0) {
+                        if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {
+                            component.setForeground(new Color(164,0,0));
+                        } else {
+                            component.setForeground(Color.black);
+                        }
+                    } else {
+                        component.setForeground(Color.gray);
+                    }
+                }
+                return component;
+            }
         };
         filterPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
@@ -118,7 +137,7 @@ public class TortillaView extends FrameView {
         separator = new javax.swing.JToolBar.Separator();
         addButton = new javax.swing.JButton();
         connectButton = new javax.swing.JButton();
-        controlButton = new javax.swing.JButton();
+        controlButton = new javax.swing.JToggleButton();
         controlMenu = new javax.swing.JPopupMenu();
         filterBarCheckBox = new StoredJCheckBoxMenuItem();
         sdlCheckBox = new StoredJCheckBoxMenuItem();
@@ -186,7 +205,7 @@ public class TortillaView extends FrameView {
         showEmptyToggle.setBorderPainted(false);
         showEmptyToggle.setName("showEmptyToggle"); // NOI18N
 
-        gameTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Types:", "dm", "tdm", "dom", "ctf", "rune", "lms", "arena", "kh", "ons", "as", "rc", "nexball", "cts" }));
+        gameTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All", "dm", "tdm", "dom", "ctf", "rune", "lms", "arena", "kh", "ons", "as", "rc", "nexball", "cts" }));
         gameTypeComboBox.setToolTipText(resourceMap.getString("gameTypeComboBox.toolTipText")); // NOI18N
         gameTypeComboBox.setName("gameTypeComboBox"); // NOI18N
         gameTypeComboBox.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
@@ -259,7 +278,6 @@ public class TortillaView extends FrameView {
         toolBar.add(connectButton);
 
         controlButton.setAction(actionMap.get("showControlPopup")); // NOI18N
-        controlButton.setText(resourceMap.getString("controlButton.text")); // NOI18N
         controlButton.setToolTipText(resourceMap.getString("controlButton.toolTipText")); // NOI18N
         controlButton.setFocusable(false);
         controlButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -292,9 +310,18 @@ public class TortillaView extends FrameView {
         );
 
         controlMenu.setName("controlMenu"); // NOI18N
+        controlMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                controlMenuPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+                controlMenuPopupMenuCanceled(evt);
+            }
+        });
 
         filterBarCheckBox.setAction(actionMap.get("showFilterPanel")); // NOI18N
-        filterBarCheckBox.setMnemonic('/');
         filterBarCheckBox.setSelected(true);
         filterBarCheckBox.setText(resourceMap.getString("filterBarCheckBox.text")); // NOI18N
         filterBarCheckBox.setName("filterBarCheckBox"); // NOI18N
@@ -355,11 +382,19 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
     }
 }//GEN-LAST:event_gameTypeComboBoxMouseWheelMoved
 
+private void controlMenuPopupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_controlMenuPopupMenuCanceled
+    controlButton.setSelected(false);
+}//GEN-LAST:event_controlMenuPopupMenuCanceled
+
+private void controlMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_controlMenuPopupMenuWillBecomeInvisible
+    controlButton.setSelected(false);
+}//GEN-LAST:event_controlMenuPopupMenuWillBecomeInvisible
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JButton connectButton;
-    private javax.swing.JButton controlButton;
+    private javax.swing.JToggleButton controlButton;
     private javax.swing.JPopupMenu controlMenu;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JToggleButton favoriteServersToggleButton;
@@ -394,7 +429,7 @@ private void gameTypeComboBoxMouseWheelMoved(java.awt.event.MouseWheelEvent evt)
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(COLUMN_NAMES.length);
     private int serverCount;
-    
+
     protected javax.swing.JPopupMenu getPopupMenu() {
         return controlMenu;
     }
