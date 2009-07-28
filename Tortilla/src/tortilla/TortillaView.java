@@ -121,6 +121,11 @@ public class TortillaView extends FrameView {
                     } else {
                         component.setForeground(Color.gray);
                     }
+                    if ((row % 2) == 0) {
+                        component.setBackground(new Color(241,245,250));
+                    } else {
+                        component.setBackground(Color.white);
+                    }
                 }
                 return component;
             }
@@ -160,14 +165,16 @@ public class TortillaView extends FrameView {
             }
         });
         serverTable.setAutoCreateRowSorter(true);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
+        serverTable.setGridColor(resourceMap.getColor("serverTable.gridColor")); // NOI18N
         serverTable.setName("serverTable"); // NOI18N
         serverTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        serverTable.setShowHorizontalLines(false);
         tableScrollPane.setViewportView(serverTable);
         serverTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         filterPanel.setName("filterPanel"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(TortillaView.class);
         searchTextField.setText(resourceMap.getString("searchTextField.text")); // NOI18N
         searchTextField.setName("searchTextField"); // NOI18N
         searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
