@@ -42,11 +42,11 @@ public class MasterQuery extends AbstractQuery {
             int index = MESSAGE_START;
             String byteAddress;
 
-            // 1 delimiter + 6 bytes
-            while (index + 7 < queryResult.length()) {
-                byteAddress = queryResult.substring(index + 1, index + 7);
+            int OFFSET = 7;  // 1 delimiter + 6 bytes
+            while (index + OFFSET < queryResult.length()) {
+                byteAddress = queryResult.substring(index + 1, index + OFFSET);
                 serverList.add(getAddressFromBytes(byteAddress));
-                index += 7;
+                index += OFFSET;
             }
         } else {
             // Notify the user since there may be a problem with their connection.

@@ -16,7 +16,7 @@ public class Player {
     private String coloredName;
     private int score;
     private int ping;
-    private int team;
+//    private int team;
 
     /**
      * Translate special characters into displayable text in player names.
@@ -149,17 +149,17 @@ public class Player {
         this.ping = Integer.parseInt(ping);
     }
 
-    /**
-     * Sets this player's team.
-     * 0 - Spec
-     * 1 - Red
-     * 2 - Blue
-     * TODO: Find other team indices.
-     * @param index of team
-     */
-    public void setTeam(String index) {
-        this.team = Integer.parseInt(index);
-    }
+//    /**
+//     * Sets this player's team.
+//     * 0 - Spec
+//     * 1 - Red
+//     * 2 - Blue
+//     * TODO: Find other team indices.
+//     * @param index of team
+//     */
+//    public void setTeam(String index) {
+//        this.team = Integer.parseInt(index);
+//    }
 
     /**
      * Converts Nexuiz color codes to HTML font color tags.
