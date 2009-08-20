@@ -482,7 +482,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      * JComboBox which is able to have its state saved automatically.
      */
     @SuppressWarnings("serial")
-    class StoredJComboBox extends javax.swing.JComboBox implements SessionStorage.Property {
+    static class StoredJComboBox extends javax.swing.JComboBox implements SessionStorage.Property {
 
         @Override
         public Object getSessionState(Component c) {
@@ -499,7 +499,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      * JToggleButton which is able to have its state saved automatically.
      */
     @SuppressWarnings("serial")
-    class StoredJToggleButton extends javax.swing.JToggleButton implements SessionStorage.Property {
+    static class StoredJToggleButton extends javax.swing.JToggleButton implements SessionStorage.Property {
 
         @Override
         public Object getSessionState(Component c) {
@@ -516,7 +516,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      * Model of Nexuiz server data.
      * @author dmaz
      */
-    class ServerTableModel extends AbstractTableModel {
+    static class ServerTableModel extends AbstractTableModel {
 
         public static final int PING = 0;
         public static final int HOSTNAME = 1;
