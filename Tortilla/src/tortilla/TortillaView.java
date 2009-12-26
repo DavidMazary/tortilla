@@ -406,16 +406,15 @@ private void controlMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenu
 
 private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_controlButtonMousePressed
     if (controlMenu.getWidth() == 0) {
-            controlMenu.setVisible(false);
-            controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
-            controlMenu.show(controlButton, 0, 0);
-            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
-            controlMenu.setVisible(true);
-        } else {
-            controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
-        }
+        controlMenu.setVisible(false);
+        controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
+        controlMenu.show(controlButton, 0, 0);
+        controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+        controlMenu.setVisible(true);
+    } else {
+        controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
+    }
 }//GEN-LAST:event_controlButtonMousePressed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
@@ -619,19 +618,19 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     private synchronized void addRowToModel(Server server) {
         boolean canAddRow = true;
         // Filter by the preferences
-        if ((!showEmptyToggle.isSelected() && (server.getPlayerCount() == 0)) ||
-                (!showFullToggle.isSelected() && (server.getPlayerCount() == server.getMaxPlayers())) ||
-                (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING)) ||
-                (favoriteServersToggleButton.isSelected() && !server.isFavorite()) ||
-                ((gameTypeComboBox.getSelectedIndex() != 0) &&
-                !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
+        if ((!showEmptyToggle.isSelected() && (server.getPlayerCount() == 0))
+                || (!showFullToggle.isSelected() && (server.getPlayerCount() == server.getMaxPlayers()))
+                || (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING))
+                || (favoriteServersToggleButton.isSelected() && !server.isFavorite())
+                || ((gameTypeComboBox.getSelectedIndex() != 0)
+                && !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
             canAddRow = false;
         } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
             String query = searchTextField.getText().toLowerCase();
             canAddRow = false;
-            if (server.getHostname().toLowerCase().contains(query) ||
-                    server.getMap().toLowerCase().contains(query) ||
-                    server.getType().contains(query)) {
+            if (server.getHostname().toLowerCase().contains(query)
+                    || server.getMap().toLowerCase().contains(query)
+                    || server.getType().contains(query)) {
                 canAddRow = true;
             } else if (server.getPlayerList() != null) {
                 for (Player player : server.getPlayerList()) {
@@ -695,15 +694,16 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         protected Object doInBackground() {
             loadFavoriteServers();
             serverList = queryM.getServerList();
-            if (favoriteServerList != null) {
-                for (String address : favoriteServerList) {
-                    if (serverList.contains(address)) {
-                        serverList.remove(address);
-                    }
-                }
-                serverCount = serverList.size() + favoriteServerList.size();
-            } else if (serverList != null) {
+            if (serverList != null) {
                 serverCount = serverList.size();
+                if (favoriteServerList != null) {
+                    for (String address : favoriteServerList) {
+                        if (serverList.contains(address)) {
+                            serverList.remove(address);
+                        }
+                    }
+                    serverCount += favoriteServerList.size();
+                }
             } else {
                 serverCount = 0;
             }

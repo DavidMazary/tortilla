@@ -81,8 +81,7 @@ public class ServerQuery extends AbstractQuery {
      * @return Player which is created.
      */
     private Player getPlayerFromResponse(String queryResult) {
-        String[] playerName = queryResult.split("\"");
-        String[] playerData = playerName[0].split(" ");
+        String[] playerData = queryResult.split(" ");
         Player player = new Player();
         player.setScore(playerData[0]);
         player.setPing(playerData[1]);
@@ -90,7 +89,7 @@ public class ServerQuery extends AbstractQuery {
 //            player.setTeam(playerData[2]);
 //        }
         try {
-            player.setName(playerName[1]);
+            player.setName(queryResult.substring(queryResult.indexOf('\"') + 1, queryResult.length() - 1));
         } catch (ArrayIndexOutOfBoundsException e) {
             player.setName("Player");
         }
