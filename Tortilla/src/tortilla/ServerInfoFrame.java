@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * ServerInfoFrame.java
  *
  * Created on Jun 22, 2009, 6:14:47 PM
@@ -39,8 +34,8 @@ public class ServerInfoFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
+        joinButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -52,12 +47,12 @@ public class ServerInfoFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-        jButton2.setName("jButton2"); // NOI18N
+        cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
+        cancelButton.setName("cancelButton"); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(ServerInfoFrame.class, this);
-        jButton1.setAction(actionMap.get("join")); // NOI18N
-        jButton1.setName("jButton1"); // NOI18N
+        joinButton.setAction(actionMap.get("join")); // NOI18N
+        joinButton.setName("joinButton"); // NOI18N
 
         jPanel1.setName("jPanel1"); // NOI18N
 
@@ -83,10 +78,10 @@ public class ServerInfoFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(259, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addContainerGap(263, Short.MAX_VALUE)
+                .addComponent(cancelButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addComponent(joinButton)
                 .addContainerGap())
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -99,8 +94,8 @@ public class ServerInfoFrame extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(joinButton)
+                    .addComponent(cancelButton))
                 .addContainerGap())
         );
 
@@ -123,12 +118,12 @@ public class ServerInfoFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JButton joinButton;
     // End of variables declaration//GEN-END:variables
 
 }

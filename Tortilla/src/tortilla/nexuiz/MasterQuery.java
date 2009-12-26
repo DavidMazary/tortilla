@@ -1,4 +1,4 @@
-package tortilla;
+package tortilla.nexuiz;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class MasterQuery extends AbstractQuery {
      * Choose a random master server to query, for load-balancing.
      * @return address of master server.
      */
-    protected String getMasterAddress() {
+    private String getMasterAddress() {
         return MASTER_ADDRESSES[new Random().nextInt(3)];
     }
 
@@ -76,7 +76,7 @@ public class MasterQuery extends AbstractQuery {
      * @param ip String containing the data.
      * @return  String with the decoded data.
      */
-    protected String getAddressFromBytes(String ip) {
+    private String getAddressFromBytes(String ip) {
         String address = null;
 
         try {

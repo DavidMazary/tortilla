@@ -1,5 +1,8 @@
 package tortilla;
 
+import tortilla.nexuiz.ServerQuery;
+import tortilla.nexuiz.Server;
+import tortilla.nexuiz.Player;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

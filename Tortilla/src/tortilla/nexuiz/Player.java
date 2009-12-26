@@ -1,4 +1,4 @@
-package tortilla;
+package tortilla.nexuiz;
 
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;

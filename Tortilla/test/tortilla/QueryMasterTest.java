@@ -1,13 +1,6 @@
 package tortilla;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import tortilla.nexuiz.MasterQuery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,15 +39,15 @@ public class QueryMasterTest {
     /**
      * Test of getMasterAddress method, of class MasterQuery.
      */
-    @Test
-    public void testGetMaster() {
-        System.out.println("testGetMaster");
-        String result = instance.getMasterAddress();
-        System.out.println("Queried " + result);
-        assertTrue(result.contains("ghdigital.com") ||
-                result.contains("dpmaster.deathmask.net") ||
-                result.contains("dpmaster.tchr.no"));
-    }
+//    @Test
+//    public void testGetMaster() {
+//        System.out.println("testGetMaster");
+//        String result = instance.getMasterAddress();
+//        System.out.println("Queried " + result);
+//        assertTrue(result.contains("ghdigital.com") ||
+//                result.contains("dpmaster.deathmask.net") ||
+//                result.contains("dpmaster.tchr.no"));
+//    }
     
     /**
      * Test of getServers method.

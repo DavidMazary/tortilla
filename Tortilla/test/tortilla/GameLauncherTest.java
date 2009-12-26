@@ -5,6 +5,7 @@
 
 package tortilla;
 
+import tortilla.nexuiz.GameLauncher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package tortilla;
+package tortilla.nexuiz;
 
 import java.awt.Frame;
 import java.io.File;
