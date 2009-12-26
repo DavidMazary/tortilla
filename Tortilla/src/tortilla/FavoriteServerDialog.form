@@ -24,10 +24,10 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="135" max="32767" attributes="0"/>
-              <Component id="addButton" min="-2" max="-2" attributes="1"/>
+              <EmptySpace pref="140" max="32767" attributes="0"/>
+              <Component id="cancelButton" min="-2" max="-2" attributes="1"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
+              <Component id="addButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
           </Group>
           <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
@@ -39,8 +39,8 @@
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
           </Group>
@@ -82,24 +82,26 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addressFieldActionPerformed"/>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="addressFieldFocusGained"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="addressFieldKeyTyped"/>
           </Events>
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="cancelButton">
+    <Component class="javax.swing.JButton" name="addButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="tortilla.TortillaAddPrivate" id="add" methodName="add"/>
         </Property>
-        <Property name="name" type="java.lang.String" value="cancelButton" noResource="true"/>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="addButton">
+    <Component class="javax.swing.JButton" name="cancelButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="tortilla.TortillaAddPrivate" id="cancel" methodName="cancel"/>
         </Property>
-        <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
+        <Property name="name" type="java.lang.String" value="cancelButton" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>
