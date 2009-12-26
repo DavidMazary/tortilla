@@ -3,6 +3,11 @@
  */
 package tortilla;
 
+import tortilla.nexuiz.Player;
+import tortilla.nexuiz.ServerQuery;
+import tortilla.nexuiz.MasterQuery;
+import tortilla.nexuiz.Server;
+import tortilla.nexuiz.GameLauncher;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
