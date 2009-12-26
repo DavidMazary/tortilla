@@ -411,11 +411,9 @@ private void controlMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenu
 
 private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_controlButtonMousePressed
     if (controlMenu.getWidth() == 0) {
-        controlMenu.setVisible(false);
         controlMenu.show(controlButton, 0, 0); // Align menu to right of button on first click.
-        controlMenu.show(controlButton, 0, 0);
+        controlMenu.setVisible(false);
         controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
-        controlMenu.setVisible(true);
     } else {
         controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
     }
