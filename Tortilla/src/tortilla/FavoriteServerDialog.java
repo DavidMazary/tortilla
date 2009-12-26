@@ -43,8 +43,8 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         addressField = new javax.swing.JTextField();
-        cancelButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
@@ -62,6 +62,11 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
         addressField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 addressFieldFocusGained(evt);
+            }
+        });
+        addressField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                addressFieldKeyTyped(evt);
             }
         });
 
@@ -83,21 +88,22 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
         );
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(FavoriteServerDialog.class, this);
-        cancelButton.setAction(actionMap.get("add")); // NOI18N
-        cancelButton.setName("cancelButton"); // NOI18N
-
-        addButton.setAction(actionMap.get("cancel")); // NOI18N
+        addButton.setAction(actionMap.get("add")); // NOI18N
+        addButton.setEnabled(false);
         addButton.setName("addButton"); // NOI18N
+
+        cancelButton.setAction(actionMap.get("cancel")); // NOI18N
+        cancelButton.setName("cancelButton"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(135, Short.MAX_VALUE)
-                .addComponent(addButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap(140, Short.MAX_VALUE)
                 .addComponent(cancelButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addButton)
                 .addGap(2, 2, 2))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -107,8 +113,8 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(addButton))
+                    .addComponent(addButton)
+                    .addComponent(cancelButton))
                 .addGap(2, 2, 2))
         );
 
@@ -122,6 +128,10 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
     private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
         add();
     }//GEN-LAST:event_addressFieldActionPerformed
+
+    private void addressFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_addressFieldKeyTyped
+        addButton.setEnabled(addressField.getText().length() > 0);
+    }//GEN-LAST:event_addressFieldKeyTyped
 
     /**
      * @param args the command line arguments
@@ -155,7 +165,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
      */
     @Action
     public void add() {
-        if (addressField.getText().equals("")) {
+        if (!addressField.getText().equals("")) {
             String operatingSystem = System.getProperty("os.name");
 
             Vector<String> configText = new Vector<String>();
