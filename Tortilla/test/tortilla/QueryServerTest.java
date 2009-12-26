@@ -56,7 +56,7 @@ public class QueryServerTest {
     @Test
     public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        Server server = queryS.getStatus("74.52.14.98:26000");
+        Server server = queryS.getStatus("private.optimalclan.com:26001");
         for (Player player : server.getPlayerList()) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }

@@ -252,7 +252,6 @@ public class Player {
     }
 
     private String decolorName(String newName) {
-        String cleanName = newName.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
-        return cleanName;
+        return newName.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
     }
 }
