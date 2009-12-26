@@ -130,7 +130,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_addressFieldActionPerformed
 
     private void addressFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_addressFieldKeyTyped
-        addButton.setEnabled(addressField.getText().length() > 0);
+        addButton.setEnabled(!addressField.getText().isEmpty());
     }//GEN-LAST:event_addressFieldKeyTyped
 
     /**
@@ -165,7 +165,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
      */
     @Action
     public void add() {
-        if (!addressField.getText().equals("")) {
+        if (!addressField.getText().isEmpty()) {
             String operatingSystem = System.getProperty("os.name");
 
             Vector<String> configText = new Vector<String>();
