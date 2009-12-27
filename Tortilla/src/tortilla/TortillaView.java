@@ -7,7 +7,6 @@ import tortilla.nexuiz.Player;
 import tortilla.nexuiz.ServerQuery;
 import tortilla.nexuiz.MasterQuery;
 import tortilla.nexuiz.Server;
-import tortilla.nexuiz.GameLauncher;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -820,7 +819,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
             } else {
                 JOptionPane.showMessageDialog(new Frame(), "Tried to launch game at " + game.toString());
             }
-        } else if (serverVector == null) {
+        } else if (serverVector == null) {  //TODO: Remove these and disable buttons when invalid
             JOptionPane.showMessageDialog(new Frame(), "Please update the server list");
         } else {
             JOptionPane.showMessageDialog(new Frame(), "Please select a server");
