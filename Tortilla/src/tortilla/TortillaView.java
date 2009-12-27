@@ -819,8 +819,9 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 
     @Action
     public void filter() {
-
-        refreshTable();
+        if (serverCount > 0) {
+            refreshTable();
+        }
     }
 
     /**
