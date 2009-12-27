@@ -32,13 +32,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.Task;
+import tortilla.nexuiz.ServerTableModel;
 
 /**
  * The application's main frame.
@@ -95,7 +95,7 @@ public class TortillaView extends FrameView {
                     }
                 }
                 String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
-                for (Server server : tableModel.dataVector) {
+                for (Server server : tableModel.getDataVector()) {
                     if (server.getHostname().equals(selectedServer)) {
                         if (server.getPlayerCount() > 0) {
                             playerList.append("<html><b>" + server.getHostname() + "</b><br/>");
@@ -244,7 +244,7 @@ public class TortillaView extends FrameView {
                 .addComponent(showFullToggle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showHighPingToggle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                 .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -451,10 +451,9 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     private ArrayList<String> favoriteServerList;
     private Vector<Server> serverVector;
     private static final int HIGH_PING = 200;
-    private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map", "Type"};
     private static final String CONNECT = " +connect ";
     private String operatingSystem = null;
-    private Vector<SortKey> sortOrder = new Vector<SortKey>(COLUMN_NAMES.length);
+    private Vector<SortKey> sortOrder = new Vector<SortKey>(6);
     private int serverCount;
 
     protected javax.swing.JPopupMenu getPopupMenu() {
@@ -514,107 +513,6 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     }
 
     /**
-     * Model of Nexuiz server data.
-     * @author dmaz
-     */
-    static class ServerTableModel extends AbstractTableModel {
-
-        public static final int PING = 0;
-        public static final int HOSTNAME = 1;
-        public static final int PLAYERS = 2;
-        public static final int MAX = 3;
-        public static final int MAP = 4;
-        public static final int TYPE = 5;
-        private static final long serialVersionUID = 2187967572701857442L;
-        protected Vector<Server> dataVector = null;
-
-        public ServerTableModel() {
-            dataVector = new Vector<Server>();
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return COLUMN_NAMES[column];
-        }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-
-        @Override
-        public Class getColumnClass(int column) {
-            switch (column) {
-                case PING:
-                case PLAYERS:
-                case MAX:
-                    return Integer.class;
-                default:
-                    return String.class;
-            }
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            Server server = dataVector.get(row);
-            switch (column) {
-                case PING:
-                    return server.getPing();
-                case PLAYERS:
-                    return server.getPlayerCount();
-                case MAX:
-                    return server.getMaxPlayers();
-                case HOSTNAME:
-                    return server.getHostname();
-                case MAP:
-                    return server.getMap();
-                case TYPE:
-                    return server.getType();
-                default:
-                    throw new IndexOutOfBoundsException();
-            }
-        }
-
-        @Override
-        public void setValueAt(Object value, int row, int column) {
-            Server server = dataVector.get(row);
-            switch (column) {
-                case PING:
-                    server.setPing((Integer) value);
-                    break;
-                case PLAYERS:
-                    server.setPlayerCount((Integer) value);
-                    break;
-                case MAX:
-                    server.setMaxPlayers((Integer) value);
-                    break;
-                case HOSTNAME:
-                    server.setHostname((String) value);
-                    break;
-                case MAP:
-                    server.setMap((String) value);
-                    break;
-                case TYPE:
-                    server.setType((String) value);
-                    break;
-                default:
-                    throw new IndexOutOfBoundsException();
-            }
-            fireTableCellUpdated(row, column);
-        }
-
-        @Override
-        public int getRowCount() {
-            return dataVector.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return COLUMN_NAMES.length;
-        }
-    }
-
-    /**
      * Adds a row to the table if the application state allows it.
      */
     private synchronized void addRowToModel(Server server) {
@@ -645,8 +543,8 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         }
         // Add row to preferences
         if (canAddRow) {
-            tableModel.dataVector.add(server);
-            tableModel.fireTableRowsInserted(tableModel.dataVector.size() - 1, tableModel.dataVector.size() - 1);
+            tableModel.getDataVector().add(server);
+            tableModel.fireTableRowsInserted(tableModel.getDataVector().size() - 1, tableModel.getDataVector().size() - 1);
         }
         // TODO: Save and restore sortkeys
         serverTable.getRowSorter().setSortKeys(sortOrder);
@@ -656,9 +554,9 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      * Deletes data from server table's model and updates rows.
      */
     private void clearTable() {
-        if (!tableModel.dataVector.isEmpty()) {
-            int dataSize = tableModel.dataVector.size();
-            tableModel.dataVector.clear();
+        if (!tableModel.getDataVector().isEmpty()) {
+            int dataSize = tableModel.getDataVector().size();
+            tableModel.getDataVector().clear();
             tableModel.fireTableRowsDeleted(0, dataSize - 1);
         }
     }
@@ -771,7 +669,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         if (selectedRow != -1) {
             String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
             String selectedIp = null;
-            for (Server server : tableModel.dataVector) {
+            for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
@@ -833,7 +731,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 
         if (selectedRow != -1) {
             String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
-            for (Server server : tableModel.dataVector) {
+            for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
                     break;
@@ -909,7 +807,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     }
 
     @Action
-    public void showFilterPanel() {
+    public void toggleFilterPanel() {
         filterPanel.setVisible(filterBarCheckBox.getState());
     }
 }
