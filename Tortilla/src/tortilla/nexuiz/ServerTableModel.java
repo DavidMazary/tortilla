@@ -1,16 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package tortilla.nexuiz;
 
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
- * @author David Mazary <dmaz@vt.edu>
+ * Models a table displaying Nexuiz servers.
+ * @author dmaz
  */
+@SuppressWarnings("serial")
 public class ServerTableModel extends AbstractTableModel {
 
     public static final int PING = 0;
@@ -19,7 +16,6 @@ public class ServerTableModel extends AbstractTableModel {
     public static final int MAX = 3;
     public static final int MAP = 4;
     public static final int TYPE = 5;
-    private static final long serialVersionUID = 2187967572701857442L;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map", "Type"};
     private Vector<Server> dataVector = null;
 
