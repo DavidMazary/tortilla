@@ -446,7 +446,6 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     // End of variables declaration//GEN-END:variables
     private JDialog aboutBox;
     private FavoriteServerDialog addPrivateServerBox;
-    private GameLauncher launcher = new GameLauncher();
     private MasterQuery queryM = new MasterQuery();
     private ServerTableModel tableModel = new ServerTableModel();
     private ArrayList<String> serverList;
@@ -454,6 +453,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     private Vector<Server> serverVector;
     private static final int HIGH_PING = 200;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map", "Type"};
+    private static final String CONNECT = " +connect ";
     private String operatingSystem = null;
     private Vector<SortKey> sortOrder = new Vector<SortKey>(COLUMN_NAMES.length);
     private int serverCount;
@@ -779,15 +779,51 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
                 }
             }
 
-            launcher.setSdl(sdlCheckBox.getState());
-            launcher.setIp(selectedIp);
-            launcher.playGame();
+            File game = null;
+            String cmd = null;
+            if (operatingSystem == null) {
+                operatingSystem = System.getProperty("os.name");
+            }
+            String userDir = System.getProperty("user.dir");
+
+            if (operatingSystem.contains("Windows")) {
+                if (sdlCheckBox.getState()) {
+                    game = new File(userDir + "\\nexuiz-sdl.exe");
+                } else {
+                    game = new File(userDir + "\\nexuiz.exe");
+                }
+                cmd = game.toString() + " -basedir " + userDir + CONNECT + selectedIp;
+            } else if (operatingSystem.contains("Linux") || operatingSystem.contains("SunOS") || operatingSystem.contains("FreeBSD")) {
+                if (sdlCheckBox.getState()) {
+                    game = new File(userDir + "/nexuiz-linux-sdl.sh");
+                } else {
+                    game = new File(userDir + "/nexuiz-linux-glx.sh");
+                }
+                cmd = game.toString() + CONNECT + selectedIp;
+            } else if (operatingSystem.contains("Mac")) {
+                if (sdlCheckBox.getState()) {
+                    game = new File(userDir + "/Nexuiz-SDL.app");
+                } else {
+                    game = new File(userDir + "/Nexuiz.app");
+                }
+                cmd = game.toString() + CONNECT + selectedIp;
+            } else {
+                JOptionPane.showMessageDialog(new Frame(), "OS not supported.");
+            }
+
+            if (cmd != null && game != null && game.exists()) {
+                try {
+                    Runtime.getRuntime().exec(cmd);
+                } catch (Exception ex) {
+                    Logger.getLogger(TortillaView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(new Frame(), "Tried to launch game at " + game.toString());
+            }
         } else if (serverVector == null) {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Please update the server list");
+            JOptionPane.showMessageDialog(new Frame(), "Please update the server list");
         } else {
-            JOptionPane.showMessageDialog(new Frame(),
-                    "Please select a server");
+            JOptionPane.showMessageDialog(new Frame(), "Please select a server");
         }
     }
 
@@ -834,10 +870,10 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 
         try {
             Scanner scanner;
-            if (operatingSystem.contains("Linux")) {
-                scanner = new Scanner(new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg"));
-            } else {
+            if (operatingSystem.contains("Windows")) {
                 scanner = new Scanner(new File(System.getProperty("user.dir") + "\\data\\config.cfg"));
+            } else {
+                scanner = new Scanner(new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg"));
             }
             String line = null;
             while (scanner.hasNextLine()) {
@@ -865,11 +901,9 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
                 try {
                     desktop.browse(new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla"));
                 } catch (IOException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).
-                            log(Level.SEVERE, null, ex);
+                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (URISyntaxException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).
-                            log(Level.SEVERE, null, ex);
+                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
