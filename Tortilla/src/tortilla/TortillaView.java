@@ -4,8 +4,8 @@
 package tortilla;
 
 import tortilla.nexuiz.Player;
-import tortilla.nexuiz.ServerQuery;
-import tortilla.nexuiz.MasterQuery;
+import tortilla.nexuiz.query.ServerQuery;
+import tortilla.nexuiz.query.MasterQuery;
 import tortilla.nexuiz.Server;
 import java.awt.Color;
 import java.awt.Component;

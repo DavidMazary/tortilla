@@ -1,4 +1,4 @@
-package tortilla.nexuiz;
+package tortilla.nexuiz.query;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
