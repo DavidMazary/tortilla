@@ -17,8 +17,7 @@ public class MasterQuery extends AbstractQuery {
     private static final int DPMASTER_PORT = 27950;
     private static final int MESSAGE_START = 22;
     private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
-    private static final String[] MASTER_ADDRESSES = {"ghdigital.com",
-        "dpmaster.deathmask.net", "dpmaster.tchr.no"};
+    private static final String[] MASTER_ADDRESSES = {"ghdigital.com", "dpmaster.deathmask.net", "dpmaster.tchr.no"};
 
     /**
      * Retreives and saves the list of servers from the master server.
@@ -76,7 +75,7 @@ public class MasterQuery extends AbstractQuery {
      * @param ip String containing the data.
      * @return  String with the decoded data.
      */
-    private String getAddressFromBytes(String ip) {
+    public String getAddressFromBytes(String ip) {
         String address = null;
 
         try {
@@ -90,8 +89,7 @@ public class MasterQuery extends AbstractQuery {
             port |= bytes[5] & 0xff;
             address = A + "." + B + "." + C + "." + D + ":" + port;
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(MasterQuery.class.getName()).log(
-                    Level.SEVERE, null, ex);
+            Logger.getLogger(MasterQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
         return address;
     }
