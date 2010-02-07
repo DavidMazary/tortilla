@@ -1,4 +1,4 @@
-package tortilla.nexuiz;
+package tortilla.nexuiz.query;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import tortilla.TortillaView;
+import tortilla.nexuiz.Player;
+import tortilla.nexuiz.Server;
 
 /**
  * Query a particular game server using <code>getstatus</code>.

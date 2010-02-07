@@ -229,7 +229,7 @@ public class Server {
      * TODO: Handle more than gametype.
      * @param string of qcstatus reply
      */
-    void setQcstatus(String string) {
+    public void setQcstatus(String string) {
         String[] qcstatus = string.split(":");
         this.gameType = qcstatus[0];
         if (gameType.equals("tortilla")) {

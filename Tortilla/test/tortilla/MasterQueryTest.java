@@ -1,6 +1,6 @@
 package tortilla;
 
-import tortilla.nexuiz.MasterQuery;
+import tortilla.nexuiz.query.MasterQuery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
