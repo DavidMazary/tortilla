@@ -63,7 +63,7 @@ public class ServerQuery extends AbstractQuery {
                     BufferedReader in = new BufferedReader(new StringReader(queryResult));
                     input = in.readLine();
                     server = getServerFromResponse(input, ipStr);
-                    players = new ArrayList<Player>();
+                    players = new ArrayList<Player>(server.getPlayerCount());
                     while ((input = in.readLine()) != null) {
                         players.add(getPlayerFromResponse(input));
                     }

@@ -33,7 +33,7 @@ public abstract class AbstractQuery {
      */
     protected String getInfo(String address, int port, String request) {
         String queryInfo;
-        long sendTime, receiveTime;
+        long sendTime;
         byte[] requestBytes = request.getBytes();
         requestBytes[0] |= 0xff;  // Change first 4 chars to 0xff
         requestBytes[1] |= 0xff;
@@ -51,9 +51,8 @@ public abstract class AbstractQuery {
             socket.send(sendPacket);
             sendTime = System.currentTimeMillis();  // ping timer
             socket.receive(receivePacket);
-            receiveTime = System.currentTimeMillis();
+            ping = (int) (System.currentTimeMillis() - sendTime);
             socket.close();
-            ping = (int) (receiveTime - sendTime);
             queryInfo = new String(receivePacket.getData(), 0, receivePacket.getLength(), CHARSET);
         } catch (IOException ex) {
             queryInfo = null;
