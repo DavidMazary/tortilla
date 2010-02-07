@@ -1,13 +1,8 @@
 package tortilla.nexuiz;
 
-import java.io.UnsupportedEncodingException;
-import java.util.regex.Pattern;
-
 /**
  * A Nexuiz player object.
- * For each player in a server, show name, ping, score,
- * and whether player is bot or whether player is spectating.
- * Also converts special characters into displayable text in player names.
+ * For each player in a server, show name, ping, score.
  * @author dmaz
  */
 public class Player {
@@ -17,32 +12,6 @@ public class Player {
     private int score;
     private int ping;
 //    private int team;
-
-    /**
-     * Translate special characters into displayable text in player names.
-     * Converts the given name string to bytes,
-     * which correspond to positions in the font table.
-     *
-     * @param name 
-     * @return Player's name converted to ascii text
-     */
-    protected String sanitizeName(String name) {
-        String asciiName;
-        try {
-            byte nameBytes[] = name.getBytes("ISO-8859-1");
-            StringBuilder sb = new StringBuilder("");
-            
-            // Character will correspond with unsigned byte.
-            for (byte b : nameBytes) {
-                sb.append(PlayerUtils.fontTable[b & 0xff]);
-            }
-            asciiName = sb.toString();
-        } catch (UnsupportedEncodingException e) {
-            asciiName = name;
-        }
-
-        return asciiName;
-    }
 
     /**
      * Whether this player is a bot.
@@ -73,11 +42,11 @@ public class Player {
      * @param newName
      */
     public void setName(String newName) {
-        String plainName = sanitizeName(decolorName(newName));
-        if (plainName.equals(newName)) {
+        String plainName = PlayerUtils.sanitizeName(PlayerUtils.decolorName(newName));
+        if (plainName.equals(newName)) {  // Name is uncolored
             this.setColoredName(newName);
         } else {
-            this.setColoredName(nexuizColorsToHtml(sanitizeName(newName)));
+            this.setColoredName(PlayerUtils.nexuizColorsToHtml(PlayerUtils.sanitizeName(newName)));
         }
         this.name = plainName;
     }
@@ -125,82 +94,7 @@ public class Player {
 //    public void setTeam(String index) {
 //        this.team = Integer.parseInt(index);
 //    }
-
-    /**
-     * Converts Nexuiz color codes to HTML font color tags.
-     * @param newName Nexuiz-encoded player name.
-     * @return HTML-encoded player name.
-     */
-    private String nexuizColorsToHtml(String newName) {
-        String htmlName = newName;
-        boolean firstTag = true;
-        for (int i = 0; i < htmlName.length(); i++) {
-            if ((htmlName.charAt(i)) == '^' && (i < htmlName.length() - 1)) {
-                char nextChar = htmlName.charAt(i + 1);
-                String color;
-                if (Character.isDigit(nextChar)) {
-                    switch (nextChar) {
-                        case '0':
-                            color = "black";
-                            break;
-                        case '1':
-                            color = "red";
-                            break;
-                        case '2':
-                            color = "lime";
-                            break;
-                        case '3':
-                            color = "yellow";
-                            break;
-                        case '4':
-                            color = "blue";
-                            break;
-                        case '5':
-                            color = "cyan";
-                            break;
-                        case '6':
-                            color = "magenta";
-                            break;
-                        case '7':
-                            color = "white";
-                            break;
-                        case '8':
-                            color = "DimGray";
-                            break;
-                        default:
-                            color = "gray";
-                    }
-                    String tag;
-                    if (firstTag) {
-                        tag = "<font color=\"" + color + "\">";
-                        firstTag = false;
-                    } else {
-                        tag = "</font><font color=\"" + color + "\">";
-                    }
-                    htmlName = htmlName.replaceFirst("\\^\\p{Digit}", tag);
-                    i++;
-                } else if (nextChar == 'x') {
-                    String colorCode = htmlName.substring(i + 2, i + 5);
-                    if (Pattern.matches("\\p{XDigit}{3}", colorCode)) {
-                        String tag;
-                        color = "#" + colorCode.charAt(0) + colorCode.charAt(0) + colorCode.charAt(1) + colorCode.charAt(1) + colorCode.charAt(2) + colorCode.charAt(2);
-                        if (firstTag) {
-                            tag = "<font color=\"" + color + "\">";
-                            firstTag = false;
-                        } else {
-                            tag = "</font><font color=\"" + color + "\">";
-                        }
-                        htmlName = htmlName.replaceFirst("\\^x\\p{XDigit}{3}", tag);
-                        i += 4;
-                    }
-                }
-            }
-        }
-        if (!firstTag) {
-            htmlName += "</font>";
-        }
-        return htmlName;
-    }
+    
 
     /**
      * @return the coloredName
@@ -214,9 +108,5 @@ public class Player {
      */
     public void setColoredName(String coloredName) {
         this.coloredName = coloredName;
-    }
-
-    private String decolorName(String newName) {
-        return newName.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
     }
 }
