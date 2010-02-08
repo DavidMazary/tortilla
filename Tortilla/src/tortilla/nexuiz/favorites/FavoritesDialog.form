@@ -92,7 +92,6 @@
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="tortilla.TortillaAddPrivate" id="add" methodName="add"/>
         </Property>
-        <Property name="enabled" type="boolean" value="false"/>
         <Property name="name" type="java.lang.String" value="addButton" noResource="true"/>
       </Properties>
     </Component>

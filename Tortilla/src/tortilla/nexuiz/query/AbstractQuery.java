@@ -19,10 +19,10 @@ public abstract class AbstractQuery {
 
     private static final int TIMEOUT = 2000;          // Timeout used for the sockets
     private static final int PACKET_SIZE = 2048;      // Receive packet size
-    private static final int TYPE_OF_SERVICE = 0x10;  // Type of Service octet
+    private static final int TYPE_OF_SERVICE = 0x04;  // Type of Service octet: reliability
     private static final String CHARSET = "ISO-8859-1";
     protected static final int RETRIES = 2;
-    protected int ping;
+    protected static int ping;
 
     /**
      * Sends a request to a game server and returns the output.
@@ -31,7 +31,7 @@ public abstract class AbstractQuery {
      * @param request message to send to server
      * @return  String of the server's reply
      */
-    protected String getInfo(String address, int port, String request) {
+    protected static String getInfo(final String address, final int port, final String request) {
         String queryInfo;
         long sendTime;
         byte[] requestBytes = request.getBytes();
@@ -39,8 +39,8 @@ public abstract class AbstractQuery {
         requestBytes[1] |= 0xff;
         requestBytes[2] |= 0xff;
         requestBytes[3] |= 0xff;
-        DatagramPacket sendPacket = new DatagramPacket(requestBytes, requestBytes.length);
-        DatagramPacket receivePacket = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
+        final DatagramPacket sendPacket = new DatagramPacket(requestBytes, requestBytes.length);
+        final DatagramPacket receivePacket = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
         DatagramSocket socket = null;
 
         try {

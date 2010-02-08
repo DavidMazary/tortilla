@@ -3,10 +3,7 @@ package tortilla;
 import tortilla.nexuiz.query.ServerQuery;
 import tortilla.nexuiz.Server;
 import tortilla.nexuiz.Player;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -16,26 +13,11 @@ import static org.junit.Assert.*;
  */
 public class QueryServerTest {
 
-    ServerQuery queryS;
-
-    public QueryServerTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    protected transient ServerQuery queryS;
 
     @Before
     public void setUp() {
-        queryS = new ServerQuery();
-    }
-
-    @After
-    public void tearDown() {
+        queryS = ServerQuery.getInstance();
     }
 
     /**

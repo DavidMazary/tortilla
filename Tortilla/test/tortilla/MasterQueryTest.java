@@ -1,10 +1,7 @@
 package tortilla;
 
 import tortilla.nexuiz.query.MasterQuery;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -14,26 +11,11 @@ import static org.junit.Assert.*;
  */
 public class MasterQueryTest {
 
-    MasterQuery instance;
-
-    public MasterQueryTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    protected transient MasterQuery instance;
 
     @Before
     public void setUp() {
-        instance = new MasterQuery();
-    }
-
-    @After
-    public void tearDown() {
+        instance = MasterQuery.getInstance();
     }
     
     /**

@@ -1,34 +1,26 @@
 /*
- * FavoriteServerDialog.java
+ * FavoritesDialog.java
  *
  * Created on May 26, 2008, 6:03 PM
  */
-package tortilla;
+package tortilla.nexuiz.favorites;
 
-import java.awt.Frame;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.Vector;
-import javax.swing.JOptionPane;
 import org.jdesktop.application.Action;
+import tortilla.nexuiz.GameUtils;
 
 /**
  *
  * @author  dmaz
  */
-public class FavoriteServerDialog extends javax.swing.JDialog {
+public class FavoritesDialog extends javax.swing.JDialog {
 
     private static final long serialVersionUID = 5877677525126224471L;
 
-    /** Creates new form FavoriteServerDialog
+    /** Creates new form FavoritesDialog
      * @param parent
      * @param modal
      */
-    public FavoriteServerDialog(java.awt.Frame parent, boolean modal) {
+    public FavoritesDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -51,7 +43,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
 
         jPanel1.setName("jPanel1"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(FavoriteServerDialog.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getResourceMap(FavoritesDialog.class);
         addressField.setText(resourceMap.getString("addressField.text")); // NOI18N
         addressField.setName("addressField"); // NOI18N
         addressField.addActionListener(new java.awt.event.ActionListener() {
@@ -87,9 +79,8 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(FavoriteServerDialog.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(FavoritesDialog.class, this);
         addButton.setAction(actionMap.get("add")); // NOI18N
-        addButton.setEnabled(false);
         addButton.setName("addButton"); // NOI18N
 
         cancelButton.setAction(actionMap.get("cancel")); // NOI18N
@@ -122,16 +113,17 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addressFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_addressFieldFocusGained
+        addButton.setEnabled(!addressField.getText().isEmpty());
         addressField.selectAll();
     }//GEN-LAST:event_addressFieldFocusGained
-
-    private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
-        add();
-    }//GEN-LAST:event_addressFieldActionPerformed
 
     private void addressFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_addressFieldKeyTyped
         addButton.setEnabled(!addressField.getText().isEmpty());
     }//GEN-LAST:event_addressFieldKeyTyped
+
+    private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
+        add();
+    }//GEN-LAST:event_addressFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -141,7 +133,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
 
             @Override
             public void run() {
-                FavoriteServerDialog dialog = new FavoriteServerDialog(new javax.swing.JFrame(), true);
+                final FavoritesDialog dialog = new FavoritesDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     @Override
@@ -166,66 +158,7 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
     @Action
     public void add() {
         if (!addressField.getText().isEmpty()) {
-            String operatingSystem = System.getProperty("os.name");
-
-            Vector<String> configText = new Vector<String>();
-            File configFile;
-            try {
-                if (operatingSystem.contains("Linux")) {
-                    configFile = new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg");
-                } else {
-                    configFile = new File(System.getProperty("user.dir") + "\\data\\config.cfg");
-                }
-                Scanner scanner = new Scanner(configFile);
-                while (scanner.hasNextLine()) {
-                    configText.add(scanner.nextLine());
-                }
-                boolean favLineFound = false;
-                for (String line : configText) {
-                    if (line.contains("net_slist_favorites")) {
-                        favLineFound = true;
-                        if (line.contains(addressField.getText())) {
-                            int choice = JOptionPane.showConfirmDialog(null, "Remove server from favorites?");
-                            if (choice == JOptionPane.YES_OPTION) {
-                                configText.remove(line);
-                                configText.add(line.replaceAll(addressField.getText(), ""));
-                            }
-                            break;
-                        } else {
-                            configText.remove(line);
-                            configText.add(line.substring(0, line.length() - 1) + " " + addressField.getText() + "\"");
-                            break;
-                        }
-                    }
-                }
-                if (!favLineFound) {
-                    configText.add("net_slist_favorites \"" + addressField.getText() + "\"");
-                }
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(configFile));
-                    for (String line : configText) {
-                        writer.write(line);
-                        writer.newLine();
-                    }
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null,
-                            "Could not write to config file");
-                } finally {
-                    if (writer != null) {
-                        try {
-                            writer.flush();
-                            writer.close();
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Could not write to config file");
-                        }
-                    }
-                }
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(new Frame(),
-                        "Could not find config file");
-            }
+            util.addFavorite(addressField.getText());
         }
         this.setVisible(false);
     }
@@ -236,18 +169,12 @@ public class FavoriteServerDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
-
-    /**
-     * @return the addressField
-     */
-    public String getAddressField() {
-        return addressField.getText();
-    }
+    private GameUtils util = GameUtils.getInstance();
 
     /**
      * @param addressField the addressField to set
      */
-    public void setAddressField(String addressField) {
+    public void setAddressField(final String addressField) {
         this.addressField.setText(addressField);
     }
 }

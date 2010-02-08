@@ -17,15 +17,31 @@ import tortilla.nexuiz.Server;
 public class ServerQuery extends AbstractQuery {
 
     /**
+     * Singleton
+     */
+    private ServerQuery() {
+        super();
+    }
+
+    private static class SingletonHolder {
+
+        private static final ServerQuery INSTANCE = new ServerQuery();
+    }
+
+    public static ServerQuery getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    /**
      * Creates a Server containing all of the server info,
      * excluding player names, scores, and pings.
      *
      * @param ipStr     String of IP address of this server
      * @return  Server containing the info of this server.
      */
-    public Server getInfo(String ipStr) {
-        String ip[] = ipStr.split(":");
-        int port = Integer.parseInt(ip[1]);
+    public static Server getInfo(final String ipStr) {
+        final String ip[] = ipStr.split(":");
+        final int port = Integer.parseInt(ip[1]);
         String queryResult = null;
         Server server = null;
 
@@ -45,9 +61,9 @@ public class ServerQuery extends AbstractQuery {
      * @param ipStr     String of IP address of server
      * @return  Server including ArrayList of TortillaPlayers
      */
-    public Server getStatus(String ipStr) {
-        String ip[] = ipStr.split(":");
-        int port = Integer.parseInt(ip[1]);
+    public static Server getStatus(final String ipStr) {
+        final String ip[] = ipStr.split(":");
+        final int port = Integer.parseInt(ip[1]);
         String queryResult = null;
         Server server = null;
 
@@ -55,17 +71,19 @@ public class ServerQuery extends AbstractQuery {
             queryResult = getInfo(ip[0], port, "xxxxgetstatus tortilla");
 
             if (queryResult != null) {
-                queryResult = queryResult.substring(queryResult.indexOf("\\"));
+                queryResult = queryResult.substring(queryResult.indexOf('\\'));
                 ArrayList<Player> players;
                 String input;
 
                 try {
-                    BufferedReader in = new BufferedReader(new StringReader(queryResult));
-                    input = in.readLine();
+                    final BufferedReader reader = new BufferedReader(new StringReader(queryResult));
+                    input = reader.readLine();
                     server = getServerFromResponse(input, ipStr);
                     players = new ArrayList<Player>(server.getPlayerCount());
-                    while ((input = in.readLine()) != null) {
+                    input = reader.readLine();
+                    while (input != null) {
                         players.add(getPlayerFromResponse(input));
+                        input = reader.readLine();
                     }
                     server.setPlayerList(players);
                 } catch (IOException ex) {
@@ -83,9 +101,9 @@ public class ServerQuery extends AbstractQuery {
      * @param queryResult String of the line to process.
      * @return Player which is created.
      */
-    private Player getPlayerFromResponse(String queryResult) {
-        String[] playerData = queryResult.split(" ");
-        Player player = new Player();
+    private static Player getPlayerFromResponse(final String queryResult) {
+        final String[] playerData = queryResult.split(" ");
+        final Player player = new Player();
         player.setScore(playerData[0]);
         player.setPing(playerData[1]);
 //        if (playerData.length == 3) {
@@ -106,9 +124,9 @@ public class ServerQuery extends AbstractQuery {
      * @param ipStr The address of the server.
      * @return Server which is created.
      */
-    private Server getServerFromResponse(String queryResult, String ipStr) {
-        String[] serverData = queryResult.split("\\\\");
-        Server server = new Server();
+    private static Server getServerFromResponse(final String queryResult, final String ipStr) {
+        final String[] serverData = queryResult.split("\\\\");
+        final Server server = new Server();
         server.setGame(serverData[2]);
         server.setModname(serverData[4]);
         server.setGameVersion(serverData[6]);

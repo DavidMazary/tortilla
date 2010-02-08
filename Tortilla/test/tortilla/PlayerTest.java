@@ -6,10 +6,7 @@
 package tortilla;
 
 import tortilla.nexuiz.Player;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,28 +16,11 @@ import static org.junit.Assert.*;
  */
 public class PlayerTest {
     
-    Player instance;
-
-    public PlayerTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception
-    {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
+    protected transient Player instance;
 
     @Before
     public void setUp() {
         instance = new Player();
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**

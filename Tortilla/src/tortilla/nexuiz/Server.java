@@ -1,6 +1,6 @@
 package tortilla.nexuiz;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Nexuiz server object.
@@ -21,7 +21,7 @@ public class Server {
     private int players;
     private int ping;
     private int botCount;
-    private ArrayList<Player> playerList;
+    private List<Player> playerList;
     private boolean favorite = false;
 
     /**
@@ -68,7 +68,7 @@ public class Server {
      * Update hostname of server.
      * @param newHostName String to replace hostname with.
      */
-    public void setHostname(String newHostName) {
+    public void setHostname(final String newHostName) {
         hostname = newHostName;
     }
 
@@ -76,7 +76,7 @@ public class Server {
      * Update current map on server.
      * @param newMap String of new map name.
      */
-    public void setMap(String newMap) {
+    public void setMap(final String newMap) {
         map = newMap;
     }
 
@@ -84,7 +84,7 @@ public class Server {
      * Update current number of players.
      * @param newPlayers New player count on server.
      */
-    public void setPlayerCount(String newPlayers) {
+    public void setPlayerCount(final String newPlayers) {
         players = Integer.parseInt(newPlayers);
     }
 
@@ -92,7 +92,7 @@ public class Server {
      * Update current number of players.
      * @param newPlayers New player count on server.
      */
-    public void setPlayerCount(int newPlayers) {
+    public void setPlayerCount(final int newPlayers) {
         players = newPlayers;
     }
 
@@ -100,7 +100,7 @@ public class Server {
      * Update ping to server.
      * @param newPing New ping from client to server.
      */
-    public void setPing(int newPing) {
+    public void setPing(final int newPing) {
         ping = newPing;
     }
 
@@ -116,7 +116,7 @@ public class Server {
      * New IP address of server.
      * @param ip address of server.
      */
-    public void setIp(String ip) {
+    public void setIp(final String ip) {
         this.ip = ip;
     }
 
@@ -124,7 +124,7 @@ public class Server {
      * Update maximum number of players.
      * @param maxplayers New maximum player limit for server.
      */
-    public void setMaxPlayers(String maxplayers) {
+    public void setMaxPlayers(final String maxplayers) {
         this.maxplayers = Integer.parseInt(maxplayers);
     }
 
@@ -132,7 +132,7 @@ public class Server {
      * Update maximum number of players.
      * @param maxplayers New maximum player limit for server.
      */
-    public void setMaxPlayers(int maxplayers) {
+    public void setMaxPlayers(final int maxplayers) {
         this.maxplayers = maxplayers;
     }
 
@@ -148,7 +148,7 @@ public class Server {
      * 
      * @param game
      */
-    public void setGame(String game) {
+    public void setGame(final String game) {
         this.game = game;
     }
 
@@ -164,7 +164,7 @@ public class Server {
      * 
      * @param gameVersion
      */
-    public void setGameVersion(String gameVersion) {
+    public void setGameVersion(final String gameVersion) {
         this.gameVersion = gameVersion;
     }
 
@@ -181,7 +181,7 @@ public class Server {
      * Bot count is deducted from player count.
      * @param botCount Number of bots running on a server.
      */
-    public void setBotCount(int botCount) {
+    public void setBotCount(final int botCount) {
         this.botCount = botCount;
         this.players -= this.botCount;
     }
@@ -190,7 +190,7 @@ public class Server {
      * 
      * @return
      */
-    public ArrayList<Player> getPlayerList() {
+    public List<Player> getPlayerList() {
         return playerList;
     }
 
@@ -198,7 +198,7 @@ public class Server {
      * Assigns an ArrayList of TortillaPlayers to this server.
      * @param playerList ArrayList of TortillaPlayers to assign to this server.
      */
-    public void setPlayerList(ArrayList<Player> playerList) {
+    public void setPlayerList(final List<Player> playerList) {
         this.playerList = playerList;
     }
 
@@ -206,7 +206,7 @@ public class Server {
         return modname;
     }
 
-    public void setModname(String modname) {
+    public void setModname(final String modname) {
         this.modname = modname;
     }
 
@@ -220,7 +220,7 @@ public class Server {
     /**
      * @param favorite the favorite to set
      */
-    public void setFavorite(boolean favorite) {
+    public void setFavorite(final boolean favorite) {
         this.favorite = favorite;
     }
 
@@ -229,8 +229,8 @@ public class Server {
      * TODO: Handle more than gametype.
      * @param string of qcstatus reply
      */
-    public void setQcstatus(String string) {
-        String[] qcstatus = string.split(":");
+    public void setQcstatus(final String string) {
+        final String[] qcstatus = string.split(":");
         this.gameType = qcstatus[0];
         if (gameType.equals("tortilla")) {
             gameType = "dm";
@@ -241,7 +241,7 @@ public class Server {
         return this.gameType;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.gameType = type;
     }
 }

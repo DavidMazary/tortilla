@@ -64,8 +64,9 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;&#xa;    public String getToolTipText(MouseEvent e) {&#xa;        int nameColumn = ServerTableModel.HOSTNAME;&#xa;        int selectedRow = rowAtPoint(e.getPoint());&#xa;        StringBuilder playerList = new StringBuilder(&quot;&quot;);&#xa;        if (!getModel().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; tableModel.getColumnCount(); i++) {&#xa;                if (tableModel.getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();&#xa;        for (Server server : tableModel.getDataVector()) {&#xa;            if (server.getHostname().equals(selectedServer)) {&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&lt;b&gt;&quot; + server.getHostname() + &quot;&lt;/b&gt;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getColoredName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                } else {&#xa;                    return null;&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {&#xa;        Component component = super.prepareRenderer(renderer, row, column);&#xa;        if (!component.getBackground().equals(getSelectionBackground())) {&#xa;            int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);&#xa;            if (playerCount &gt; 0) {&#xa;                if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {&#xa;                    component.setForeground(new Color(164,0,0));&#xa;                } else {&#xa;                    component.setForeground(Color.black);&#xa;                }&#xa;            } else {&#xa;                component.setForeground(Color.gray);&#xa;            }&#xa;            if ((row % 2) == 0) {&#xa;                component.setBackground(new Color(241,245,250));&#xa;            } else {&#xa;                component.setBackground(Color.white);&#xa;            }&#xa;        }&#xa;        return component;&#xa;    }&#xa;}"/>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="serverTable.addMouseListener(new MouseAdapter() {&#xa;    public void mouseClicked(MouseEvent e) {&#xa;        if (e.getClickCount() == 2) {&#xa;            connect();&#xa;        }&#xa;    }&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;&#xa;    public String getToolTipText(final MouseEvent evt) {&#xa;        int nameColumn = ServerTableModel.HOSTNAME;&#xa;        final int selectedRow = rowAtPoint(evt.getPoint());&#xa;        final StringBuilder playerList = new StringBuilder();&#xa;        if (!getModel().getColumnName(nameColumn).equals(&quot;Server&quot;)) {&#xa;            for (int i = 0; i &lt; tableModel.getColumnCount(); i++) {&#xa;                if (tableModel.getColumnName(i).equals(&quot;Server&quot;)) {&#xa;                    nameColumn = i;&#xa;                    break;&#xa;                }&#xa;            }&#xa;        }&#xa;        final String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();&#xa;        for (Server server : tableModel.getDataVector()) {&#xa;            if (server.getHostname().equals(selectedServer)) {&#xa;                if (server.getPlayerCount() &gt; 0) {&#xa;                    playerList.append(&quot;&lt;html&gt;&lt;b&gt;&quot; + server.getHostname() + &quot;&lt;/b&gt;&lt;br/&gt;&quot;);&#xa;                    for (Player player : server.getPlayerList()) {&#xa;                        playerList.append(player.getColoredName() + &quot;&lt;br/&gt;&quot;);&#xa;                    }&#xa;                    playerList.append(&quot;&lt;/html&gt;&quot;);&#xa;                } else {&#xa;                    return null;&#xa;                }&#xa;                break;&#xa;            }&#xa;        }&#xa;        return playerList.toString();&#xa;    }&#xa;&#xa;    public Component prepareRenderer(final TableCellRenderer renderer, final int row, final int column) {&#xa;        final Component component = super.prepareRenderer(renderer, row, column);&#xa;        if (!component.getBackground().equals(getSelectionBackground())) {&#xa;            final int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);&#xa;            if (playerCount &gt; 0) {&#xa;                if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {&#xa;                    component.setForeground(BRICK);&#xa;                } else {&#xa;                    component.setForeground(Color.black);&#xa;                }&#xa;            } else {&#xa;                component.setForeground(Color.gray);&#xa;            }&#xa;            if ((row % 2) == 0) {&#xa;                component.setBackground(LT_BLUE);&#xa;            } else {&#xa;                component.setBackground(Color.white);&#xa;            }&#xa;        }&#xa;        return component;&#xa;    }&#xa;}"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="serverTable.addMouseListener(new MouseAdapter() {&#xa;    public void mouseClicked(final MouseEvent evt) {&#xa;        if (evt.getClickCount() == 2) {&#xa;            connect();&#xa;        }&#xa;    }&#xa;});"/>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="18"/>
               </AuxValues>
             </Component>
           </SubComponents>
@@ -87,7 +88,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="showHighPingToggle" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="109" max="32767" attributes="0"/>
-                      <Component id="favoriteServersToggleButton" min="-2" pref="32" max="-2" attributes="0"/>
+                      <Component id="favoritesToggleButton" min="-2" pref="32" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="searchTextField" min="-2" pref="164" max="-2" attributes="0"/>
                   </Group>
@@ -102,7 +103,7 @@
                       <Component id="showHighPingToggle" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                      <Component id="favoriteServersToggleButton" alignment="1" min="-2" max="-2" attributes="1"/>
+                      <Component id="favoritesToggleButton" alignment="1" min="-2" max="-2" attributes="1"/>
                       <Component id="searchTextField" alignment="1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -118,14 +119,14 @@
                 <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="searchTextFieldKeyReleased"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JToggleButton" name="favoriteServersToggleButton">
+            <Component class="javax.swing.JToggleButton" name="favoritesToggleButton">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="tortilla.TortillaView" id="filter" methodName="filter"/>
                 </Property>
-                <Property name="icon" type="javax.swing.Icon" resourceKey="favoriteServersToggleButton.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="favoriteServersToggleButton.text"/>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="favoriteServersToggleButton.toolTipText"/>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="favoritesToggleButton.icon"/>
+                <Property name="text" type="java.lang.String" resourceKey="favoritesToggleButton.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="favoritesToggleButton.toolTipText"/>
                 <Property name="borderPainted" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[24, 24]"/>
@@ -133,7 +134,7 @@
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[24, 24]"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="favoriteServersToggleButton" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="favoritesToggleButton" noResource="true"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[24, 24]"/>
                 </Property>
@@ -339,15 +340,15 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="helpMenuItem">
           <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="tortilla.TortillaView" id="launchHelpPage" methodName="launchHelpPage"/>
-            </Property>
             <Property name="text" type="java.lang.String" resourceKey="helpMenuItem.text"/>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="null" type="code"/>
             </Property>
             <Property name="name" type="java.lang.String" value="helpMenuItem" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpMenuItemActionPerformed"/>
+          </Events>
         </MenuItem>
         <Component class="javax.swing.JSeparator" name="jSeparator2">
           <Properties>

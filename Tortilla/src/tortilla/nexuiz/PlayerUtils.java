@@ -1,15 +1,17 @@
 package tortilla.nexuiz;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
  * Helper functions for Player class.
  * @author dmaz
  */
-public class PlayerUtils {
+public final class PlayerUtils {
 
-    private static final char fontTable[] = {
+    private static final char FONT_TABLE[] = {
         ' ', '#', '#', '#', '#', '.', '#', '#',
         '#', 9, 10, '#', ' ', 13, '.', '.',
         '[', ']', '0', '1', '2', '3', '4', '5',
@@ -43,55 +45,70 @@ public class PlayerUtils {
         'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
         'x', 'y', 'z', '{', '|', '}', '~', '<'
     };
-    private static final String colorTable[] = {
+    private static final String COLOR_TABLE[] = {
         "black", "red", "lime", "yellow", "blue", "cyan", "magenta", "white", "DimGray", "gray"};
     private static final String FONT_CLOSE = "</font>";
-    private static boolean firstTag;
-    
+
+    /**
+     * Singleton
+     */
+    private PlayerUtils() {
+    }
+
+    private static class SingletonHolder {
+
+        private static final PlayerUtils INSTANCE = new PlayerUtils();
+    }
+
+    public static PlayerUtils getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
     /**
      * Converts Nexuiz color codes to HTML font color tags.
      * @param newName Nexuiz-encoded player name.
      * @return HTML-encoded player name.
      */
-    protected static String nexuizColorsToHtml(String newName) {
+    protected static String nexuizColorsToHtml(final String newName) {
         String htmlName = newName;
-        firstTag = true;
+        boolean closeTag = false;  // Indicates the need to add a close font tag
+        final StringBuilder tag = new StringBuilder();
         for (int i = 0; i < htmlName.length(); i++) {
             if ((htmlName.charAt(i)) == '^' && (i < htmlName.length() - 1)) {
-                char nextChar = htmlName.charAt(i + 1);
+                final char nextChar = htmlName.charAt(i + 1);
                 if (Character.isDigit(nextChar)) {
-                    htmlName = htmlName.replaceFirst("\\^\\p{Digit}", colorToTag(
-                            colorTable[Character.digit(nextChar, 10)]));
+                    tag.delete(0, tag.length());
+                    if (closeTag) {
+                        tag.append(FONT_CLOSE);
+                    } else {
+                        closeTag = true;
+                    }
+                    tag.append("<font color=\"").append(COLOR_TABLE[Character.digit(nextChar, 10)]).append("\">");
+                    htmlName = htmlName.replaceFirst("\\^\\p{Digit}", tag.toString());
                     i++;
                 } else if (nextChar == 'x') {
-                    String colorCode = htmlName.substring(i + 2, i + 5);
+                    final String colorCode = htmlName.substring(i + 2, i + 5);
                     if (Pattern.matches("\\p{XDigit}{3}", colorCode)) {
-                        htmlName = htmlName.replaceFirst("\\^x\\p{XDigit}{3}", colorToTag(
-                                "#" + colorCode.charAt(0) + colorCode.charAt(0) + colorCode.charAt(1)
-                                + colorCode.charAt(1) + colorCode.charAt(2) + colorCode.charAt(2)));
+                        tag.delete(0, tag.length());
+                        if (closeTag) {
+                            tag.append(FONT_CLOSE);
+                        } else {
+                            closeTag = true;
+                        }
+                        tag.append("<font color=\"").append("#").append(colorCode.charAt(0)).append(colorCode.charAt(0)).append(colorCode.charAt(1)).append(colorCode.charAt(1)).append(colorCode.charAt(2)).append(colorCode.charAt(2)).append("\">");
+                        htmlName = htmlName.replaceFirst("\\^x\\p{XDigit}{3}", tag.toString());
                         i += 4;
                     }
                 }
             }
         }
-        if (!firstTag) {
+        if (closeTag) {
             htmlName += FONT_CLOSE;
         }
         return htmlName;
     }
 
-    private static String colorToTag(String color) {
-        String tag = "";
-        if (!firstTag) {
-            tag = FONT_CLOSE;
-        } else {
-            firstTag = false;
-        }
-        tag += "<font color=\"" + color + "\">";
-        return tag;
-    }
-
-    protected static String decolorName(String name) {
+    protected static String decolorName(final String name) {
         return name.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
     }
 
@@ -103,19 +120,19 @@ public class PlayerUtils {
      * @param name
      * @return Player's name converted to ascii text
      */
-    protected static String sanitizeName(String name) {
-        String asciiName;
+    protected static String sanitizeName(final String name) {
+        String asciiName = name;
         try {
-            byte nameBytes[] = name.getBytes("ISO-8859-1");
-            StringBuilder sb = new StringBuilder("");
+            final byte nameBytes[] = name.getBytes("ISO-8859-1");
+            final StringBuilder builder = new StringBuilder("");
 
             // Character will correspond with unsigned byte.
             for (byte b : nameBytes) {
-                sb.append(fontTable[b & 0xff]);
+                builder.append(FONT_TABLE[b & 0xff]);
             }
-            asciiName = sb.toString();
-        } catch (UnsupportedEncodingException e) {
-            asciiName = name;
+            asciiName = builder.toString();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(PlayerUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return asciiName;
