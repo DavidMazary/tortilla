@@ -19,7 +19,7 @@ public class TortillaAboutBox extends javax.swing.JDialog {
      * Creates new About Box.
      * @param parent
      */
-    public TortillaAboutBox(java.awt.Frame parent) {
+    public TortillaAboutBox(final java.awt.Frame parent) {
         super(parent);
         initComponents();
         getRootPane().setDefaultButton(closeButton);
@@ -157,7 +157,7 @@ public class TortillaAboutBox extends javax.swing.JDialog {
      */
 private void appHomepageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appHomepageLabelMouseClicked
     if (Desktop.isDesktopSupported()) {
-        Desktop desktop = Desktop.getDesktop();
+        final Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
                 desktop.browse(new URI("http://code.google.com/p/tortilla/"));

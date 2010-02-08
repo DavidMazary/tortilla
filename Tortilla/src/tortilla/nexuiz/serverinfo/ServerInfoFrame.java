@@ -4,7 +4,7 @@
  * Created on Jun 22, 2009, 6:14:47 PM
  */
 
-package tortilla;
+package tortilla.nexuiz.serverinfo;
 
 import org.jdesktop.application.Action;
 
@@ -17,6 +17,7 @@ public class ServerInfoFrame extends javax.swing.JFrame {
 
     /** Creates new form ServerInfoFrame */
     public ServerInfoFrame() {
+        super();
         initComponents();
         /*
          * TODO: Add refresh button somewhere
@@ -105,7 +106,7 @@ public class ServerInfoFrame extends javax.swing.JFrame {
     /**
     * @param args the command line arguments
     */
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ServerInfoFrame().setVisible(true);
@@ -113,8 +114,12 @@ public class ServerInfoFrame extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Join server we're viewing. We have server address, will need SDL state.
+     */
     @Action
     public void join() {
+        // Stub
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -41,12 +41,13 @@ public class Player {
      * 
      * @param newName
      */
-    public void setName(String newName) {
-        String plainName = PlayerUtils.sanitizeName(PlayerUtils.decolorName(newName));
+    public void setName(final String newName) {
+        PlayerUtils util = PlayerUtils.getInstance();
+        final String plainName = util.sanitizeName(util.decolorName(newName));
         if (plainName.equals(newName)) {  // Name is uncolored
             this.setColoredName(newName);
         } else {
-            this.setColoredName(PlayerUtils.nexuizColorsToHtml(PlayerUtils.sanitizeName(newName)));
+            this.setColoredName(util.nexuizColorsToHtml(util.sanitizeName(newName)));
         }
         this.name = plainName;
     }
@@ -63,7 +64,7 @@ public class Player {
      * 
      * @param score
      */
-    public void setScore(String score) {
+    public void setScore(final String score) {
         this.score = Integer.parseInt(score);
     }
 
@@ -79,7 +80,7 @@ public class Player {
      * 
      * @param ping
      */
-    public void setPing(String ping) {
+    public void setPing(final String ping) {
         this.ping = Integer.parseInt(ping);
     }
 
@@ -106,7 +107,7 @@ public class Player {
     /**
      * @param coloredName the coloredName to set
      */
-    public void setColoredName(String coloredName) {
+    public void setColoredName(final String coloredName) {
         this.coloredName = coloredName;
     }
 }

@@ -1,7 +1,10 @@
-package tortilla.nexuiz;
+package tortilla.nexuiz.tablemodel;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
+import tortilla.nexuiz.Server;
 
 /**
  * Models a table displaying Nexuiz servers.
@@ -17,24 +20,25 @@ public class ServerTableModel extends AbstractTableModel {
     public static final int MAP = 4;
     public static final int TYPE = 5;
     private static final String[] COLUMN_NAMES = {"Ping", "Server", "Players", "Max", "Map", "Type"};
-    private Vector<Server> dataVector = null;
+    private List<Server> dataVector = null;
 
     public ServerTableModel() {
-        dataVector = new Vector<Server>();
+        super();
+        dataVector = Collections.synchronizedList(new ArrayList<Server>());
     }
 
     @Override
-    public String getColumnName(int column) {
+    public String getColumnName(final int column) {
         return COLUMN_NAMES[column];
     }
 
     @Override
-    public boolean isCellEditable(int row, int column) {
+    public boolean isCellEditable(final int row, final int column) {
         return false;
     }
 
     @Override
-    public Class getColumnClass(int column) {
+    public Class getColumnClass(final int column) {
         switch (column) {
             case PING:
             case PLAYERS:
@@ -46,8 +50,8 @@ public class ServerTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Object getValueAt(int row, int column) {
-        Server server = getDataVector().get(row);
+    public Object getValueAt(final int row, final int column) {
+        final Server server = getDataVector().get(row);
         switch (column) {
             case PING:
                 return server.getPing();
@@ -67,8 +71,8 @@ public class ServerTableModel extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt(Object value, int row, int column) {
-        Server server = getDataVector().get(row);
+    public void setValueAt(final Object value, final int row, final int column) {
+        final Server server = getDataVector().get(row);
         switch (column) {
             case PING:
                 server.setPing((Integer) value);
@@ -107,7 +111,18 @@ public class ServerTableModel extends AbstractTableModel {
     /**
      * @return the dataVector
      */
-    public Vector<Server> getDataVector() {
+    public List<Server> getDataVector() {
         return dataVector;
+    }
+
+    /**
+     * Clear the datavector and update table rows
+     */
+    public void clear() {
+        if (!dataVector.isEmpty()) {
+            int size = dataVector.size();  // Cache value since data being deleted.
+            dataVector.clear();
+            fireTableRowsDeleted(0, size - 1);
+        }
     }
 }

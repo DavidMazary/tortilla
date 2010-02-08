@@ -3,28 +3,16 @@
  */
 package tortilla;
 
-import tortilla.nexuiz.Player;
-import tortilla.nexuiz.query.ServerQuery;
-import tortilla.nexuiz.query.MasterQuery;
-import tortilla.nexuiz.Server;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -36,9 +24,17 @@ import javax.swing.table.TableCellRenderer;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.Task;
-import tortilla.nexuiz.ServerTableModel;
+import tortilla.nexuiz.favorites.FavoritesDialog;
+import tortilla.nexuiz.GameUtils;
+import tortilla.nexuiz.Player;
+import tortilla.nexuiz.Server;
+import tortilla.nexuiz.tablemodel.ServerTableModel;
+import tortilla.nexuiz.query.MasterQuery;
+import tortilla.nexuiz.query.ServerQuery;
+import tortilla.swing.StoredJCheckBoxMenuItem;
+import tortilla.swing.StoredJComboBox;
+import tortilla.swing.StoredJToggleButton;
 
 /**
  * The application's main frame.
@@ -49,7 +45,7 @@ public class TortillaView extends FrameView {
      * Create a new TortillaView using given SingleFrameApplication.
      * @param app Application calling TortillaView
      */
-    public TortillaView(SingleFrameApplication app) {
+    public TortillaView(final SingleFrameApplication app) {
         super(app);
 
         initComponents();
@@ -63,7 +59,7 @@ public class TortillaView extends FrameView {
     @Action
     public void showAboutBox() {
         if (aboutBox == null) {
-            JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
+            final JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
             aboutBox = new TortillaAboutBox(mainFrame);
             aboutBox.setLocationRelativeTo(mainFrame);
         }
@@ -80,63 +76,9 @@ public class TortillaView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         tableScrollPane = new javax.swing.JScrollPane();
-        serverTable = new javax.swing.JTable() {
-
-            public String getToolTipText(MouseEvent e) {
-                int nameColumn = ServerTableModel.HOSTNAME;
-                int selectedRow = rowAtPoint(e.getPoint());
-                StringBuilder playerList = new StringBuilder("");
-                if (!getModel().getColumnName(nameColumn).equals("Server")) {
-                    for (int i = 0; i < tableModel.getColumnCount(); i++) {
-                        if (tableModel.getColumnName(i).equals("Server")) {
-                            nameColumn = i;
-                            break;
-                        }
-                    }
-                }
-                String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
-                for (Server server : tableModel.getDataVector()) {
-                    if (server.getHostname().equals(selectedServer)) {
-                        if (server.getPlayerCount() > 0) {
-                            playerList.append("<html><b>" + server.getHostname() + "</b><br/>");
-                            for (Player player : server.getPlayerList()) {
-                                playerList.append(player.getColoredName() + "<br/>");
-                            }
-                            playerList.append("</html>");
-                        } else {
-                            return null;
-                        }
-                        break;
-                    }
-                }
-                return playerList.toString();
-            }
-
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                Component component = super.prepareRenderer(renderer, row, column);
-                if (!component.getBackground().equals(getSelectionBackground())) {
-                    int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);
-                    if (playerCount > 0) {
-                        if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {
-                            component.setForeground(new Color(164,0,0));
-                        } else {
-                            component.setForeground(Color.black);
-                        }
-                    } else {
-                        component.setForeground(Color.gray);
-                    }
-                    if ((row % 2) == 0) {
-                        component.setBackground(new Color(241,245,250));
-                    } else {
-                        component.setBackground(Color.white);
-                    }
-                }
-                return component;
-            }
-        };
         filterPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
-        favoriteServersToggleButton = new StoredJToggleButton();
+        favoritesToggleButton = new StoredJToggleButton();
         showHighPingToggle = new StoredJToggleButton();
         showFullToggle = new StoredJToggleButton();
         showEmptyToggle = new StoredJToggleButton();
@@ -162,8 +104,8 @@ public class TortillaView extends FrameView {
         tableScrollPane.setName("tableScrollPane"); // NOI18N
 
         serverTable.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+            public void mouseClicked(final MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
                     connect();
                 }
             }
@@ -190,15 +132,15 @@ public class TortillaView extends FrameView {
         });
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(tortilla.TortillaApp.class).getContext().getActionMap(TortillaView.class, this);
-        favoriteServersToggleButton.setAction(actionMap.get("filter")); // NOI18N
-        favoriteServersToggleButton.setIcon(resourceMap.getIcon("favoriteServersToggleButton.icon")); // NOI18N
-        favoriteServersToggleButton.setText(resourceMap.getString("favoriteServersToggleButton.text")); // NOI18N
-        favoriteServersToggleButton.setToolTipText(resourceMap.getString("favoriteServersToggleButton.toolTipText")); // NOI18N
-        favoriteServersToggleButton.setBorderPainted(false);
-        favoriteServersToggleButton.setMaximumSize(new java.awt.Dimension(24, 24));
-        favoriteServersToggleButton.setMinimumSize(new java.awt.Dimension(24, 24));
-        favoriteServersToggleButton.setName("favoriteServersToggleButton"); // NOI18N
-        favoriteServersToggleButton.setPreferredSize(new java.awt.Dimension(24, 24));
+        favoritesToggleButton.setAction(actionMap.get("filter")); // NOI18N
+        favoritesToggleButton.setIcon(resourceMap.getIcon("favoritesToggleButton.icon")); // NOI18N
+        favoritesToggleButton.setText(resourceMap.getString("favoritesToggleButton.text")); // NOI18N
+        favoritesToggleButton.setToolTipText(resourceMap.getString("favoritesToggleButton.toolTipText")); // NOI18N
+        favoritesToggleButton.setBorderPainted(false);
+        favoritesToggleButton.setMaximumSize(new java.awt.Dimension(24, 24));
+        favoritesToggleButton.setMinimumSize(new java.awt.Dimension(24, 24));
+        favoritesToggleButton.setName("favoritesToggleButton"); // NOI18N
+        favoritesToggleButton.setPreferredSize(new java.awt.Dimension(24, 24));
 
         showHighPingToggle.setAction(actionMap.get("filter")); // NOI18N
         showHighPingToggle.setText(resourceMap.getString("showHighPingToggle.text")); // NOI18N
@@ -245,7 +187,7 @@ public class TortillaView extends FrameView {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(showHighPingToggle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
-                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(favoritesToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -257,7 +199,7 @@ public class TortillaView extends FrameView {
                 .addComponent(showFullToggle)
                 .addComponent(showHighPingToggle))
             .addGroup(filterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(favoriteServersToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(favoritesToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -358,10 +300,14 @@ public class TortillaView extends FrameView {
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
         controlMenu.add(aboutMenuItem);
 
-        helpMenuItem.setAction(actionMap.get("launchHelpPage")); // NOI18N
         helpMenuItem.setText(resourceMap.getString("helpMenuItem.text")); // NOI18N
         helpMenuItem.setToolTipText(null);
         helpMenuItem.setName("helpMenuItem"); // NOI18N
+        helpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuItemActionPerformed(evt);
+            }
+        });
         controlMenu.add(helpMenuItem);
 
         jSeparator2.setName("jSeparator2"); // NOI18N
@@ -417,6 +363,11 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         controlMenu.show(controlButton, controlButton.getWidth() - controlMenu.getWidth(), controlButton.getHeight());
     }
 }//GEN-LAST:event_controlButtonMousePressed
+
+private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
+    util.launchHelpPage();
+}//GEN-LAST:event_helpMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
@@ -424,7 +375,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     private javax.swing.JToggleButton controlButton;
     private javax.swing.JPopupMenu controlMenu;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JToggleButton favoriteServersToggleButton;
+    private javax.swing.JToggleButton favoritesToggleButton;
     private javax.swing.JCheckBoxMenuItem filterBarCheckBox;
     private javax.swing.JPanel filterPanel;
     private javax.swing.JComboBox gameTypeComboBox;
@@ -436,97 +387,104 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     private javax.swing.JCheckBoxMenuItem sdlCheckBox;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JToolBar.Separator separator;
-    private javax.swing.JTable serverTable;
+    private final javax.swing.JTable serverTable = new javax.swing.JTable() {
+
+        public String getToolTipText(final MouseEvent evt) {
+            int nameColumn = ServerTableModel.HOSTNAME;
+            final int selectedRow = rowAtPoint(evt.getPoint());
+            final StringBuilder playerList = new StringBuilder();
+            if (!getModel().getColumnName(nameColumn).equals("Server")) {
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    if (tableModel.getColumnName(i).equals("Server")) {
+                        nameColumn = i;
+                        break;
+                    }
+                }
+            }
+            final String selectedServer = this.getModel().getValueAt(convertRowIndexToModel(selectedRow), nameColumn).toString();
+            for (Server server : tableModel.getDataVector()) {
+                if (server.getHostname().equals(selectedServer)) {
+                    if (server.getPlayerCount() > 0) {
+                        playerList.append("<html><b>" + server.getHostname() + "</b><br/>");
+                        for (Player player : server.getPlayerList()) {
+                            playerList.append(player.getColoredName() + "<br/>");
+                        }
+                        playerList.append("</html>");
+                    } else {
+                        return null;
+                    }
+                    break;
+                }
+            }
+            return playerList.toString();
+        }
+
+        public Component prepareRenderer(final TableCellRenderer renderer, final int row, final int column) {
+            final Component component = super.prepareRenderer(renderer, row, column);
+            if (!component.getBackground().equals(getSelectionBackground())) {
+                final int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);
+                if (playerCount > 0) {
+                    if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {
+                        component.setForeground(BRICK);
+                    } else {
+                        component.setForeground(Color.black);
+                    }
+                } else {
+                    component.setForeground(Color.gray);
+                }
+                if ((row % 2) == 0) {
+                    component.setBackground(LT_BLUE);
+                } else {
+                    component.setBackground(Color.white);
+                }
+            }
+            return component;
+        }
+    };
     private javax.swing.JToggleButton showEmptyToggle;
     private javax.swing.JToggleButton showFullToggle;
     private javax.swing.JToggleButton showHighPingToggle;
     private javax.swing.JScrollPane tableScrollPane;
     private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables
-    private JDialog aboutBox;
-    private FavoriteServerDialog addPrivateServerBox;
-    private MasterQuery queryM = new MasterQuery();
-    private ServerTableModel tableModel = new ServerTableModel();
-    private ArrayList<String> serverList;
-    private ArrayList<String> favoriteServerList;
-    private Vector<Server> serverVector;
+    private transient JDialog aboutBox;
+    private transient FavoritesDialog favoriteDialog;
+    private transient final MasterQuery queryM = MasterQuery.getInstance();
+    private transient final ServerQuery queryS = ServerQuery.getInstance();
+    private transient final GameUtils util = GameUtils.getInstance();
+    private transient final ServerTableModel tableModel = new ServerTableModel();
+    private transient List<String> serverList;
+    private transient List<String> favoritesList;
+    private transient List<Server> serverVector;
     private static final int HIGH_PING = 200;
-    private static final String CONNECT = " +connect ";
-    private String operatingSystem = null;
-    private Vector<SortKey> sortOrder = new Vector<SortKey>(6);
-    private int serverCount;
+    private transient final List<SortKey> sortOrder = Collections.synchronizedList(new ArrayList<SortKey>(6));
+    private transient int serverCount;
+    private static final Color LT_BLUE = new Color(241, 245, 250);
+    private static final Color BRICK = new Color(164, 0, 0);
 
     protected javax.swing.JPopupMenu getPopupMenu() {
         return controlMenu;
     }
 
-    /**
-     * JCheckBoxMenuItem which is able to have its state saved automatically.
-     */
-    @SuppressWarnings("serial")
-    class StoredJCheckBoxMenuItem extends javax.swing.JCheckBoxMenuItem implements SessionStorage.Property {
-
-        @Override
-        public Object getSessionState(Component c) {
-            return getState();
-        }
-
-        @Override
-        public void setSessionState(Component c, Object state) {
-            this.setState((Boolean) state);
-            filterPanel.setVisible(filterBarCheckBox.getState());
-        }
-    }
-
-    /**
-     * JComboBox which is able to have its state saved automatically.
-     */
-    @SuppressWarnings("serial")
-    static class StoredJComboBox extends javax.swing.JComboBox implements SessionStorage.Property {
-
-        @Override
-        public Object getSessionState(Component c) {
-            return getSelectedIndex();
-        }
-
-        @Override
-        public void setSessionState(Component c, Object state) {
-            this.setSelectedIndex((Integer) state);
-        }
-    }
-
-    /**
-     * JToggleButton which is able to have its state saved automatically.
-     */
-    @SuppressWarnings("serial")
-    static class StoredJToggleButton extends javax.swing.JToggleButton implements SessionStorage.Property {
-
-        @Override
-        public Object getSessionState(Component c) {
-            return isSelected();
-        }
-
-        @Override
-        public void setSessionState(Component c, Object state) {
-            this.setSelected((Boolean) state);
-        }
+    protected void restoreFilterBar() {
+        filterPanel.setVisible(filterBarCheckBox.getState());
     }
 
     /**
      * Adds a row to the table if the application state allows it.
      */
-    private synchronized void addRowToModel(Server server) {
+    private void addRowToModel(final Server server) {
         boolean canAddRow = true;
         // Filter by the preferences
         if ((!showEmptyToggle.isSelected() && (server.getPlayerCount() == 0))
                 || (!showFullToggle.isSelected() && (server.getPlayerCount() == server.getMaxPlayers()))
                 || (!showHighPingToggle.isSelected() && (server.getPing() > HIGH_PING))
-                || (favoriteServersToggleButton.isSelected() && !server.isFavorite())
+                || (favoritesToggleButton.isSelected() && !server.isFavorite())
                 || ((gameTypeComboBox.getSelectedIndex() != 0)
                 && !((String) gameTypeComboBox.getSelectedItem()).equals(server.getType()))) {
             canAddRow = false;
         } else if (!searchTextField.getText().isEmpty()) {  // Filter by the search term
-            String query = searchTextField.getText().toLowerCase();
+            final String query = searchTextField.getText().toLowerCase();
             canAddRow = false;
             if (server.getHostname().toLowerCase().contains(query)
                     || server.getMap().toLowerCase().contains(query)
@@ -551,22 +509,11 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
     }
 
     /**
-     * Deletes data from server table's model and updates rows.
-     */
-    private void clearTable() {
-        if (!tableModel.getDataVector().isEmpty()) {
-            int dataSize = tableModel.getDataVector().size();
-            tableModel.getDataVector().clear();
-            tableModel.fireTableRowsDeleted(0, dataSize - 1);
-        }
-    }
-
-    /**
      * Clears table, then re-evaluates which rows may be added.
      */
     private void refreshTable() {
         // TODO: Save and restore selected row
-        clearTable();
+        tableModel.clear();
         for (Server server : serverVector) {
             addRowToModel(server);
         }
@@ -585,61 +532,63 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 
     private class RefreshTask extends org.jdesktop.application.Task<Object, Void> {
 
-        RefreshTask(org.jdesktop.application.Application app) {
+        RefreshTask(final org.jdesktop.application.Application app) {
             super(app);
             refreshButton.setEnabled(false);
         }
 
         @Override
         protected Object doInBackground() {
-            loadFavoriteServers();
+            favoritesList = util.loadFavorites();
             serverList = queryM.getServerList();
-            if (serverList != null) {
+            if (serverList == null) {
+                serverCount = 0;
+            } else {
                 serverCount = serverList.size();
-                if (favoriteServerList != null) {
-                    for (String address : favoriteServerList) {
+                if (favoritesList != null) {
+                    for (String address : favoritesList) {
                         if (serverList.contains(address)) {
                             serverList.remove(address);
                         }
                     }
-                    serverCount += favoriteServerList.size();
+                    serverCount += favoritesList.size();
                 }
-            } else {
-                serverCount = 0;
             }
             return null;
         }
 
         @Override
-        protected void succeeded(Object result) {
+        protected void succeeded(final Object result) {
             if (serverCount > 0) {
-                clearTable();
-                serverVector = new Vector<Server>(serverCount);
+                tableModel.clear();
+                serverVector = Collections.synchronizedList(new ArrayList<Server>(serverCount));
 
                 class ServerQueryRunner implements Runnable {
 
-                    String address;
-                    boolean favorite;
+                    private transient String address;
+                    private transient boolean favorite;
 
-                    public ServerQueryRunner(String ip, boolean fav) {
-                        address = ip;
+                    public ServerQueryRunner(final String addr, final boolean fav) {
+                        address = addr;
                         favorite = fav;
                     }
 
                     @Override
                     public void run() {
-                        Server server = new ServerQuery().getStatus(address);
+                        final Server server = queryS.getStatus(address);
                         if (server != null) {
                             server.setFavorite(favorite);
                             serverVector.add(server);
-                            addRowToModel(server);
+                            synchronized (this) {
+                                addRowToModel(server);
+                            }
                         }
                     }
                 }
 
-                ExecutorService pool = Executors.newFixedThreadPool(serverCount);
-                if (favoriteServerList != null) {
-                    for (final String ip : favoriteServerList) {
+                final ExecutorService pool = Executors.newFixedThreadPool(serverCount);
+                if (favoritesList != null) {
+                    for (final String ip : favoritesList) {
                         pool.execute(new ServerQueryRunner(ip, true));
                     }
                 }
@@ -657,6 +606,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      */
     @Action
     public void viewServer() {
+        // TODO: Implement viewing server details
     }
 
     /**
@@ -664,10 +614,10 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
      */
     @Action
     public void connect() {
-        int selectedRow = serverTable.getSelectedRow();
+        final int selectedRow = serverTable.getSelectedRow();
 
-        if (selectedRow != -1) {
-            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
+        if (selectedRow > -1) {
+            final String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
             String selectedIp = null;
             for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
@@ -675,48 +625,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
                     break;
                 }
             }
-
-            File game = null;
-            String cmd = null;
-            if (operatingSystem == null) {
-                operatingSystem = System.getProperty("os.name");
-            }
-            String userDir = System.getProperty("user.dir");
-
-            if (operatingSystem.contains("Windows")) {
-                if (sdlCheckBox.getState()) {
-                    game = new File(userDir + "\\nexuiz-sdl.exe");
-                } else {
-                    game = new File(userDir + "\\nexuiz.exe");
-                }
-                cmd = game.toString() + " -basedir " + userDir + CONNECT + selectedIp;
-            } else if (operatingSystem.contains("Linux") || operatingSystem.contains("SunOS") || operatingSystem.contains("FreeBSD")) {
-                if (sdlCheckBox.getState()) {
-                    game = new File(userDir + "/nexuiz-linux-sdl.sh");
-                } else {
-                    game = new File(userDir + "/nexuiz-linux-glx.sh");
-                }
-                cmd = game.toString() + CONNECT + selectedIp;
-            } else if (operatingSystem.contains("Mac")) {
-                if (sdlCheckBox.getState()) {
-                    game = new File(userDir + "/Nexuiz-SDL.app");
-                } else {
-                    game = new File(userDir + "/Nexuiz.app");
-                }
-                cmd = game.toString() + CONNECT + selectedIp;
-            } else {
-                JOptionPane.showMessageDialog(new Frame(), "OS not supported.");
-            }
-
-            if (cmd != null && game != null && game.exists()) {
-                try {
-                    Runtime.getRuntime().exec(cmd);
-                } catch (Exception ex) {
-                    Logger.getLogger(TortillaView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                JOptionPane.showMessageDialog(new Frame(), "Tried to launch game at " + game.toString());
-            }
+            util.launchGame(selectedIp, sdlCheckBox.getState());
         } else if (serverVector == null) {  //TODO: Remove these and disable buttons when invalid
             JOptionPane.showMessageDialog(new Frame(), "Please update the server list");
         } else {
@@ -726,11 +635,11 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 
     @Action
     public void launchFavoriteServerDialog() {
-        int selectedRow = serverTable.getSelectedRow();
+        final int selectedRow = serverTable.getSelectedRow();
         String selectedIp = null;
 
-        if (selectedRow != -1) {
-            String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
+        if (selectedRow > -1) {
+            final String selectedServer = tableModel.getValueAt(serverTable.convertRowIndexToModel(selectedRow), ServerTableModel.HOSTNAME).toString();
             for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     selectedIp = server.getIp();
@@ -738,16 +647,16 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
                 }
             }
         }
-        if (addPrivateServerBox == null) {
-            JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
-            addPrivateServerBox = new FavoriteServerDialog(mainFrame, false);
-            addPrivateServerBox.setLocationRelativeTo(this.getFrame());
-            addPrivateServerBox.setTitle("Favorite");
+        if (favoriteDialog == null) {
+            final JFrame mainFrame = TortillaApp.getApplication().getMainFrame();
+            favoriteDialog = new FavoritesDialog(mainFrame, false);
+            favoriteDialog.setLocationRelativeTo(this.getFrame());
+            favoriteDialog.setTitle("Favorite");
         }
         if (selectedIp != null) {
-            addPrivateServerBox.setAddressField(selectedIp);
+            favoriteDialog.setAddressField(selectedIp);
         }
-        TortillaApp.getApplication().show(addPrivateServerBox);
+        TortillaApp.getApplication().show(favoriteDialog);
     }
 
     @Action
@@ -755,59 +664,5 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
         if (serverCount > 0) {
             refreshTable();
         }
-    }
-
-    /**
-     * Reads in config.cfg for favorite servers.
-     */
-    private void loadFavoriteServers() {
-        if (operatingSystem == null) {
-            operatingSystem = System.getProperty("os.name");
-        }
-
-        try {
-            Scanner scanner;
-            if (operatingSystem.contains("Windows")) {
-                scanner = new Scanner(new File(System.getProperty("user.dir") + "\\data\\config.cfg"));
-            } else {
-                scanner = new Scanner(new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg"));
-            }
-            String line = null;
-            while (scanner.hasNextLine()) {
-                line = scanner.nextLine();
-                if (line.contains("net_slist_favorites")) {
-                    scanner = new Scanner(line.replaceAll("[\"]", ""));
-                    scanner.next();
-                    favoriteServerList = new ArrayList<String>();
-                    while (scanner.hasNext()) {
-                        favoriteServerList.add(scanner.next());
-                    }
-                    break;
-                }
-            }
-
-        } catch (FileNotFoundException ex) {
-        }
-    }
-
-    @Action
-    public void launchHelpPage() {
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla"));
-                } catch (IOException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (URISyntaxException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
-    @Action
-    public void toggleFilterPanel() {
-        filterPanel.setVisible(filterBarCheckBox.getState());
     }
 }

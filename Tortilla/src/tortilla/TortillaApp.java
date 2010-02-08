@@ -15,7 +15,7 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class TortillaApp extends SingleFrameApplication {
 
-    TortillaView tortillaView;
+    private transient TortillaView tortillaView;
     private static final String SESSION_FILE = "session.xml";
 
     /**
@@ -27,6 +27,7 @@ public class TortillaApp extends SingleFrameApplication {
         try {
             getContext().getSessionStorage().restore(tortillaView.getComponent(), SESSION_FILE);
             getContext().getSessionStorage().restore(tortillaView.getPopupMenu(), "menu." + SESSION_FILE);
+            tortillaView.restoreFilterBar();
         } catch (IOException ex) {
             Logger.getLogger(TortillaApp.class.getName()).log(Level.WARNING, "Couldn't restore session", ex);
         }
@@ -55,7 +56,7 @@ public class TortillaApp extends SingleFrameApplication {
      * Main method launching the application.
      * @param args 
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(TortillaApp.class, args);
     }
 }

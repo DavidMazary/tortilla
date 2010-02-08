@@ -2,6 +2,7 @@ package tortilla.nexuiz.query;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,23 +21,46 @@ public class MasterQuery extends AbstractQuery {
     private static final String[] MASTER_ADDRESSES = {"ghdigital.com", "dpmaster.deathmask.net", "dpmaster.tchr.no"};
 
     /**
+     * Singleton
+     */
+    private MasterQuery() {
+        super();
+    }
+
+    private static class SingletonHolder {
+
+        private static final MasterQuery INSTANCE = new MasterQuery();
+    }
+
+    public static MasterQuery getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    /**
      * Retreives and saves the list of servers from the master server.
      * Note that servers containing the "\\" delimiter in their byte string
      * are probable.
      * @return An ArrayList of server query results
      */
-    public ArrayList<String> getServerList() {
-        ArrayList<String> serverList = null;
+    public static List<String> getServerList() {
+        List<String> serverList = null;
         String queryResult = null;
 
-        long queryStartTime = System.currentTimeMillis();
+        final long queryStartTime = System.currentTimeMillis();
         int queryTries = 0;
         while ((queryResult == null) && (queryTries < RETRIES)) {
             queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
             queryTries++;
         }
 
-        if (queryResult != null) {
+        if (queryResult == null) {
+           // Notify the user since there may be a problem with their connection.
+            if ((System.currentTimeMillis() - queryStartTime) < 2000) {
+                JOptionPane.showMessageDialog(null, "Could not reach master server");
+            } else {
+                JOptionPane.showMessageDialog(null, "No reply from master server");
+            }
+        } else {
             serverList = new ArrayList<String>();
             int index = MESSAGE_START;
             String byteAddress;
@@ -47,14 +71,6 @@ public class MasterQuery extends AbstractQuery {
                 serverList.add(getAddressFromBytes(byteAddress));
                 index += OFFSET;
             }
-        } else {
-            // Notify the user since there may be a problem with their connection.
-            long queryTime = (System.currentTimeMillis() - queryStartTime);
-            if (queryTime < 2000) {
-                JOptionPane.showMessageDialog(null, "Could not reach master server");
-            } else {
-                JOptionPane.showMessageDialog(null, "No reply from master server");
-            }
         }
         return serverList;
     }
@@ -63,7 +79,7 @@ public class MasterQuery extends AbstractQuery {
      * Choose a random master server to query, for load-balancing.
      * @return address of master server.
      */
-    private String getMasterAddress() {
+    private static String getMasterAddress() {
         return MASTER_ADDRESSES[new Random().nextInt(3)];
     }
 
@@ -75,15 +91,15 @@ public class MasterQuery extends AbstractQuery {
      * @param ip String containing the data.
      * @return  String with the decoded data.
      */
-    public String getAddressFromBytes(String ip) {
+    public static String getAddressFromBytes(final String ip) {
         String address = null;
 
         try {
-            byte[] bytes = ip.getBytes("ISO-8859-1");
-            int A = bytes[0] & 0xff;
-            int B = bytes[1] & 0xff;
-            int C = bytes[2] & 0xff;
-            int D = bytes[3] & 0xff;
+            final byte[] bytes = ip.getBytes("ISO-8859-1");
+            final int A = bytes[0] & 0xff;
+            final int B = bytes[1] & 0xff;
+            final int C = bytes[2] & 0xff;
+            final int D = bytes[3] & 0xff;
             int port = bytes[4] & 0xff;
             port <<= 8;
             port |= bytes[5] & 0xff;
