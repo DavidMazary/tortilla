@@ -180,18 +180,33 @@ public class GameUtils {
     }
 
     /**
-     * Connects to help page in default browser
+     * Connects to help page in default browser.
      */
     public static void launchHelpPage() {
+        launchPage("http://code.google.com/p/tortilla/wiki/UsingTortilla");
+    }
+
+    /**
+     * Connects to home page in default browser.
+     */
+    public static void launchHomePage() {
+        launchPage("http://code.google.com/p/tortilla/");
+    }
+
+    /**
+     * Connects to URI in default browser.
+     * @param URI to browse to
+     */
+    private static void launchPage(final String URI) {
         if (Desktop.isDesktopSupported()) {
             final Desktop desktop = Desktop.getDesktop();
             if (desktop.isSupported(Desktop.Action.BROWSE)) {
                 try {
-                    desktop.browse(new URI("http://code.google.com/p/tortilla/wiki/UsingTortilla"));
+                    desktop.browse(new URI(URI));
                 } catch (IOException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GameUtils.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (URISyntaxException ex) {
-                    Logger.getLogger(TortillaAboutBox.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GameUtils.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

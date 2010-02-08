@@ -3,17 +3,13 @@
  */
 package tortilla;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdesktop.application.Action;
+import tortilla.nexuiz.GameUtils;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
 
     private static final long serialVersionUID = -2068487999261265325L;
+    private transient GameUtils util = GameUtils.getInstance();
 
     /**
      * Creates new About Box.
@@ -156,20 +152,7 @@ public class TortillaAboutBox extends javax.swing.JDialog {
      * @param evt Mouse event which will trigger this action.
      */
 private void appHomepageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appHomepageLabelMouseClicked
-    if (Desktop.isDesktopSupported()) {
-        final Desktop desktop = Desktop.getDesktop();
-        if (desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(new URI("http://code.google.com/p/tortilla/"));
-            } catch (IOException ex) {
-                Logger.getLogger(TortillaAboutBox.class.getName()).
-                        log(Level.SEVERE, null, ex);
-            } catch (URISyntaxException ex) {
-                Logger.getLogger(TortillaAboutBox.class.getName()).
-                        log(Level.SEVERE, null, ex);
-            }
-        }
-    }
+    util.launchHomePage();
 }//GEN-LAST:event_appHomepageLabelMouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
