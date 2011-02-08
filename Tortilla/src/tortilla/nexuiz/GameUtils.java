@@ -2,11 +2,13 @@ package tortilla.nexuiz;
 
 import java.awt.Desktop;
 import java.awt.Frame;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import tortilla.TortillaAboutBox;
 import tortilla.TortillaView;
 
 /**
@@ -38,7 +39,7 @@ public class GameUtils {
     public static GameUtils getInstance() {
         return SingletonHolder.INSTANCE;
     }
-    private static final String CONNECT_FLAG = "+connect";
+    private static final String CONNECT_FLAG = " +connect";
     private static final String OS_NAME = System.getProperty("os.name");
     private static final String USER_DIR = System.getProperty("user.dir");
 
@@ -73,16 +74,22 @@ public class GameUtils {
             cmd = USER_DIR + gamePath + CONNECT_FLAG + address;
         } else {
             JOptionPane.showMessageDialog(new Frame(), "OS not supported.");
+            return;
         }
 
-        if (cmd != null && gamePath != null && (new File(gamePath)).exists()) {
+        if (cmd != null && (new File(USER_DIR + gamePath)).exists()) {
             try {
-                Runtime.getRuntime().exec(cmd);
+                Process process = Runtime.getRuntime().exec(cmd);
+                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while((line = in.readLine()) != null) {
+                    System.out.println(line);
+                }
             } catch (Exception ex) {
                 Logger.getLogger(TortillaView.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (gamePath != null) {
-            JOptionPane.showMessageDialog(new Frame(), "Tried to launch game at " + gamePath);
+            JOptionPane.showMessageDialog(new Frame(), "Tried to launch game at " + cmd);
         }
     }
 
