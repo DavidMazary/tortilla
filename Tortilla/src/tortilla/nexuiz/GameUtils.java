@@ -39,7 +39,7 @@ public class GameUtils {
     public static GameUtils getInstance() {
         return SingletonHolder.INSTANCE;
     }
-    private static final String CONNECT_FLAG = " +connect";
+    private static final String CONNECT_FLAG = " +connect ";
     private static final String OS_NAME = System.getProperty("os.name");
     private static final String USER_DIR = System.getProperty("user.dir");
 
