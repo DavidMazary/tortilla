@@ -1,13 +1,13 @@
-package tortilla.nexuiz.tablemodel;
+package tortilla.xonotic.tablemodel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
-import tortilla.nexuiz.Server;
+import tortilla.xonotic.Server;
 
 /**
- * Models a table displaying Nexuiz servers.
+ * Models a table displaying xonotic servers.
  * @author dmaz
  */
 @SuppressWarnings("serial")

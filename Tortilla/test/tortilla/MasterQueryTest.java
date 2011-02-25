@@ -1,6 +1,6 @@
 package tortilla;
 
-import tortilla.nexuiz.query.MasterQuery;
+import tortilla.xonotic.query.MasterQuery;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

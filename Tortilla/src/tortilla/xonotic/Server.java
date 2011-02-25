@@ -1,9 +1,9 @@
-package tortilla.nexuiz;
+package tortilla.xonotic;
 
 import java.util.List;
 
 /**
- * A Nexuiz server object.
+ * A xonotic server object.
  * For each server show ping, hostname, mapname, playercount, ip.
  * Later, this class will also store if a server is a favorite or is timed-out.
  * @author dmaz

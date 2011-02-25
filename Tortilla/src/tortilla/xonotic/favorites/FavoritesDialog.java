@@ -3,10 +3,10 @@
  *
  * Created on May 26, 2008, 6:03 PM
  */
-package tortilla.nexuiz.favorites;
+package tortilla.xonotic.favorites;
 
 import org.jdesktop.application.Action;
-import tortilla.nexuiz.GameUtils;
+import tortilla.xonotic.GameUtils;
 
 /**
  *

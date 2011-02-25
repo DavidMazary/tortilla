@@ -1,4 +1,4 @@
-package tortilla.nexuiz.query;
+package tortilla.xonotic.query;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

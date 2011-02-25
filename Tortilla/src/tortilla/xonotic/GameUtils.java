@@ -1,4 +1,4 @@
-package tortilla.nexuiz;
+package tortilla.xonotic;
 
 import java.awt.Desktop;
 import java.awt.Frame;
@@ -44,7 +44,7 @@ public class GameUtils {
     private static final String USER_DIR = System.getProperty("user.dir");
 
     /**
-     * Launches Nexuiz.
+     * Launches xonotic.
      * @param address to connect to
      * @param useSdl or not
      */
@@ -53,23 +53,23 @@ public class GameUtils {
         String cmd = null;
         if (OS_NAME.contains("Windows")) {
             if (useSdl) {
-                gamePath = "\\nexuiz-sdl.exe";
+                gamePath = "\\xonotic-sdl.exe";
             } else {
-                gamePath = "\\nexuiz.exe";
+                gamePath = "\\xonotic.exe";
             }
             cmd = USER_DIR + gamePath + " -basedir " + USER_DIR + CONNECT_FLAG + address;
         } else if (OS_NAME.contains("Linux")) {
             if (useSdl) {
-                gamePath = "/nexuiz-linux-sdl.sh";
+                gamePath = "/xonotic-linux-sdl.sh";
             } else {
-                gamePath = "/nexuiz-linux-glx.sh";
+                gamePath = "/xonotic-linux-glx.sh";
             }
             cmd = USER_DIR + gamePath + CONNECT_FLAG + address;
         } else if (OS_NAME.contains("Mac")) {
             if (useSdl) {
-                gamePath = "/Nexuiz-SDL.app";
+                gamePath = "/xonotic-SDL.app";
             } else {
-                gamePath = "/Nexuiz.app";
+                gamePath = "/xonotic.app";
             }
             cmd = USER_DIR + gamePath + CONNECT_FLAG + address;
         } else {
@@ -104,7 +104,7 @@ public class GameUtils {
             if (OS_NAME.contains("Windows")) {
                 configPath = System.getProperty("user.dir") + "\\data\\config.cfg";
             } else {
-                configPath = System.getProperty("user.home") + "/.nexuiz/data/config.cfg";
+                configPath = System.getProperty("user.home") + "/.xonotic/data/config.cfg";
             }
             Scanner scanner = new Scanner(new File(configPath));
             String line;
@@ -136,7 +136,7 @@ public class GameUtils {
             if (operatingSystem.contains("Windows")) {
                 configFile = new File(System.getProperty("user.dir") + "\\data\\config.cfg");
             } else {
-                configFile = new File(System.getProperty("user.home") + "/.nexuiz/data/config.cfg");
+                configFile = new File(System.getProperty("user.home") + "/.xonotic/data/config.cfg");
             }
             final Scanner scanner = new Scanner(configFile);
             while (scanner.hasNextLine()) {
