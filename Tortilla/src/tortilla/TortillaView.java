@@ -365,7 +365,7 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 }//GEN-LAST:event_controlButtonMousePressed
 
 private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
-    util.launchHelpPage();
+    GameUtils.launchHelpPage();
 }//GEN-LAST:event_helpMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -449,9 +449,6 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     // End of variables declaration//GEN-END:variables
     private transient JDialog aboutBox;
     private transient FavoritesDialog favoriteDialog;
-    private transient final MasterQuery queryM = MasterQuery.getInstance();
-    private transient final ServerQuery queryS = ServerQuery.getInstance();
-    private transient final GameUtils util = GameUtils.getInstance();
     private transient final ServerTableModel tableModel = new ServerTableModel();
     private transient List<String> serverList;
     private transient List<String> favoritesList;
@@ -539,8 +536,8 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
         @Override
         protected Object doInBackground() {
-            favoritesList = util.loadFavorites();
-            serverList = queryM.getServerList();
+            favoritesList = GameUtils.loadFavorites();
+            serverList = MasterQuery.getServerList();
             if (serverList == null) {
                 serverCount = 0;
             } else {
@@ -575,7 +572,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
                     @Override
                     public void run() {
-                        final Server server = queryS.getStatus(address);
+                        final Server server = ServerQuery.getStatus(address);
                         if (server != null) {
                             server.setFavorite(favorite);
                             serverVector.add(server);
@@ -625,7 +622,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
                     break;
                 }
             }
-            util.launchGame(selectedIp, sdlCheckBox.getState());
+            GameUtils.launchGame(selectedIp, sdlCheckBox.getState());
         } else if (serverVector == null) {  //TODO: Remove these and disable buttons when invalid
             JOptionPane.showMessageDialog(new Frame(), "Please update the server list");
         } else {
