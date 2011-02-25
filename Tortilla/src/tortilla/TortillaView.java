@@ -576,7 +576,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
                         if (server != null) {
                             server.setFavorite(favorite);
                             serverVector.add(server);
-                            synchronized (this) {
+                            synchronized (RefreshTask.this) {
                                 addRowToModel(server);
                             }
                         }
