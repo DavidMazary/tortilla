@@ -9,10 +9,14 @@ import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -367,7 +371,6 @@ private void controlButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIR
 private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
     GameUtils.launchHelpPage();
 }//GEN-LAST:event_helpMenuItemActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
@@ -405,9 +408,9 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             for (Server server : tableModel.getDataVector()) {
                 if (server.getHostname().equals(selectedServer)) {
                     if (server.getPlayerCount() > 0) {
-                        playerList.append("<html><b>" + server.getHostname() + "</b><br/>");
+                        playerList.append("<html><b>").append(server.getHostname()).append("</b><br/>");
                         for (Player player : server.getPlayerList()) {
-                            playerList.append(player.getColoredName() + "<br/>");
+                            playerList.append(player.getColoredName()).append("<br/>");
                         }
                         playerList.append("</html>");
                     } else {
@@ -421,7 +424,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
         public Component prepareRenderer(final TableCellRenderer renderer, final int row, final int column) {
             final Component component = super.prepareRenderer(renderer, row, column);
-            if (!component.getBackground().equals(getSelectionBackground())) {
+            if (component.getBackground() != null && !component.getBackground().equals(getSelectionBackground())) {
                 final int playerCount = (Integer) getValueAt(row, ServerTableModel.PLAYERS);
                 if (playerCount > 0) {
                     if (playerCount == (Integer) getValueAt(row, ServerTableModel.MAX)) {
@@ -454,10 +457,11 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private transient List<String> favoritesList;
     private transient List<Server> serverVector;
     private static final int HIGH_PING = 200;
-    private transient final List<SortKey> sortOrder = Collections.synchronizedList(new ArrayList<SortKey>(6));
+    private transient final List<SortKey> sortOrder = new ArrayList<SortKey>(6);
     private transient int serverCount;
     private static final Color LT_BLUE = new Color(241, 245, 250);
     private static final Color BRICK = new Color(164, 0, 0);
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
 
     protected javax.swing.JPopupMenu getPopupMenu() {
         return controlMenu;
@@ -542,6 +546,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
                 serverCount = 0;
             } else {
                 serverCount = serverList.size();
+                // TODO: Replace with Set.removeAll()
                 if (favoritesList != null) {
                     for (String address : favoritesList) {
                         if (serverList.contains(address)) {
@@ -558,41 +563,46 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         protected void succeeded(final Object result) {
             if (serverCount > 0) {
                 tableModel.clear();
-                serverVector = Collections.synchronizedList(new ArrayList<Server>(serverCount));
+                serverVector = new ArrayList<Server>(serverCount);
+                List<Future<Server>> futuresList = new ArrayList();
 
-                class ServerQueryRunner implements Runnable {
+                class ServerQueryRunner implements Callable<Server> {
 
-                    private transient String address;
-                    private transient boolean favorite;
+                    private final String address;
 
-                    public ServerQueryRunner(final String addr, final boolean fav) {
-                        address = addr;
-                        favorite = fav;
+                    public ServerQueryRunner(final String addr) {
+                        this.address = addr;
                     }
 
                     @Override
-                    public void run() {
-                        final Server server = ServerQuery.getStatus(address);
-                        if (server != null) {
-                            server.setFavorite(favorite);
-                            serverVector.add(server);
-                            synchronized (RefreshTask.this) {
-                                addRowToModel(server);
-                            }
-                        }
+                    public Server call() throws Exception {
+                        return ServerQuery.getStatus(address);
                     }
                 }
 
-                final ExecutorService pool = Executors.newFixedThreadPool(serverCount);
+                Future<Server> future;
                 if (favoritesList != null) {
                     for (final String ip : favoritesList) {
-                        pool.execute(new ServerQueryRunner(ip, true));
+                        future = pool.submit(new ServerQueryRunner(ip));
+                        futuresList.add(future);
                     }
                 }
                 for (final String ip : serverList) {
-                    pool.execute(new ServerQueryRunner(ip, false));
+                    future = pool.submit(new ServerQueryRunner(ip));
+                    futuresList.add(future);
                 }
-                pool.shutdown();
+                try {
+                    Server server;
+                    for (Future<Server> fut : futuresList) {
+                        server = fut.get();
+                        if (server != null) {
+                            serverVector.add(server);
+                            addRowToModel(server);
+                        }
+                    }
+                } catch (ExecutionException ex) {
+                } catch (InterruptedException ex) {
+                }
             }
             refreshButton.setEnabled(true);
         }
