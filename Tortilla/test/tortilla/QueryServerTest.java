@@ -1,8 +1,8 @@
 package tortilla;
 
-import tortilla.nexuiz.query.ServerQuery;
-import tortilla.nexuiz.Server;
-import tortilla.nexuiz.Player;
+import tortilla.xonotic.query.ServerQuery;
+import tortilla.xonotic.Server;
+import tortilla.xonotic.Player;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -13,25 +13,18 @@ import static org.junit.Assert.*;
  */
 public class QueryServerTest {
 
-    protected transient ServerQuery queryS;
-
-    @Before
-    public void setUp() {
-        queryS = ServerQuery.getInstance();
-    }
-
     /**
      * Test if server details are correctly queried.
      */
     @Test
     public void testQueryServer() {
         System.out.println("testQueryServer");
-        Server server = queryS.getInfo("private.optimalclan.com:26001");
+        Server server = ServerQuery.getInfo("94.23.21.40:26000");
         System.out.println("Ping: " + server.getPing());
-        assertEquals("private.optimalclan.com:26001", server.getIp());
-        assertEquals(64, server.getMaxPlayers());
-        assertEquals("Nexuiz", server.getGame());
-        assertEquals("20000", server.getGameVersion());
+        assertEquals("94.23.21.40:26000", server.getIp());
+        assertEquals(16, server.getMaxPlayers());
+        assertEquals("Xonotic", server.getGame());
+        assertEquals("100", server.getGameVersion());
     }
 
     /**
@@ -41,7 +34,7 @@ public class QueryServerTest {
     @Test
     public void testQueryServerPlayers() {
         System.out.println("testQueryServerPlayers");
-        Server server = queryS.getStatus("private.optimalclan.com:26001");
+        Server server = ServerQuery.getStatus("94.23.21.40:26000");
         for (Player player : server.getPlayerList()) {
             System.out.println(player.getScore() + "\t" + player.getName());
         }

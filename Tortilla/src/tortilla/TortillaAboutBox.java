@@ -4,7 +4,7 @@
 package tortilla;
 
 import org.jdesktop.application.Action;
-import tortilla.nexuiz.GameUtils;
+import tortilla.xonotic.GameUtils;
 
 public class TortillaAboutBox extends javax.swing.JDialog {
 

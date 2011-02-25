@@ -1,4 +1,4 @@
-package tortilla.nexuiz;
+package tortilla.xonotic;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
@@ -65,11 +65,11 @@ public final class PlayerUtils {
     }
 
     /**
-     * Converts Nexuiz color codes to HTML font color tags.
-     * @param newName Nexuiz-encoded player name.
+     * Converts xonotic color codes to HTML font color tags.
+     * @param newName xonotic-encoded player name.
      * @return HTML-encoded player name.
      */
-    protected static String nexuizColorsToHtml(final String newName) {
+    protected static String xonoticColorsToHtml(final String newName) {
         String htmlName = newName;
         boolean closeTag = false;  // Indicates the need to add a close font tag
         final StringBuilder tag = new StringBuilder();

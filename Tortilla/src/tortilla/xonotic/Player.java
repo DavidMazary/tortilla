@@ -1,7 +1,7 @@
-package tortilla.nexuiz;
+package tortilla.xonotic;
 
 /**
- * A Nexuiz player object.
+ * A xonotic player object.
  * For each player in a server, show name, ping, score.
  * @author dmaz
  */
@@ -47,7 +47,7 @@ public class Player {
         if (plainName.equals(newName)) {  // Name is uncolored
             this.setColoredName(newName);
         } else {
-            this.setColoredName(util.nexuizColorsToHtml(util.sanitizeName(newName)));
+            this.setColoredName(util.xonoticColorsToHtml(util.sanitizeName(newName)));
         }
         this.name = plainName;
     }

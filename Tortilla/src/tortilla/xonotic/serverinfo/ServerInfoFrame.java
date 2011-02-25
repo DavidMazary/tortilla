@@ -4,7 +4,7 @@
  * Created on Jun 22, 2009, 6:14:47 PM
  */
 
-package tortilla.nexuiz.serverinfo;
+package tortilla.xonotic.serverinfo;
 
 import org.jdesktop.application.Action;
 

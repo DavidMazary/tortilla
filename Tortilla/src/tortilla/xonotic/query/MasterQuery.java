@@ -1,4 +1,4 @@
-package tortilla.nexuiz.query;
+package tortilla.xonotic.query;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class MasterQuery extends AbstractQuery {
 
     private static final int DPMASTER_PORT = 27950;
     private static final int MESSAGE_START = 22;
-    private static final String REQUEST = "xxxxgetservers Nexuiz 3 empty full";
+    private static final String REQUEST = "xxxxgetservers Xonotic 3 empty full";
     private static final String[] MASTER_ADDRESSES = {"ghdigital.com", "dpmaster.deathmask.net", "dpmaster.tchr.no"};
 
     /**
