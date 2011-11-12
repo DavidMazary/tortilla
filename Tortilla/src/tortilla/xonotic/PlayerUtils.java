@@ -1,8 +1,6 @@
 package tortilla.xonotic;
 
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -45,9 +43,18 @@ public final class PlayerUtils {
         'p', 'q', 'r', 's', 't', 'u', 'v', 'w',
         'x', 'y', 'z', '{', '|', '}', '~', '<'
     };
-    private static final String COLOR_TABLE[] = {
-        "black", "red", "lime", "yellow", "blue", "cyan", "magenta", "white", "DimGray", "gray"};
-    private static final String FONT_CLOSE = "</font>";
+    private static final String[] DEC_SPANS = {
+        "<span style='color:#333333'>",
+        "<span style='color:#FF9900'>",
+        "<span style='color:#33FF00'>",
+        "<span style='color:#FFFF00'>",
+        "<span style='color:#3366FF'>",
+        "<span style='color:#33FFFF'>",
+        "<span style='color:#FF3366'>",
+        "<span style='color:#FFFFFF'>",
+        "<span style='color:#999999'>",
+        "<span style='color:#666666'>"
+    };
 
     /**
      * Singleton
@@ -64,52 +71,39 @@ public final class PlayerUtils {
         return SingletonHolder.INSTANCE;
     }
 
+    private static String getDecSpan(String match) {
+        return DEC_SPANS[match.charAt(1) - '0'];
+    }
+    private static final Pattern allColors = Pattern.compile("\\^\\d|\\^x(\\p{XDigit}){3}");
+    private static final Pattern decColors = Pattern.compile("\\^(\\d)");
+    private static final Pattern hexColors = Pattern.compile("\\^x(\\p{XDigit})(\\p{XDigit})(\\p{XDigit})");
+
     /**
      * Converts xonotic color codes to HTML font color tags.
-     * @param newName xonotic-encoded player name.
-     * @return HTML-encoded player name.
+     * @param string xonotic-encoded string.
+     * @return HTML-encoded string.
      */
-    protected static String xonoticColorsToHtml(final String newName) {
-        String htmlName = newName;
-        boolean closeTag = false;  // Indicates the need to add a close font tag
-        final StringBuilder tag = new StringBuilder();
-        for (int i = 0; i < htmlName.length(); i++) {
-            if ((htmlName.charAt(i)) == '^' && (i < htmlName.length() - 1)) {
-                final char nextChar = htmlName.charAt(i + 1);
-                if (Character.isDigit(nextChar)) {
-                    tag.delete(0, tag.length());
-                    if (closeTag) {
-                        tag.append(FONT_CLOSE);
-                    } else {
-                        closeTag = true;
-                    }
-                    tag.append("<font color=\"").append(COLOR_TABLE[Character.digit(nextChar, 10)]).append("\">");
-                    htmlName = htmlName.replaceFirst("\\^\\p{Digit}", tag.toString());
-                    i++;
-                } else if (nextChar == 'x') {
-                    final String colorCode = htmlName.substring(i + 2, i + 5);
-                    if (Pattern.matches("\\p{XDigit}{3}", colorCode)) {
-                        tag.delete(0, tag.length());
-                        if (closeTag) {
-                            tag.append(FONT_CLOSE);
-                        } else {
-                            closeTag = true;
-                        }
-                        tag.append("<font color=\"").append("#").append(colorCode.charAt(0)).append(colorCode.charAt(0)).append(colorCode.charAt(1)).append(colorCode.charAt(1)).append(colorCode.charAt(2)).append(colorCode.charAt(2)).append("\">");
-                        htmlName = htmlName.replaceFirst("\\^x\\p{XDigit}{3}", tag.toString());
-                        i += 4;
-                    }
-                }
-            }
+    protected static String xonoticColorsToHtml(String string) {
+        String hexDecodedString = hexColors.matcher(string).replaceAll("<span style='color:#$1$1$2$2$3$3'>");
+        Matcher matcher = decColors.matcher(hexDecodedString);
+        StringBuffer htmlName = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(htmlName, getDecSpan(matcher.group()));
         }
-        if (closeTag) {
-            htmlName += FONT_CLOSE;
+        // No decimal colors found
+        if (htmlName.length() == 0) {
+            htmlName.append(hexDecodedString);
         }
-        return htmlName;
+        // Close span tage for each color match found
+        matcher = allColors.matcher(string);
+        while (matcher.find()) {
+            htmlName.append("</span>");
+        }
+        return htmlName.toString();
     }
 
     protected static String decolorName(final String name) {
-        return name.replaceAll("\\^(\\p{Digit}|x\\p{XDigit}{3})", "");
+        return allColors.matcher(name).replaceAll("");
     }
 
     /**
