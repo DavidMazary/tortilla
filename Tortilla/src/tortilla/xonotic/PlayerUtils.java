@@ -121,20 +121,13 @@ public final class PlayerUtils {
      * @return Player's name converted to ascii text
      */
     protected static String sanitizeName(final String name) {
-        String asciiName = name;
-        try {
-            final byte nameBytes[] = name.getBytes("ISO-8859-1");
-            final StringBuilder builder = new StringBuilder("");
-
-            // Character will correspond with unsigned byte.
-            for (byte b : nameBytes) {
-                builder.append(FONT_TABLE[b & 0xff]);
+        final StringBuilder builder = new StringBuilder("");
+        for (char c : name.toCharArray()) {
+            if (c >= '\ue000' && c <= '\ue0ff') {
+                c = FONT_TABLE[c - '\ue000'];
             }
-            asciiName = builder.toString();
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(PlayerUtils.class.getName()).log(Level.SEVERE, null, ex);
+            builder.append(c);
         }
-
-        return asciiName;
+        return builder.toString();
     }
 }

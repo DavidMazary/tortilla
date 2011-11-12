@@ -69,7 +69,7 @@ public class Server {
      * @param newHostName String to replace hostname with.
      */
     public void setHostname(final String newHostName) {
-        hostname = newHostName;
+        hostname = PlayerUtils.sanitizeName(newHostName);
     }
 
     /**

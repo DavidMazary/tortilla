@@ -20,7 +20,6 @@ public abstract class AbstractQuery {
     private static final int TIMEOUT = 2000;          // Timeout used for the sockets
     private static final int PACKET_SIZE = 2048;      // Receive packet size
     private static final int TYPE_OF_SERVICE = 0x04;  // Type of Service octet: reliability
-    private static final String CHARSET = "ISO-8859-1";
     protected static final int RETRIES = 2;
     protected static int ping;
 
@@ -31,8 +30,8 @@ public abstract class AbstractQuery {
      * @param request message to send to server
      * @return  String of the server's reply
      */
-    protected static String getInfo(final String address, final int port, final String request) {
-        String queryInfo;
+    protected static byte[] getInfo(final String address, final int port, final String request) {
+        byte[] response;
         long sendTime;
         byte[] requestBytes = request.getBytes();
         requestBytes[0] |= 0xff;  // Change first 4 chars to 0xff
@@ -53,14 +52,14 @@ public abstract class AbstractQuery {
             socket.receive(receivePacket);
             ping = (int) (System.currentTimeMillis() - sendTime);
             socket.close();
-            queryInfo = new String(receivePacket.getData(), 0, receivePacket.getLength(), CHARSET);
+            response = receivePacket.getData();
         } catch (IOException ex) {
-            queryInfo = null;
+            response = null;
             if (socket != null) {
                 socket.close();
             }
         }
 
-        return queryInfo;
+        return response;
     }
 }

@@ -3,6 +3,7 @@ package tortilla.xonotic.query;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,13 +43,18 @@ public class ServerQuery extends AbstractQuery {
     public static Server getInfo(final String ipStr) {
         final String ip[] = ipStr.split(":");
         final int port = Integer.parseInt(ip[1]);
-        String queryResult = null;
+        String response = null;
         Server server = null;
 
         for (int attempts = 0; attempts < RETRIES; attempts++) {
-            queryResult = getInfo(ip[0], port, "xxxxgetinfo tortilla");
-            if (queryResult != null) {
-                server = getServerFromResponse(queryResult, ipStr);
+            try {
+                response = new String(getInfo(ip[0], port, "xxxxgetinfo tortilla"), "UTF-8");
+                if (response != null) {
+                    server = getServerFromResponse(response, ipStr);
+                    break;
+                }
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(ServerQuery.class.getName()).log(Level.SEVERE, null, ex);
                 break;
             }
         }
@@ -64,26 +70,21 @@ public class ServerQuery extends AbstractQuery {
     public static Server getStatus(final String ipStr) {
         final String ip[] = ipStr.split(":");
         final int port = Integer.parseInt(ip[1]);
-        String queryResult = null;
+        byte[] response = null;
         Server server = null;
 
         for (int attempts = 0; attempts < RETRIES; attempts++) {
-            queryResult = getInfo(ip[0], port, "xxxxgetstatus tortilla");
+            response = getInfo(ip[0], port, "xxxxgetstatus tortilla");
 
-            if (queryResult != null) {
-                queryResult = queryResult.substring(queryResult.indexOf('\\'));
-                ArrayList<Player> players;
-                String input;
-
+            if (response != null) {
                 try {
-                    final BufferedReader reader = new BufferedReader(new StringReader(queryResult));
-                    input = reader.readLine();
-                    server = getServerFromResponse(input, ipStr);
-                    players = new ArrayList<Player>(server.getPlayerCount());
-                    input = reader.readLine();
-                    while (input != null) {
-                        players.add(getPlayerFromResponse(input));
-                        input = reader.readLine();
+                    String responseLines = new String(response, "UTF-8");
+                    responseLines = responseLines.substring(responseLines.indexOf('\\'));
+                    String[] lines = responseLines.split("\n");
+                    server = getServerFromResponse(lines[0], ipStr);
+                    ArrayList<Player> players = new ArrayList<Player>(server.getPlayerCount());
+                    for (int i = 1; i < lines.length - 1; i++) {
+                        players.add(getPlayerFromResponse(lines[i]));
                     }
                     server.setPlayerList(players);
                 } catch (IOException ex) {
@@ -96,13 +97,14 @@ public class ServerQuery extends AbstractQuery {
     }
 
     /**
-     * From a line in the queryResult, retreive player info.
+     * From a line in the queryResult, retrieve player info.
      * TODO: Make this less wasteful.
      * @param queryResult String of the line to process.
      * @return Player which is created.
      */
     private static Player getPlayerFromResponse(final String queryResult) {
         final String[] playerData = queryResult.split(" ");
+        
         final Player player = new Player();
         player.setScore(playerData[0]);
         player.setPing(playerData[1]);
