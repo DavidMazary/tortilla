@@ -9,9 +9,7 @@ import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -564,7 +562,7 @@ private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             if (serverCount > 0) {
                 tableModel.clear();
                 serverVector = new ArrayList<Server>(serverCount);
-                List<Future<Server>> futuresList = new ArrayList();
+                List<Future<Server>> futuresList = new ArrayList<Future<Server>>();
 
                 class ServerQueryRunner implements Callable<Server> {
 

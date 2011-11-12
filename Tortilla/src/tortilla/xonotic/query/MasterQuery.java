@@ -44,17 +44,17 @@ public class MasterQuery extends AbstractQuery {
      */
     public static List<String> getServerList() {
         List<String> serverList = null;
-        String queryResult = null;
+        byte[] response = null;
 
         final long queryStartTime = System.currentTimeMillis();
         int queryTries = 0;
-        while ((queryResult == null) && (queryTries < RETRIES)) {
-            queryResult = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
+        while ((response == null) && (queryTries < RETRIES)) {
+            response = getInfo(getMasterAddress(), DPMASTER_PORT, REQUEST);
             queryTries++;
         }
 
-        if (queryResult == null) {
-           // Notify the user since there may be a problem with their connection.
+        if (response == null) {
+            // Notify the user since there may be a problem with their connection.
             if ((System.currentTimeMillis() - queryStartTime) < 2000) {
                 JOptionPane.showMessageDialog(null, "Could not reach master server");
             } else {
@@ -63,11 +63,10 @@ public class MasterQuery extends AbstractQuery {
         } else {
             serverList = new ArrayList<String>();
             int index = MESSAGE_START;
-            String byteAddress;
-
             int OFFSET = 7;  // 1 delimiter + 6 bytes
-            while (index + OFFSET < queryResult.length()) {
-                byteAddress = queryResult.substring(index + 1, index + OFFSET);
+            byte[] byteAddress = new byte[OFFSET];
+            while (index + OFFSET < response.length) {
+                System.arraycopy(response, index + 1, byteAddress, 0, OFFSET);
                 serverList.add(getAddressFromBytes(byteAddress));
                 index += OFFSET;
             }
@@ -91,22 +90,16 @@ public class MasterQuery extends AbstractQuery {
      * @param ip String containing the data.
      * @return  String with the decoded data.
      */
-    public static String getAddressFromBytes(final String ip) {
+    public static String getAddressFromBytes(final byte[] bytes) {
         String address = null;
-
-        try {
-            final byte[] bytes = ip.getBytes("ISO-8859-1");
-            final int A = bytes[0] & 0xff;
-            final int B = bytes[1] & 0xff;
-            final int C = bytes[2] & 0xff;
-            final int D = bytes[3] & 0xff;
-            int port = bytes[4] & 0xff;
-            port <<= 8;
-            port |= bytes[5] & 0xff;
-            address = A + "." + B + "." + C + "." + D + ":" + port;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(MasterQuery.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        final int A = bytes[0] & 0xff;
+        final int B = bytes[1] & 0xff;
+        final int C = bytes[2] & 0xff;
+        final int D = bytes[3] & 0xff;
+        int port = bytes[4] & 0xff;
+        port <<= 8;
+        port |= bytes[5] & 0xff;
+        address = A + "." + B + "." + C + "." + D + ":" + port;
         return address;
     }
 }

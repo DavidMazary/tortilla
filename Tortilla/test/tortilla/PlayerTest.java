@@ -56,8 +56,21 @@ public class PlayerTest {
     public void testTranslateName()
     {
         System.out.println("testTranslateName");
-        String expResult = "COUICOUI";
-        instance.setName("ÃÏÕÉÃÏÕÉ");
+        String expResult = "DAVE";
+        instance.setName("");
+        String result = instance.getName();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of sanitizeName method on Cyrillic string.
+     */
+    @Test
+    public void testTranslateUnicodeName()
+    {
+        System.out.println("testTranslateUnicodeName");
+        String expResult = "Дейв";
+        instance.setName("Дейв");
         String result = instance.getName();
         assertEquals(expResult, result);
     }

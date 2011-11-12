@@ -21,10 +21,11 @@ public class QueryServerTest {
         System.out.println("testQueryServer");
         Server server = ServerQuery.getInfo("94.23.21.40:26000");
         System.out.println("Ping: " + server.getPing());
+        assertEquals("[R×M]Xonotic Beckstein vs Stoiber {X}", server.getHostname());
         assertEquals("94.23.21.40:26000", server.getIp());
         assertEquals(16, server.getMaxPlayers());
         assertEquals("Xonotic", server.getGame());
-        assertEquals("100", server.getGameVersion());
+        assertEquals("500", server.getGameVersion());
     }
 
     /**
