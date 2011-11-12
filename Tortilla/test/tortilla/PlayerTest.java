@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package tortilla;
 
 import tortilla.xonotic.Player;
@@ -80,7 +75,7 @@ public class PlayerTest {
      */
     @Test
     public void basicColoredName() {
-        String expResult = "<font color=\"white\">[</font><font color=\"red\">Dave</font><font color=\"white\">]</font><font color=\"yellow\">D</font><font color=\"DimGray\">ave</font>";
+        String expResult = "<span style='color:#FFFFFF'>[<span style='color:#FF9900'>Dave<span style='color:#FFFFFF'>]<span style='color:#FFFF00'>D<span style='color:#999999'></span></span></span></span></span>";
         instance.setName("^7[^1Dave^7]^3D^8ave");
         assertEquals("[Dave]Dave", instance.getName());
         assertEquals(expResult, instance.getColoredName());
@@ -93,6 +88,6 @@ public class PlayerTest {
     public void hexColoredName() {
         instance.setName("^x089D^x078a^x05Dv^xB1Fe^x39F");
         assertEquals("Dave", instance.getName());
-        assertEquals("<font color=\"#008899\">D</font><font color=\"#007788\">a</font><font color=\"#0055DD\">v</font><font color=\"#BB11FF\">e</font><font color=\"#3399FF\"></font>", instance.getColoredName());
+        assertEquals("<span style='color:#008899'>D<span style='color:#007788'>a<span style='color:#0055DD'>v<span style='color:#BB11FF'>e<span style='color:#3399FF'></span></span></span></span></span>", instance.getColoredName());
     }
 }
